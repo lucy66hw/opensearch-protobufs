@@ -23,6 +23,9 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y protobuf-compiler
+      - uses: bazelbuild/setup-bazelisk@v2
+        with:
+          bazel-version: 5.4.1
       - uses: actions/checkout@v3
 
 #      - uses: aws-actions/configure-aws-credentials@v1
@@ -33,6 +36,4 @@ jobs:
         run: |
           export SONATYPE_USERNAME=abc
           export SONATYPE_PASSWORD=abc
-          echo "::add-mask::$SONATYPE_USERNAME"
-          echo "::add-mask::$SONATYPE_PASSWORD"
           ./tools/java/package_proto_jar.sh
