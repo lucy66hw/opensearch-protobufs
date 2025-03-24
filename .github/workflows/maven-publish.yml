@@ -23,9 +23,14 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y protobuf-compiler
-      - uses: bazelbuild/setup-bazelisk@v2
+      - name: Mount Bazel cache
+        uses: actions/cache@v4
         with:
-          bazel-version: 5.4.1
+          path: "~/.cache/bazel"
+          key: bazel-cache-${{ runner.os }}-${{ hashFiles('WORKSPACE', '**/*.bazel', '**/*.bzl', 'MODULE.bazel') }}
+          restore-keys: bazel-cache-${{ runner.os }}-
+      - name: Setup Bazelisk
+        uses: bazelbuild/setup-bazelisk@v2
       - uses: actions/checkout@v3
 
 #      - uses: aws-actions/configure-aws-credentials@v1
