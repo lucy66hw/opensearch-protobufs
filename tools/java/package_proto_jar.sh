@@ -228,4 +228,4 @@ mvn deploy:deploy-file \
   -Durl=https://aws.oss.sonatype.org/content/repositories/snapshots/ \
   -Dusername=$SONATYPE_USERNAME \
   -Dpassword=$SONATYPE_PASSWORD
-echo "SONATYPE_USERNAME is: [$SONATYPE_USERNAME]"
+echo "SONATYPE_USERNAME is: $SONATYPE_USERNAME"
