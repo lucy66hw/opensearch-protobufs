@@ -1,5 +1,5 @@
 generatorName: protobuf-schema
-outputDir: protos/generated
+outputDir: protos/tools
 inputSpec: build/processed-opensearch-openapi.yaml
 templateDir: tools/proto-convert/src/config/protobuf-schema-template/
 additionalProperties:
