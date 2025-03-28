@@ -4,7 +4,6 @@ inputSpec: build/processed-opensearch-openapi.yaml
 templateDir: tools/proto-convert/src/config/protobuf-schema-template/
 additionalProperties:
   addJsonNameAnnotation: true
-  flattenComplexType: true
   numberedFieldNumberList: true
   startEnumsWithUnspecified: true
   aggregateModelsName: aggregated_models
