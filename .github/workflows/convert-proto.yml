@@ -38,7 +38,7 @@ jobs:
         run: npm ci && npm run preprocessing
 
       - name: Clone Protobuf Generator Repository
-        run: git clone --branch aggregate_protos https://github.com/lucy66hw/openapi-generator.git cloned-repo
+        run: git clone --branch multi_response https://github.com/lucy66hw/openapi-generator.git cloned-repo
 
       - name: Build Protobuf Generator Tool
         run: |
