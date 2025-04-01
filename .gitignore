@@ -31,7 +31,7 @@ bazel-opensearch-protos
 .bazelrc.user
 
 # Generated files
-generated/
+/generated/
 
 # Maven output
 maven_output/
@@ -70,3 +70,4 @@ Thumbs.db
 protos/tools/.openapi-generator/
 protos/tools/.openapi-generator-ignore
 /cloned-repo
+opensearch-openapi.yaml

@@ -5,13 +5,13 @@ package {{#lambda.lowercase}}{{{packageName}}};{{/lambda.lowercase}}
 
 {{#imports}}
 {{#import}}
-import public "{{{import}}}.proto";
+import "{{{import}}}.proto";
 {{/import}}
 {{/imports}}
 
 {{#models}}
 {{#model}}
-{{#isEnum}}{{>enum}}{{/isEnum}}{{^isEnum}}message {{classname}} {
+{{^isAlias}}{{#isEnum}}{{>enum}}{{/isEnum}}{{^isEnum}}message {{classname}} {
 
 {{#oneOf}}
 {{#-first}}
@@ -51,5 +51,6 @@ import public "{{{import}}}.proto";
 {{/oneOf}}
 }
 {{/isEnum}}
+{{/isAlias}}
 {{/model}}
 {{/models}}
