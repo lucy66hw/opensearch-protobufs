@@ -37,6 +37,7 @@ jobs:
         id: get_commit
         uses: actions/github-script@v6
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const owner = "opensearch-project";
             const repo = "opensearch-api-specification";
