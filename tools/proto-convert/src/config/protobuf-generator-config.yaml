@@ -13,9 +13,9 @@ inlineSchemaOptions:
   RESOLVE_INLINE_ENUMS: true
   SKIP_SCHEMA_REUSE: true
 importMappings:
-  google.protobuf.Struct: "google/protobuf/struct"
+  ObjectMap: "google/protobuf/struct"
 typeMappings:
-  object: "google.protobuf.Struct"
-  AnyType: "google.protobuf.Struct"
+  object: "ObjectMap"
+  AnyType: "ObjectMap"
 openapiGeneratorIgnoreList:
   - "README.md"
