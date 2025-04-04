@@ -9,7 +9,8 @@ on:
 jobs:
   auto-proto-convert:
     runs-on: ubuntu-latest
-    if: github.repository == 'opensearch-project/opensearch-protobufs'
+    #temp remove it for testing fork repository purpose.
+    # if: github.repository == 'opensearch-project/opensearch-protobufs'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -24,6 +25,11 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+
+      - name: Install buf
+        run: |
+          npm install -g @bufbuild/buf
+          buf --version
 
       - name: Download Release Assets
         uses: robinraju/release-downloader@v1
@@ -68,7 +74,9 @@ jobs:
 
       #      - name: Post Process Protobuf
       #        run: npm run postprocessing
-
+      - name: Reformat proto files
+        run: |
+          buf format -w protos/generated
       - name: Configure Git User
         run: |
           git config --global user.name "github-actions[bot]"
