@@ -29,7 +29,6 @@ jobs:
       - name: Install buf
         run: |
           curl -sSL https://github.com/bufbuild/buf/releases/latest/download/install.sh | bash -s -- -b /usr/local/bin
-          buf --version
 
       - name: Download Release Assets
         uses: robinraju/release-downloader@v1
