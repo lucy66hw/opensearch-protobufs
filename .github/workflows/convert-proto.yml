@@ -76,9 +76,7 @@ jobs:
       #        run: npm run postprocessing
       - name: Reformat proto files
         run: |
-          ls -l protos/generated
-          buf format -w protos/generated/models/aggregated_models.proto
-          buf format -w protos/generated/services/default_service.proto
+          buf format -w protos/generated
       - name: Configure Git User
         run: |
           git config --global user.name "github-actions[bot]"
