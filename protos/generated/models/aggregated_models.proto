@@ -69,7 +69,7 @@ message Fields {
 }
 message InlineGetDictUserDefined {
   // The fields retrieved from the document.
-  map<string, ObjectMap> fields = 1;
+  ObjectMap fields = 1;
 
   // Whether the document was found.
   bool found = 2;
@@ -84,7 +84,7 @@ message InlineGetDictUserDefined {
   optional string underscore_routing = 5;
 
   // The source of the document.
-  map<string, ObjectMap> underscore_source = 6;
+  ObjectMap underscore_source = 6;
 }
 message InlineObject {
   bool errors = 1;
@@ -104,7 +104,7 @@ message InlineScript {
 }
 message InlineScriptOneOf {
   // Specifies any named parameters that are passed into the script as variables.  Use parameters instead of hard-coded values to decrease compilation time.
-  map<string, ObjectMap> params = 1;
+  ObjectMap params = 1;
 
   optional ScriptLanguage lang = 2;
 
@@ -197,7 +197,7 @@ message ResponseItem {
   optional int64 underscore_version = 12;
 }
 message ResponseItemMap {
-  map<string, ResponseItem> response_item_map = 1;
+  ResponseItem response_item_map = 1;
 }
 message Script {
   oneof script {
@@ -208,7 +208,7 @@ message Script {
 }
 message ScriptBase {
   // Specifies any named parameters that are passed into the script as variables.  Use parameters instead of hard-coded values to decrease compilation time.
-  map<string, ObjectMap> params = 1;
+  ObjectMap params = 1;
 }
 message ScriptLanguage {
   optional BuiltinScriptLanguage builtin = 1;
@@ -265,7 +265,7 @@ message SourceFilterOneOf {
 }
 message StoredScriptId {
   // Specifies any named parameters that are passed into the script as variables.  Use parameters instead of hard-coded values to decrease compilation time.
-  map<string, ObjectMap> params = 1;
+  ObjectMap params = 1;
 
   // The unique identifier for a resource.
   string id = 2;
