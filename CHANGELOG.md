@@ -12,6 +12,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Add auto remove workflow for auto-pr-branch ([#62](https://github.com/opensearch-project/opensearch-protobufs/pull/62))
 - Reformat generated protobuf schema ([#64](https://github.com/opensearch-project/opensearch-protobufs/pull/64))
 - Add generated proto formatter and modify proto template ([#66](https://github.com/opensearch-project/opensearch-protobufs/pull/66))
+- Preprocessing specification for additionalProperties ([#69](https://github.com/opensearch-project/opensearch-protobufs/pull/69)))
 ### Removed
 
 ### Fixed
