@@ -3339,9 +3339,9 @@ components:
           required:
             - queries
     DistanceFeatureQuery:
-      allOf:
-        - $ref: '#/components/schemas/QueryBase'
-        - oneOf:
+      oneOf:
+        - allOf:
+            - $ref: '#/components/schemas/QueryBase'
             - type: object
               properties:
                 origin:
@@ -3354,6 +3354,8 @@ components:
                 - field
                 - origin
                 - pivot
+        - allOf:
+            - $ref: '#/components/schemas/QueryBase'
             - type: object
               properties:
                 origin:
@@ -4108,10 +4110,12 @@ components:
           required:
             - query
     RangeQuery:
-      allOf:
-        - $ref: '#/components/schemas/RangeQueryBase'
-        - oneOf:
+      oneOf:
+        - allOf:
+            - $ref: '#/components/schemas/RangeQueryBase'
             - $ref: '#/components/schemas/NumberRangeQueryParameters'
+        - allOf:
+            - $ref: '#/components/schemas/RangeQueryBase'
             - $ref: '#/components/schemas/DateRangeQueryParameters'
     RankFeatureQuery:
       allOf:
@@ -4515,7 +4519,6 @@ components:
                     - _score
                     - _script
           additionalProperties:
-            title: abc
             $ref: '#/components/schemas/FieldSort'
           minProperties: 1
           maxProperties: 1
