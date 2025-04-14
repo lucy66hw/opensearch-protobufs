@@ -1105,13 +1105,6 @@ enum CombinedFieldsZeroTerms {
   COMBINED_FIELDS_ZERO_TERMS_NONE = 2;
 }
 message CommonTermsQuery {
-  oneof common_terms_query {
-    string query = 1;
-
-    CommonTermsQueryOneOf common_terms_query_one_of = 2;
-  }
-}
-message CommonTermsQueryOneOf {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
 
@@ -1130,16 +1123,6 @@ message CommonTermsQueryOneOf {
   string query = 8;
 }
 message CompletionContext {
-  oneof completion_context {
-    Context context = 1;
-
-    CompletionContextOneOf completion_context_one_of = 2;
-  }
-}
-message CompletionContextArray {
-  repeated CompletionContext completion_context_array = 1;
-}
-message CompletionContextOneOf {
   optional double boost = 1;
 
   Context context = 2;
@@ -1149,6 +1132,9 @@ message CompletionContextOneOf {
   optional GeoHashPrecision precision = 4;
 
   optional bool prefix = 5;
+}
+message CompletionContextArray {
+  repeated CompletionContext completion_context_array = 1;
 }
 message CompletionSuggest {
   int32 length = 1;
@@ -2075,14 +2061,6 @@ message FetchProfileDebug {
   optional int32 fast_path = 2;
 }
 message FieldAndFormat {
-  oneof field_and_format {
-    // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-    string field = 1;
-
-    FieldAndFormatOneOf field_and_format_one_of = 2;
-  }
-}
-message FieldAndFormatOneOf {
   // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
   string field = 1;
 
@@ -2121,33 +2099,6 @@ message FieldLookup {
   optional string routing = 4;
 }
 message FieldSort {
-  oneof field_sort {
-    // The sort order direction.
-    SortOrder order = 1;
-
-    FieldSortOneOf field_sort_one_of = 2;
-  }
-}
-message FieldSortMap {
-  // Sort by field options.
-  map<string, FieldSort> field_sort_map = 1;
-}
-message FieldSortNumericType {
-  oneof field_sort_numeric_type {
-    // The field contains date values.
-    bool field_sort_numeric_type_date = 1;
-
-    // The field contains date values with nanosecond precision.
-    bool field_sort_numeric_type_date_nanos = 2;
-
-    // The field contains double-precision floating-point values.
-    bool field_sort_numeric_type_double = 3;
-
-    // The field contains long integer values.
-    bool field_sort_numeric_type_long = 4;
-  }
-}
-message FieldSortOneOf {
   // The value to use when the field is missing.
   optional FieldValue missing = 1;
 
@@ -2168,6 +2119,25 @@ message FieldSortOneOf {
 
   // The format to use for the sort values.
   optional string format = 7;
+}
+message FieldSortMap {
+  // Sort by field options.
+  map<string, FieldSort> field_sort_map = 1;
+}
+message FieldSortNumericType {
+  oneof field_sort_numeric_type {
+    // The field contains date values.
+    bool field_sort_numeric_type_date = 1;
+
+    // The field contains date values with nanosecond precision.
+    bool field_sort_numeric_type_date_nanos = 2;
+
+    // The field contains double-precision floating-point values.
+    bool field_sort_numeric_type_double = 3;
+
+    // The field contains long integer values.
+    bool field_sort_numeric_type_long = 4;
+  }
 }
 message FieldSuggester {
   optional string prefix = 1;
@@ -2414,13 +2384,6 @@ message Fuzziness {
   }
 }
 message FuzzyQuery {
-  oneof fuzzy_query {
-    FieldValue value = 1;
-
-    FuzzyQueryOneOf fuzzy_query_one_of = 2;
-  }
-}
-message FuzzyQueryOneOf {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
 
@@ -3402,13 +3365,6 @@ message InlineObject {
   optional int64 ingest_took = 4;
 }
 message InlineScript {
-  oneof inline_script {
-    string source = 1;
-
-    InlineScriptOneOf inline_script_one_of = 2;
-  }
-}
-message InlineScriptOneOf {
   // Specifies any named parameters that are passed into the script as variables.  Use parameters instead of hard-coded values to decrease compilation time.
   optional ObjectMap params = 1;
 
@@ -3872,13 +3828,6 @@ message MatchAllQuery {
   optional string underscore_name = 2;
 }
 message MatchBoolPrefixQuery {
-  oneof match_bool_prefix_query {
-    string query = 1;
-
-    MatchBoolPrefixQueryOneOf match_bool_prefix_query_one_of = 2;
-  }
-}
-message MatchBoolPrefixQueryOneOf {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
 
@@ -3914,13 +3863,6 @@ message MatchNoneQuery {
   optional string underscore_name = 2;
 }
 message MatchPhrasePrefixQuery {
-  oneof match_phrase_prefix_query {
-    string query = 1;
-
-    MatchPhrasePrefixQueryOneOf match_phrase_prefix_query_one_of = 2;
-  }
-}
-message MatchPhrasePrefixQueryOneOf {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
 
@@ -3941,13 +3883,6 @@ message MatchPhrasePrefixQueryOneOf {
   optional ZeroTermsQuery zero_terms_query = 7;
 }
 message MatchPhraseQuery {
-  oneof match_phrase_query {
-    string query = 1;
-
-    MatchPhraseQueryOneOf match_phrase_query_one_of = 2;
-  }
-}
-message MatchPhraseQueryOneOf {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
 
@@ -3965,13 +3900,6 @@ message MatchPhraseQueryOneOf {
   optional ZeroTermsQuery zero_terms_query = 6;
 }
 message MatchQuery {
-  oneof match_query {
-    FieldValue query = 1;
-
-    MatchQueryOneOf match_query_one_of = 2;
-  }
-}
-message MatchQueryOneOf {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
 
@@ -5076,13 +5004,6 @@ message PointInTimeReference {
   optional string keep_alive = 2;
 }
 message PrefixQuery {
-  oneof prefix_query {
-    string value = 1;
-
-    PrefixQueryOneOf prefix_query_one_of = 2;
-  }
-}
-message PrefixQueryOneOf {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
 
@@ -5602,13 +5523,6 @@ message Refresh {
   }
 }
 message RegexpQuery {
-  oneof regexp_query {
-    string value = 1;
-
-    RegexpQueryOneOf regexp_query_one_of = 2;
-  }
-}
-message RegexpQueryOneOf {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
 
@@ -6478,13 +6392,6 @@ message SourceConfigParam {
   }
 }
 message SourceFilter {
-  oneof source_filter {
-    StringArray includes = 1;
-
-    SourceFilterOneOf source_filter_one_of = 2;
-  }
-}
-message SourceFilterOneOf {
   repeated string excludes = 1;
 
   repeated string includes = 2;
@@ -6596,13 +6503,6 @@ message SpanQuery {
   optional SpanWithinQuery span_within = 10;
 }
 message SpanTermQuery {
-  oneof span_term_query {
-    string value = 1;
-
-    SpanTermQueryOneOf span_term_query_one_of = 2;
-  }
-}
-message SpanTermQueryOneOf {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
 
@@ -7037,13 +6937,6 @@ enum TTestType {
   T_TEST_TYPE_PAIRED = 3;
 }
 message TermQuery {
-  oneof term_query {
-    FieldValue value = 1;
-
-    TermQueryOneOf term_query_one_of = 2;
-  }
-}
-message TermQueryOneOf {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
 
@@ -7635,13 +7528,6 @@ enum WhitespaceAnalyzerType {
   WHITESPACE_ANALYZER_TYPE_WHITESPACE = 1;
 }
 message WildcardQuery {
-  oneof wildcard_query {
-    string value = 1;
-
-    WildcardQueryOneOf wildcard_query_one_of = 2;
-  }
-}
-message WildcardQueryOneOf {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
 
