@@ -26,7 +26,7 @@ export class SchemaModifier {
                 this.handleOneOfConst(schema, schemaName)
                 this.collapseOrMergeOneOfArray(schema)
                 this.handleAdditionalPropertiesUndefined(schema)
-                //this.CollapseOneOfObjectPropContainsTitleSchema(schema)
+                this.CollapseOneOfObjectPropContainsTitleSchema(schema)
             },
         });
         return OpenApiSpec;
