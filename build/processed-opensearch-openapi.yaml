@@ -924,14 +924,23 @@ components:
       properties:
         index:
           $ref: '#/components/schemas/IndexOperation'
+          x-oneOf-property: true
+          x-oneOf-annotation: index, create, update, delete are mutual exclusive
         create:
           $ref: '#/components/schemas/CreateOperation'
+          x-oneOf-property: true
+          x-oneOf-annotation: index, create, update, delete are mutual exclusive
         update:
           $ref: '#/components/schemas/UpdateOperation'
+          x-oneOf-property: true
+          x-oneOf-annotation: index, create, update, delete are mutual exclusive
         delete:
           $ref: '#/components/schemas/DeleteOperation'
+          x-oneOf-property: true
+          x-oneOf-annotation: index, create, update, delete are mutual exclusive
       minProperties: 1
       maxProperties: 1
+      x-oneOf-model: true
     UpdateAction:
       type: object
       properties:
@@ -1536,252 +1545,291 @@ components:
         - field
     RankContainer:
       type: object
+      description: The container for ranking configuration.
       properties:
         rrf:
           $ref: '#/components/schemas/RrfRank'
+          description: The reciprocal rank fusion configuration.
+          x-oneOf-property: true
+          x-oneOf-annotation: rrf are mutual exclusive
       minProperties: 1
       maxProperties: 1
+      x-oneOf-model: true
     QueryContainer:
       type: object
       properties:
         bool:
           $ref: '#/components/schemas/BoolQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         boosting:
           $ref: '#/components/schemas/BoostingQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         common:
           deprecated: true
           type: object
-          propertyNames:
-            $ref: '#/components/schemas/Field'
-          additionalProperties:
-            $ref: '#/components/schemas/CommonTermsQuery'
-          minProperties: 1
-          maxProperties: 1
+          $ref: '#/components/schemas/CommonTermsQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         combined_fields:
           $ref: '#/components/schemas/CombinedFieldsQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         constant_score:
           $ref: '#/components/schemas/ConstantScoreQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         dis_max:
           $ref: '#/components/schemas/DisMaxQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         distance_feature:
           $ref: '#/components/schemas/DistanceFeatureQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         exists:
           $ref: '#/components/schemas/ExistsQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         function_score:
           $ref: '#/components/schemas/FunctionScoreQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         fuzzy:
           description: Returns documents that contain terms similar to the search term, as measured by a Levenshtein edit distance.
           type: object
-          propertyNames:
-            $ref: '#/components/schemas/Field'
-          additionalProperties:
-            $ref: '#/components/schemas/FuzzyQuery'
-          minProperties: 1
-          maxProperties: 1
+          $ref: '#/components/schemas/FuzzyQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         geo_bounding_box:
           $ref: '#/components/schemas/GeoBoundingBoxQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         geo_distance:
           $ref: '#/components/schemas/GeoDistanceQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         geo_polygon:
           $ref: '#/components/schemas/GeoPolygonQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         geo_shape:
           $ref: '#/components/schemas/GeoShapeQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         has_child:
           $ref: '#/components/schemas/HasChildQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         has_parent:
           $ref: '#/components/schemas/HasParentQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         hybrid:
           $ref: '#/components/schemas/HybridQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         ids:
           $ref: '#/components/schemas/IdsQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         intervals:
           description: Returns documents based on the order and proximity of matching terms.
           type: object
-          propertyNames:
-            $ref: '#/components/schemas/Field'
-          additionalProperties:
-            $ref: '#/components/schemas/IntervalsQuery'
-          minProperties: 1
-          maxProperties: 1
+          $ref: '#/components/schemas/IntervalsQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         knn:
           type: object
-          propertyNames:
-            $ref: '#/components/schemas/Field'
-          additionalProperties:
-            $ref: '#/components/schemas/KnnQuery'
-          minProperties: 1
-          maxProperties: 1
+          $ref: '#/components/schemas/KnnQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         match:
           description: |-
             Returns documents that match a provided text, number, date or Boolean value.
             The provided text is analyzed before matching.
           type: object
-          propertyNames:
-            $ref: '#/components/schemas/Field'
-          additionalProperties:
-            $ref: '#/components/schemas/MatchQuery'
-          minProperties: 1
-          maxProperties: 1
+          $ref: '#/components/schemas/MatchQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         match_all:
           $ref: '#/components/schemas/MatchAllQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         match_bool_prefix:
           description: |-
             Analyzes its input and constructs a `bool` query from the terms.
             Each term except the last is used in a `term` query.
             The last term is used in a prefix query.
           type: object
-          propertyNames:
-            $ref: '#/components/schemas/Field'
-          additionalProperties:
-            $ref: '#/components/schemas/MatchBoolPrefixQuery'
-          minProperties: 1
-          maxProperties: 1
+          $ref: '#/components/schemas/MatchBoolPrefixQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         match_none:
           $ref: '#/components/schemas/MatchNoneQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         match_phrase:
           description: Analyzes the text and creates a phrase query out of the analyzed text.
           type: object
-          propertyNames:
-            $ref: '#/components/schemas/Field'
-          additionalProperties:
-            $ref: '#/components/schemas/MatchPhraseQuery'
-          minProperties: 1
-          maxProperties: 1
+          $ref: '#/components/schemas/MatchPhraseQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         match_phrase_prefix:
           description: |-
             Returns documents that contain the words of a provided text, in the same order as provided.
             The last term of the provided text is treated as a prefix, matching any words that begin with that term.
           type: object
-          propertyNames:
-            $ref: '#/components/schemas/Field'
-          additionalProperties:
-            $ref: '#/components/schemas/MatchPhrasePrefixQuery'
-          minProperties: 1
-          maxProperties: 1
+          $ref: '#/components/schemas/MatchPhrasePrefixQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         more_like_this:
           $ref: '#/components/schemas/MoreLikeThisQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         multi_match:
           $ref: '#/components/schemas/MultiMatchQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         nested:
           $ref: '#/components/schemas/NestedQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         neural:
           type: object
-          propertyNames:
-            $ref: '#/components/schemas/Field'
-          additionalProperties:
-            $ref: '#/components/schemas/NeuralQuery'
-          minProperties: 1
-          maxProperties: 1
+          $ref: '#/components/schemas/NeuralQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         parent_id:
           $ref: '#/components/schemas/ParentIdQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         percolate:
           $ref: '#/components/schemas/PercolateQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         pinned:
           $ref: '#/components/schemas/PinnedQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         prefix:
           description: Returns documents that contain a specific prefix in a provided field.
           type: object
-          propertyNames:
-            $ref: '#/components/schemas/Field'
-          additionalProperties:
-            $ref: '#/components/schemas/PrefixQuery'
-          minProperties: 1
-          maxProperties: 1
+          $ref: '#/components/schemas/PrefixQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         query_string:
           $ref: '#/components/schemas/QueryStringQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         range:
           description: Returns documents that contain terms within a provided range.
           type: object
-          propertyNames:
-            $ref: '#/components/schemas/Field'
-          additionalProperties:
-            $ref: '#/components/schemas/RangeQuery'
-          minProperties: 1
-          maxProperties: 1
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         rank_feature:
           $ref: '#/components/schemas/RankFeatureQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         regexp:
           description: Returns documents that contain terms matching a regular expression.
           type: object
-          propertyNames:
-            $ref: '#/components/schemas/Field'
-          additionalProperties:
-            $ref: '#/components/schemas/RegexpQuery'
-          minProperties: 1
-          maxProperties: 1
+          $ref: '#/components/schemas/RegexpQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         script:
           $ref: '#/components/schemas/ScriptQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         script_score:
           $ref: '#/components/schemas/ScriptScoreQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         simple_query_string:
           $ref: '#/components/schemas/SimpleQueryStringQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         span_containing:
           $ref: '#/components/schemas/SpanContainingQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         field_masking_span:
           $ref: '#/components/schemas/SpanFieldMaskingQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         span_first:
           $ref: '#/components/schemas/SpanFirstQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         span_multi:
           $ref: '#/components/schemas/SpanMultiTermQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         span_near:
           $ref: '#/components/schemas/SpanNearQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         span_not:
           $ref: '#/components/schemas/SpanNotQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         span_or:
           $ref: '#/components/schemas/SpanOrQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         span_term:
           description: Matches spans containing a term.
           type: object
-          propertyNames:
-            $ref: '#/components/schemas/Field'
-          additionalProperties:
-            $ref: '#/components/schemas/SpanTermQuery'
-          minProperties: 1
-          maxProperties: 1
+          $ref: '#/components/schemas/SpanTermQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         span_within:
           $ref: '#/components/schemas/SpanWithinQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         term:
           description: |-
             Returns documents that contain an exact term in a provided field.
             To return a document, the query term must exactly match the queried field's value, including white space and capitalization.
           type: object
-          propertyNames:
-            $ref: '#/components/schemas/Field'
-          additionalProperties:
-            $ref: '#/components/schemas/TermQuery'
-          minProperties: 1
-          maxProperties: 1
+          $ref: '#/components/schemas/TermQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         terms:
           description: Returns documents that contain one or more exact terms in a provided field.
           $ref: '#/components/schemas/TermsQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         terms_set:
           description: |-
             Returns documents that contain a minimum number of exact terms in a provided field.
             To return a document, a required number of terms must exactly match the field values, including white space and capitalization.
           type: object
-          propertyNames:
-            $ref: '#/components/schemas/Field'
-          additionalProperties:
-            $ref: '#/components/schemas/TermsSetQuery'
-          minProperties: 1
-          maxProperties: 1
+          $ref: '#/components/schemas/TermsSetQuery'
+          x-oneOf-property: truerang
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         type:
           $ref: '#/components/schemas/TypeQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         wildcard:
           description: Returns documents that contain terms matching a wildcard pattern.
           type: object
-          propertyNames:
-            $ref: '#/components/schemas/Field'
-          additionalProperties:
-            $ref: '#/components/schemas/WildcardQuery'
-          minProperties: 1
-          maxProperties: 1
+          $ref: '#/components/schemas/WildcardQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         wrapper:
           $ref: '#/components/schemas/WrapperQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
         xy_shape:
           $ref: '#/components/schemas/XyShapeQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: bool, boosting, common, combined_fields, constant_score, dis_max, distance_feature, exists, function_score, fuzzy, geo_bounding_box, geo_distance, geo_polygon, geo_shape, has_child, has_parent, hybrid, ids, intervals, knn, match, match_all, match_bool_prefix, match_none, match_phrase, match_phrase_prefix, more_like_this, multi_match, nested, neural, parent_id, percolate, pinned, prefix, query_string, range, rank_feature, regexp, script, script_score, simple_query_string, span_containing, field_masking_span, span_first, span_multi, span_near, span_not, span_or, span_term, span_within, term, terms, terms_set, type, wildcard, wrapper, xy_shape are mutual exclusive
       minProperties: 1
       maxProperties: 1
+      x-oneOf-model: true
     Rescore:
       type: object
       properties:
@@ -1907,11 +1955,13 @@ components:
         - took
     ErrorResponse:
       type: object
+      description: Provides details about an API error.
       properties:
         error:
           $ref: '#/components/schemas/Error'
         status:
           type: number
+          description: The HTTP status code for the error.
     WaitForActiveShardOptions:
       oneOf:
         - type: boolean
@@ -3201,6 +3251,7 @@ components:
       allOf:
         - $ref: '#/components/schemas/RankBase'
         - type: object
+          description: The reciprocal rank fusion ranking configuration.
           properties:
             rank_constant:
               description: To what degree documents found in individual result sets per query influence the final ranked result set.
@@ -3283,6 +3334,10 @@ components:
               type: string
           required:
             - query
+        - type: object
+          properties:
+            field:
+              type: string
     CombinedFieldsQuery:
       allOf:
         - $ref: '#/components/schemas/QueryBase'
@@ -3339,9 +3394,9 @@ components:
           required:
             - queries
     DistanceFeatureQuery:
-      allOf:
-        - $ref: '#/components/schemas/QueryBase'
-        - oneOf:
+      oneOf:
+        - allOf:
+            - $ref: '#/components/schemas/QueryBase'
             - type: object
               properties:
                 origin:
@@ -3354,6 +3409,8 @@ components:
                 - field
                 - origin
                 - pivot
+        - allOf:
+            - $ref: '#/components/schemas/QueryBase'
             - type: object
               properties:
                 origin:
@@ -3424,6 +3481,10 @@ components:
               $ref: '#/components/schemas/FieldValue'
           required:
             - value
+        - type: object
+          properties:
+            field:
+              type: string
     GeoBoundingBoxQuery:
       allOf:
         - $ref: '#/components/schemas/QueryBase'
@@ -3573,18 +3634,35 @@ components:
           properties:
             all_of:
               $ref: '#/components/schemas/IntervalsAllOf'
+              x-oneOf-property: true
+              x-oneOf-annotation: all_of, any_of, fuzzy, match, prefix, wildcard are mutual exclusive
             any_of:
               $ref: '#/components/schemas/IntervalsAnyOf'
+              x-oneOf-property: true
+              x-oneOf-annotation: all_of, any_of, fuzzy, match, prefix, wildcard are mutual exclusive
             fuzzy:
               $ref: '#/components/schemas/IntervalsFuzzy'
+              x-oneOf-property: true
+              x-oneOf-annotation: all_of, any_of, fuzzy, match, prefix, wildcard are mutual exclusive
             match:
               $ref: '#/components/schemas/IntervalsMatch'
+              x-oneOf-property: true
+              x-oneOf-annotation: all_of, any_of, fuzzy, match, prefix, wildcard are mutual exclusive
             prefix:
               $ref: '#/components/schemas/IntervalsPrefix'
+              x-oneOf-property: true
+              x-oneOf-annotation: all_of, any_of, fuzzy, match, prefix, wildcard are mutual exclusive
             wildcard:
               $ref: '#/components/schemas/IntervalsWildcard'
+              x-oneOf-property: true
+              x-oneOf-annotation: all_of, any_of, fuzzy, match, prefix, wildcard are mutual exclusive
           minProperties: 1
           maxProperties: 1
+          x-oneOf-model: true
+        - type: object
+          properties:
+            field:
+              type: string
     KnnQuery:
       allOf:
         - $ref: '#/components/schemas/QueryBase'
@@ -3620,6 +3698,10 @@ components:
               x-version-added: '2.19'
           required:
             - vector
+        - type: object
+          properties:
+            field:
+              type: string
     MatchQuery:
       allOf:
         - $ref: '#/components/schemas/QueryBase'
@@ -3664,6 +3746,10 @@ components:
               $ref: '#/components/schemas/ZeroTermsQuery'
           required:
             - query
+        - type: object
+          properties:
+            field:
+              type: string
     MatchAllQuery:
       allOf:
         - $ref: '#/components/schemas/QueryBase'
@@ -3709,6 +3795,10 @@ components:
               type: string
           required:
             - query
+        - type: object
+          properties:
+            field:
+              type: string
     MatchNoneQuery:
       allOf:
         - $ref: '#/components/schemas/QueryBase'
@@ -3732,6 +3822,10 @@ components:
               $ref: '#/components/schemas/ZeroTermsQuery'
           required:
             - query
+        - type: object
+          properties:
+            field:
+              type: string
     MatchPhrasePrefixQuery:
       allOf:
         - $ref: '#/components/schemas/QueryBase'
@@ -3755,6 +3849,10 @@ components:
               $ref: '#/components/schemas/ZeroTermsQuery'
           required:
             - query
+        - type: object
+          properties:
+            field:
+              type: string
     MoreLikeThisQuery:
       allOf:
         - $ref: '#/components/schemas/QueryBase'
@@ -3937,6 +4035,10 @@ components:
               format: float
             filter:
               $ref: '#/components/schemas/QueryContainer'
+        - type: object
+          properties:
+            field:
+              type: string
     ParentIdQuery:
       allOf:
         - $ref: '#/components/schemas/QueryBase'
@@ -3997,6 +4099,8 @@ components:
                   type: array
                   items:
                     $ref: '#/components/schemas/Id'
+                  x-oneOf-property: true
+                  x-oneOf-annotation: ids, docs are mutual exclusive
                 docs:
                   description: |-
                     Documents listed in the order they are to appear in results.
@@ -4004,8 +4108,11 @@ components:
                   type: array
                   items:
                     $ref: '#/components/schemas/PinnedDoc'
+                  x-oneOf-property: true
+                  x-oneOf-annotation: ids, docs are mutual exclusive
               minProperties: 1
               maxProperties: 1
+              x-oneOf-model: true
     PrefixQuery:
       allOf:
         - $ref: '#/components/schemas/QueryBase'
@@ -4023,6 +4130,10 @@ components:
               type: boolean
           required:
             - value
+        - type: object
+          properties:
+            field:
+              type: string
     QueryStringQuery:
       allOf:
         - $ref: '#/components/schemas/QueryBase'
@@ -4108,10 +4219,12 @@ components:
           required:
             - query
     RangeQuery:
-      allOf:
-        - $ref: '#/components/schemas/RangeQueryBase'
-        - oneOf:
+      oneOf:
+        - allOf:
+            - $ref: '#/components/schemas/RangeQueryBase'
             - $ref: '#/components/schemas/NumberRangeQueryParameters'
+        - allOf:
+            - $ref: '#/components/schemas/RangeQueryBase'
             - $ref: '#/components/schemas/DateRangeQueryParameters'
     RankFeatureQuery:
       allOf:
@@ -4154,6 +4267,10 @@ components:
               type: string
           required:
             - value
+        - type: object
+          properties:
+            field:
+              type: string
     ScriptQuery:
       allOf:
         - $ref: '#/components/schemas/QueryBase'
@@ -4343,6 +4460,14 @@ components:
               type: string
           required:
             - value
+        - type: object
+          properties:
+            field:
+              type: string
+        - type: object
+          properties:
+            field:
+              type: string
     SpanWithinQuery:
       allOf:
         - $ref: '#/components/schemas/QueryBase'
@@ -4369,6 +4494,10 @@ components:
               type: boolean
           required:
             - value
+        - type: object
+          properties:
+            field:
+              type: string
     TermsQuery:
       allOf:
         - $ref: '#/components/schemas/QueryBase'
@@ -4398,6 +4527,10 @@ components:
                 type: string
           required:
             - terms
+        - type: object
+          properties:
+            field:
+              type: string
     TypeQuery:
       allOf:
         - $ref: '#/components/schemas/QueryBase'
@@ -4422,6 +4555,10 @@ components:
               type: string
             wildcard:
               description: Wildcard pattern for terms you wish to find in the provided field. Required, when value is not set.
+              type: string
+        - type: object
+          properties:
+            field:
               type: string
     WrapperQuery:
       allOf:
@@ -4494,31 +4631,26 @@ components:
           properties:
             underscore_score:
               $ref: '#/components/schemas/ScoreSort'
+              x-oneOf-property: true
+              x-oneOf-annotation: underscore_score, underscore_doc, underscore_geo_distance, underscore_script are mutual exclusive
             underscore_doc:
               $ref: '#/components/schemas/ScoreSort'
+              x-oneOf-property: true
+              x-oneOf-annotation: underscore_score, underscore_doc, underscore_geo_distance, underscore_script are mutual exclusive
             underscore_geo_distance:
               $ref: '#/components/schemas/GeoDistanceSort'
+              x-oneOf-property: true
+              x-oneOf-annotation: underscore_score, underscore_doc, underscore_geo_distance, underscore_script are mutual exclusive
             underscore_script:
               $ref: '#/components/schemas/ScriptSort'
+              x-oneOf-property: true
+              x-oneOf-annotation: underscore_score, underscore_doc, underscore_geo_distance, underscore_script are mutual exclusive
           minProperties: 1
           maxProperties: 1
+          x-oneOf-model: true
         - type: object
           description: Sort by field options.
-          propertyNames:
-            allOf:
-              - $ref: '#/components/schemas/Field'
-              - not:
-                  type: string
-                  enum:
-                    - _doc
-                    - _geo_distance
-                    - _score
-                    - _script
-          additionalProperties:
-            title: abc
-            $ref: '#/components/schemas/FieldSort'
-          minProperties: 1
-          maxProperties: 1
+          $ref: '#/components/schemas/FieldSort'
     SourceFilter:
       type: object
       properties:
@@ -4540,30 +4672,44 @@ components:
           properties:
             completion:
               $ref: '#/components/schemas/CompletionSuggester'
+              x-oneOf-property: true
+              x-oneOf-annotation: completion, phrase, term are mutual exclusive
             phrase:
               $ref: '#/components/schemas/PhraseSuggester'
+              x-oneOf-property: true
+              x-oneOf-annotation: completion, phrase, term are mutual exclusive
             term:
               $ref: '#/components/schemas/TermSuggester'
+              x-oneOf-property: true
+              x-oneOf-annotation: completion, phrase, term are mutual exclusive
           minProperties: 1
           maxProperties: 1
+          x-oneOf-model: true
     Id:
       type: string
       description: The unique identifier for a resource.
     PhaseTook:
       type: object
+      description: The time taken by different phases of the search.
       properties:
         dfs_pre_query:
           $ref: '#/components/schemas/uint'
+          description: The time taken for the distributed frequency search `pre-query` phase.
         query:
           $ref: '#/components/schemas/uint'
+          description: The time taken for the `query` phase.
         fetch:
           $ref: '#/components/schemas/uint'
+          description: The time taken for the `fetch` phase.
         dfs_query:
           $ref: '#/components/schemas/uint'
+          description: The time taken for the distributed frequency search query phase.
         expand:
           $ref: '#/components/schemas/uint'
+          description: The time taken for the `expand` phase.
         can_match:
           $ref: '#/components/schemas/uint'
+          description: The time taken for the `can_match` phase.
       required:
         - can_match
         - dfs_pre_query
@@ -4712,15 +4858,19 @@ components:
           $ref: '#/components/schemas/TermSuggest'
     Error:
       type: object
+      description: Contains detailed information about an error.
       properties:
         root_cause:
           type: array
           items:
             $ref: '#/components/schemas/RootCause'
+            description: The underlying causes of the error.
         type:
           type: string
+          description: The error type classification.
         reason:
           type: string
+          description: The human-readable error message.
       required:
         - reason
         - root_cause
@@ -5148,10 +5298,15 @@ components:
       properties:
         regression:
           $ref: '#/components/schemas/RegressionInferenceOptions'
+          x-oneOf-property: true
+          x-oneOf-annotation: regression, classification are mutual exclusive
         classification:
           $ref: '#/components/schemas/ClassificationInferenceOptions'
+          x-oneOf-property: true
+          x-oneOf-annotation: regression, classification are mutual exclusive
       minProperties: 1
       maxProperties: 1
+      x-oneOf-model: true
     MatrixAggregation:
       allOf:
         - $ref: '#/components/schemas/Aggregation'
@@ -5473,6 +5628,7 @@ components:
         - $ref: '#/components/schemas/PhoneAnalyzer'
     RankBase:
       type: object
+      description: The base configuration for ranking.
     QueryBase:
       type: object
       properties:
@@ -5904,31 +6060,49 @@ components:
       properties:
         span_containing:
           $ref: '#/components/schemas/SpanContainingQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: span_containing, field_masking_span, span_first, span_gap, span_multi, span_near, span_not, span_or, span_term, span_within are mutual exclusive
         field_masking_span:
           $ref: '#/components/schemas/SpanFieldMaskingQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: span_containing, field_masking_span, span_first, span_gap, span_multi, span_near, span_not, span_or, span_term, span_within are mutual exclusive
         span_first:
           $ref: '#/components/schemas/SpanFirstQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: span_containing, field_masking_span, span_first, span_gap, span_multi, span_near, span_not, span_or, span_term, span_within are mutual exclusive
         span_gap:
           $ref: '#/components/schemas/SpanGapQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: span_containing, field_masking_span, span_first, span_gap, span_multi, span_near, span_not, span_or, span_term, span_within are mutual exclusive
         span_multi:
           $ref: '#/components/schemas/SpanMultiTermQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: span_containing, field_masking_span, span_first, span_gap, span_multi, span_near, span_not, span_or, span_term, span_within are mutual exclusive
         span_near:
           $ref: '#/components/schemas/SpanNearQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: span_containing, field_masking_span, span_first, span_gap, span_multi, span_near, span_not, span_or, span_term, span_within are mutual exclusive
         span_not:
           $ref: '#/components/schemas/SpanNotQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: span_containing, field_masking_span, span_first, span_gap, span_multi, span_near, span_not, span_or, span_term, span_within are mutual exclusive
         span_or:
           $ref: '#/components/schemas/SpanOrQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: span_containing, field_masking_span, span_first, span_gap, span_multi, span_near, span_not, span_or, span_term, span_within are mutual exclusive
         span_term:
           description: The equivalent of the `term` query but for use with other span queries.
           type: object
-          additionalProperties:
-            $ref: '#/components/schemas/SpanTermQuery'
-          minProperties: 1
-          maxProperties: 1
+          $ref: '#/components/schemas/SpanTermQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: span_containing, field_masking_span, span_first, span_gap, span_multi, span_near, span_not, span_or, span_term, span_within are mutual exclusive
         span_within:
           $ref: '#/components/schemas/SpanWithinQuery'
+          x-oneOf-property: true
+          x-oneOf-annotation: span_containing, field_masking_span, span_first, span_gap, span_multi, span_near, span_not, span_or, span_term, span_within are mutual exclusive
       minProperties: 1
       maxProperties: 1
+      x-oneOf-model: true
     TermsQueryField:
       oneOf:
         - title: value
@@ -6821,8 +6995,10 @@ components:
       properties:
         type:
           type: string
+          description: The error type classification.
         reason:
           type: string
+          description: The human-readable error message.
       required:
         - reason
         - type
@@ -7404,51 +7580,91 @@ components:
           type: array
     GeoShapeRelation:
       type: string
-      enum:
-        - contains
-        - disjoint
-        - intersects
-        - within
+      oneOf:
+        - type: boolean
+          description: The shape contains the query shape.
+          title: GeoShapeRelation_contains
+        - type: boolean
+          description: The shape has no points in common with the query shape.
+          title: GeoShapeRelation_disjoint
+        - type: boolean
+          description: The shape shares any points in common with the query shape.
+          title: GeoShapeRelation_intersects
+        - type: boolean
+          description: The shape is within the query shape.
+          title: GeoShapeRelation_within
     IntervalsContainer:
       type: object
       properties:
         all_of:
           $ref: '#/components/schemas/IntervalsAllOf'
+          x-oneOf-property: true
+          x-oneOf-annotation: all_of, any_of, fuzzy, match, prefix, wildcard are mutual exclusive
         any_of:
           $ref: '#/components/schemas/IntervalsAnyOf'
+          x-oneOf-property: true
+          x-oneOf-annotation: all_of, any_of, fuzzy, match, prefix, wildcard are mutual exclusive
         fuzzy:
           $ref: '#/components/schemas/IntervalsFuzzy'
+          x-oneOf-property: true
+          x-oneOf-annotation: all_of, any_of, fuzzy, match, prefix, wildcard are mutual exclusive
         match:
           $ref: '#/components/schemas/IntervalsMatch'
+          x-oneOf-property: true
+          x-oneOf-annotation: all_of, any_of, fuzzy, match, prefix, wildcard are mutual exclusive
         prefix:
           $ref: '#/components/schemas/IntervalsPrefix'
+          x-oneOf-property: true
+          x-oneOf-annotation: all_of, any_of, fuzzy, match, prefix, wildcard are mutual exclusive
         wildcard:
           $ref: '#/components/schemas/IntervalsWildcard'
+          x-oneOf-property: true
+          x-oneOf-annotation: all_of, any_of, fuzzy, match, prefix, wildcard are mutual exclusive
       minProperties: 1
       maxProperties: 1
+      x-oneOf-model: true
     IntervalsFilter:
       type: object
       properties:
         after:
           $ref: '#/components/schemas/IntervalsContainer'
+          x-oneOf-property: true
+          x-oneOf-annotation: after, before, contained_by, containing, not_contained_by, not_containing, not_overlapping, overlapping, script are mutual exclusive
         before:
           $ref: '#/components/schemas/IntervalsContainer'
+          x-oneOf-property: true
+          x-oneOf-annotation: after, before, contained_by, containing, not_contained_by, not_containing, not_overlapping, overlapping, script are mutual exclusive
         contained_by:
           $ref: '#/components/schemas/IntervalsContainer'
+          x-oneOf-property: true
+          x-oneOf-annotation: after, before, contained_by, containing, not_contained_by, not_containing, not_overlapping, overlapping, script are mutual exclusive
         containing:
           $ref: '#/components/schemas/IntervalsContainer'
+          x-oneOf-property: true
+          x-oneOf-annotation: after, before, contained_by, containing, not_contained_by, not_containing, not_overlapping, overlapping, script are mutual exclusive
         not_contained_by:
           $ref: '#/components/schemas/IntervalsContainer'
+          x-oneOf-property: true
+          x-oneOf-annotation: after, before, contained_by, containing, not_contained_by, not_containing, not_overlapping, overlapping, script are mutual exclusive
         not_containing:
           $ref: '#/components/schemas/IntervalsContainer'
+          x-oneOf-property: true
+          x-oneOf-annotation: after, before, contained_by, containing, not_contained_by, not_containing, not_overlapping, overlapping, script are mutual exclusive
         not_overlapping:
           $ref: '#/components/schemas/IntervalsContainer'
+          x-oneOf-property: true
+          x-oneOf-annotation: after, before, contained_by, containing, not_contained_by, not_containing, not_overlapping, overlapping, script are mutual exclusive
         overlapping:
           $ref: '#/components/schemas/IntervalsContainer'
+          x-oneOf-property: true
+          x-oneOf-annotation: after, before, contained_by, containing, not_contained_by, not_containing, not_overlapping, overlapping, script are mutual exclusive
         script:
           $ref: '#/components/schemas/Script'
+          x-oneOf-property: true
+          x-oneOf-annotation: after, before, contained_by, containing, not_contained_by, not_containing, not_overlapping, overlapping, script are mutual exclusive
       minProperties: 1
       maxProperties: 1
+      x-oneOf-model: true
     RescoreContext:
       type: object
       properties:
@@ -7510,14 +7726,13 @@ components:
     SpanGapQuery:
       description: Can only be used as a clause in a `span_near` query.
       type: object
-      propertyNames:
-        $ref: '#/components/schemas/Field'
-      additionalProperties:
-        title: span_width
-        type: integer
-        format: int32
-      minProperties: 1
-      maxProperties: 1
+      properties:
+        field:
+          type: string
+        value:
+          title: span_width
+          type: integer
+          format: int32
     TermsLookup:
       type: object
       properties:
@@ -7739,12 +7954,19 @@ components:
       properties:
         laplace:
           $ref: '#/components/schemas/LaplaceSmoothingModel'
+          x-oneOf-property: true
+          x-oneOf-annotation: laplace, linear_interpolation, stupid_backoff are mutual exclusive
         linear_interpolation:
           $ref: '#/components/schemas/LinearInterpolationSmoothingModel'
+          x-oneOf-property: true
+          x-oneOf-annotation: laplace, linear_interpolation, stupid_backoff are mutual exclusive
         stupid_backoff:
           $ref: '#/components/schemas/StupidBackoffSmoothingModel'
+          x-oneOf-property: true
+          x-oneOf-annotation: laplace, linear_interpolation, stupid_backoff are mutual exclusive
       minProperties: 1
       maxProperties: 1
+      x-oneOf-model: true
     SuggestSort:
       type: string
       enum:

@@ -3,11 +3,11 @@ import {traverse, traverseSchema} from './utils/OpenApiTraverser';
 import isEqual from 'lodash.isequal';
 import {compressMultipleUnderscores, resolveObj} from './utils/helper';
 import Logger from "./utils/logger";
-
-// type SchemaObjectWithPropertyNames = OpenAPIV3.SchemaObject & {
-//     propertyNames?: OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject;
-// };
-
+type ExtendedSchemaObject = OpenAPIV3.SchemaObject & {
+    // This index signature allows any string property
+    // (such as x-my-property-extension) to be assigned.
+    [extensionName: string]: any;
+};
 export class SchemaModifier {
     logger: Logger
     root: OpenAPIV3.Document;
@@ -17,10 +17,6 @@ export class SchemaModifier {
     }
     public modify(OpenApiSpec: OpenAPIV3.Document): any {
         traverse(OpenApiSpec, {
-            onSchemaProperty: (schema) => {
-                this.handleAdditionalPropertiesUndefined(schema)
-                this.collapseOrMergeOneOfArray(schema)
-            },
             onSchema: (schema, schemaName) => {
                 if (!schema || this.isReferenceObject(schema)) return;
                 this.handleOneOfConst(schema, schemaName)
@@ -28,8 +24,48 @@ export class SchemaModifier {
                 this.handleAdditionalPropertiesUndefined(schema)
                 this.CollapseOneOfObjectPropContainsTitleSchema(schema)
             },
+            onSchemaProperty: (schema) => {
+                this.handleAdditionalPropertiesUndefined(schema)
+                this.collapseOrMergeOneOfArray(schema)
+            },
+        });
+        traverse(OpenApiSpec, {
+            onSchema: (schema, schemaName) => {
+                if (!schema || this.isReferenceObject(schema)) return;
+                this.transformPropertyNamesSchema(schema)
+            },
+            onSchemaProperty: (schema) => {
+                this.transformPropertyNamesSchema(schema)
+            },
+        });
+
+        traverse(OpenApiSpec, {
+            onSchema: (schema, schemaName) => {
+                if (!schema || this.isReferenceObject(schema)) return;
+                this.handleMinMaxProperties(schema)
+
+            },
         });
         return OpenApiSpec;
+    }
+
+    handleMinMaxProperties(schema: OpenAPIV3.SchemaObject): void {
+        if (schema.type === 'object' && schema.minProperties === 1 && schema.maxProperties === 1 && schema.properties) {
+            (schema as ExtendedSchemaObject)['x-oneOf-model'] = true;
+            let annotation = "";
+            for(const key in schema.properties) {
+                annotation += key+", ";
+            }
+            annotation = annotation.slice(0, -2) + " are mutual exclusive";
+            for(const key in schema.properties) {
+                const propSchema = schema.properties[key];
+                if (typeof propSchema === 'object') {
+                    const actualSchema = propSchema as ExtendedSchemaObject;
+                    actualSchema['x-oneOf-property'] = true;
+                    actualSchema['x-oneOf-annotation'] = annotation;
+                }
+            }
+        }
     }
 
     // Converts `additionalProperties: true` or `additionalProperties: {}` to `type: object`.
@@ -115,30 +151,35 @@ export class SchemaModifier {
         );
     }
 
-    // transformPropertyNamesSchema(schema: SchemaObjectWithPropertyNames): void {
-    //     if (schema.type === 'object' &&
-    //         typeof schema.additionalProperties === 'object' &&
-    //         !Array.isArray(schema.additionalProperties) &&
-    //         schema.minProperties === 1 &&
-    //         schema.maxProperties === 1){
-    //         //     const { title, ...restOfAdditionalProps } = schema.additionalProperties as OpenAPIV3.SchemaObject;
-    //         //
-    //         //     // schema.properties = {
-    //         //     //     field_key: { type: 'string' },
-    //         //     //     [title as string]: restOfAdditionalProps
-    //         //     // };
-    //         //     //
-    //         //     // schema.required = ['field_key', title as string];
-    //         //     //
-    //         //     // delete schema.propertyNames;
-    //         //     // delete schema.additionalProperties;
-    //         //     //
-    //         //     // delete schema.minProperties;
-    //         //     // delete schema.maxProperties;
-    //         //     console.log(schema)
-    //         //     this.cnt++
-    //     }
-    // }
+    transformPropertyNamesSchema(schema: OpenAPIV3.SchemaObject): void {
+        if (schema.type === 'object' &&
+            typeof schema.additionalProperties === 'object' &&
+            !Array.isArray(schema.additionalProperties) &&
+            schema.minProperties === 1 &&
+            schema.maxProperties === 1){
+            const complexObject = resolveObj(schema.additionalProperties, this.root);
+            if (Array.isArray(complexObject?.allOf)) {
+                complexObject?.allOf.push(this.cloneAdditionalPropertySchema())
+                Object.assign(schema, schema.additionalProperties);
+            }else if(complexObject?.type === 'object' && complexObject?.properties) {
+                Object.assign(schema, schema.additionalProperties);
+            }
+            else if (complexObject && complexObject.type && complexObject.type === 'integer') {
+                const freshSchema = this.cloneAdditionalPropertySchema();
+                freshSchema.properties = freshSchema.properties || {};
+                freshSchema.properties["value"] = complexObject;
+                Object.assign(schema, freshSchema)
+
+            }
+            delete schema.additionalProperties;
+            delete schema.minProperties;
+            delete schema.maxProperties;
+            if ('propertyNames' in schema) {
+                delete schema.propertyNames;
+            }
+        }
+    }
+
 
     CollapseOneOfObjectPropContainsTitleSchema(schema: OpenAPIV3.SchemaObject): void {
         // TODO: might need to handle oneOf more than 2
@@ -197,5 +238,22 @@ export class SchemaModifier {
             return true;
         }
         return false;
+    }
+
+    cloneAdditionalPropertySchema(): OpenAPIV3.SchemaObject {
+        const AdditionalPropertySchema: OpenAPIV3.SchemaObject = {
+            type: "object",
+            properties: {
+                field: {
+                    type: "string"
+                }
+            }
+        }
+        return {
+            ...AdditionalPropertySchema,
+            properties: AdditionalPropertySchema.properties
+                ? { ...AdditionalPropertySchema.properties }
+                : {}
+        };
     }
 }

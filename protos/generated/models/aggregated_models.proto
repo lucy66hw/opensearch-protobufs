@@ -2175,12 +2175,15 @@ message FieldSuggester {
   optional string regex = 2;
 
   optional string text = 3;
+  oneof object{
+    CompletionSuggester completion = 4;
 
-  optional CompletionSuggester completion = 4;
+    PhraseSuggester phrase = 5;
 
-  optional PhraseSuggester phrase = 5;
+    TermSuggester term = 6;
+  }
 
-  optional TermSuggester term = 6;
+
 }
 enum FieldType {
   FIELD_TYPE_UNSPECIFIED = 0;
@@ -5050,10 +5053,12 @@ message PinnedQuery {
   QueryContainer organic = 3;
 
   // Document IDs listed in the order they are to appear in results. Required if `docs` is not specified.
-  repeated string ids = 4;
+  oneof aaa{
+    repeated string ids = 4;
 
-  // Documents listed in the order they are to appear in results. Required if `ids` is not specified.
-  repeated PinnedDoc docs = 5;
+    // Documents listed in the order they are to appear in results. Required if `ids` is not specified.
+    repeated PinnedDoc docs = 5;
+  }
 }
 message PipelineAggregationBase {
   // The custom metadata attached to a resource.
