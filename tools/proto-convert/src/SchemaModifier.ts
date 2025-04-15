@@ -189,4 +189,49 @@ export class SchemaModifier {
         }
         return false;
     }
+
+    cloneAdditionalPropertySchema(): OpenAPIV3.SchemaObject {
+        const AdditionalPropertySchema: OpenAPIV3.SchemaObject = {
+            type: "object",
+            properties: {
+                field: {
+                    type: "string"
+                }
+            }
+        }
+        return {
+            ...AdditionalPropertySchema,
+            properties: AdditionalPropertySchema.properties
+                ? { ...AdditionalPropertySchema.properties }
+                : {}
+        };
+    }
+
+    transformPropertyNamesSchema(schema: OpenAPIV3.SchemaObject): void {
+        if (schema.type === 'object' &&
+            typeof schema.additionalProperties === 'object' &&
+            !Array.isArray(schema.additionalProperties) &&
+            schema.minProperties === 1 &&
+            schema.maxProperties === 1){
+            const complexObject = resolveObj(schema.additionalProperties, this.root);
+            if (Array.isArray(complexObject?.allOf)) {
+                complexObject?.allOf.push(this.cloneAdditionalPropertySchema())
+                Object.assign(schema, schema.additionalProperties);
+            } else if(complexObject?.type === 'object' && complexObject?.properties) {
+                Object.assign(schema, schema.additionalProperties);
+            } else if (complexObject && complexObject.type && complexObject.type === 'integer') {
+                const freshSchema = this.cloneAdditionalPropertySchema();
+                freshSchema.properties = freshSchema.properties || {};
+                freshSchema.properties["value"] = complexObject;
+                Object.assign(schema, freshSchema)
+
+            }
+            delete schema.additionalProperties;
+            delete schema.minProperties;
+            delete schema.maxProperties;
+            if ('propertyNames' in schema) {
+                delete schema.propertyNames;
+            }
+        }
+    }
 }
