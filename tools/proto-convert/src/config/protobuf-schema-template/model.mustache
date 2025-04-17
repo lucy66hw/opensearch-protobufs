@@ -13,7 +13,17 @@ import "{{{import}}}.proto";
 {{#models}}
 {{#model}}
 {{^isAlias}}{{#isEnum}}{{>enum}}{{/isEnum}}{{^isEnum}}message {{classname}} {
-
+{{#vendorExtensions.x-oneOf-model}}
+    oneof {{classVarName}} {
+    {{#vars}}
+    {{#description}}
+      // {{{.}}}
+      {{/description}}
+      {{#vendorExtensions.x-protobuf-type}}{{{.}}}{{/vendorExtensions.x-protobuf-type}}{{{vendorExtensions.x-protobuf-data-type}}} {{{name}}} = {{vendorExtensions.x-protobuf-index}}{{#vendorExtensions.x-protobuf-packed}} [packed=true]{{/vendorExtensions.x-protobuf-packed}};
+    {{/vars}}
+    }
+{{/vendorExtensions.x-oneOf-model}}
+{{^vendorExtensions.x-oneOf-model}}
 {{#oneOf}}
 {{#-first}}
   oneof {{classVarName}} {
@@ -33,6 +43,9 @@ import "{{{import}}}.proto";
   {{#description}}
   // {{{.}}}
   {{/description}}
+  {{#vendorExtensions.x-oneOf-annotation}}
+  // {{vendorExtensions.x-oneOf-annotation}}
+  {{/vendorExtensions.x-oneOf-annotation}}
   {{^isEnum}}
   {{#vendorExtensions.x-protobuf-type}}{{{.}}} {{/vendorExtensions.x-protobuf-type}}{{^required}}{{^isMap}}{{^vendorExtensions.x-protobuf-type}}optional {{/vendorExtensions.x-protobuf-type}}{{/isMap}}{{/required}}{{{vendorExtensions.x-protobuf-data-type}}} {{{name}}} = {{vendorExtensions.x-protobuf-index}}{{#vendorExtensions.x-protobuf-packed}} [packed=true]{{/vendorExtensions.x-protobuf-packed}}{{#vendorExtensions.x-protobuf-json-name}} [json_name="{{vendorExtensions.x-protobuf-json-name}}"]{{/vendorExtensions.x-protobuf-json-name}};
   {{/isEnum}}
@@ -50,6 +63,7 @@ import "{{{import}}}.proto";
 
   {{/vars}}
 {{/oneOf}}
+{{/vendorExtensions.x-oneOf-model}}
 }
 {{/isEnum}}
 {{/isAlias}}

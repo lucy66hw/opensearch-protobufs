@@ -8,6 +8,10 @@ import Logger from "./utils/logger";
 const DEFAULT_MAP_KEY = 'field' // default key for simplified additionalProperties
 const DEFAULT_MAP_VALUE = 'value' // default value for simplified additionalProperties
 
+type ExtendedSchemaObject = OpenAPIV3.SchemaObject & {
+    [extensionName: string]: any;
+};
+
 export class SchemaModifier {
     logger: Logger
     root: OpenAPIV3.Document;
@@ -39,6 +43,13 @@ export class SchemaModifier {
             onSchema: (schema) => {
                 if (!schema || isReferenceObject(schema)) return;
                 this.simplifySingleMapSchema(schema, visit)
+            },
+        });
+
+        traverse(this.root, {
+            onSchema: (schema) => {
+                if (!schema || isReferenceObject(schema)) return;
+                this.handleMinMaxProperties(schema)
             },
         });
         return this.root
@@ -311,5 +322,25 @@ export class SchemaModifier {
         }
 
         schema.enum = Array.from(enumSet)
+    }
+
+    handleMinMaxProperties(schema: OpenAPIV3.SchemaObject): void {
+        if (schema.type === 'object' && schema.minProperties === 1 && schema.maxProperties === 1 && schema.properties) {
+            (schema as ExtendedSchemaObject)['x-oneOf-model'] = true;
+            let annotation = "";
+            for(const key in schema.properties) {
+                annotation += key+", ";
+            }
+            console.log(schema)
+            annotation = annotation.slice(0, -2) + " are mutual exclusive";
+            for(const key in schema.properties) {
+                const propSchema = schema.properties[key];
+                if (typeof propSchema === 'object') {
+                    const actualSchema = propSchema as ExtendedSchemaObject;
+                    actualSchema['x-oneOf-property'] = true;
+                    actualSchema['x-oneOf-annotation'] = annotation;
+                }
+            }
+        }
     }
 }
