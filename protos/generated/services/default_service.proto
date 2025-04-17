@@ -18,10 +18,10 @@ message BulkRequest {
   optional SourceConfigParam underscore_source = 3;
 
   // A comma-separated list of source fields to exclude from the response.
-  optional Fields underscore_source_excludes = 4;
+  repeated string underscore_source_excludes = 4;
 
   // A comma-separated list of source fields to include in the response.
-  optional Fields underscore_source_includes = 5;
+  repeated string underscore_source_includes = 5;
 
   // ID of the pipeline to use to preprocess incoming documents. If the index has a default ingest pipeline specified, then setting the value to `_none` disables the default ingest pipeline for this request. If a final pipeline is configured it will always run, regardless of the value of this parameter.
   optional string pipeline = 6;
@@ -33,7 +33,7 @@ message BulkRequest {
   optional bool require_alias = 8;
 
   // Custom value used to route operations to a specific shard.
-  optional StringOrStringArray routing = 9;
+  repeated string routing = 9;
 
   // Period each action waits for the following operations: automatic index creation, dynamic mapping updates, waiting for active shards.
   optional string timeout = 10;
@@ -57,7 +57,7 @@ message BulkRequest {
   optional string source = 16;
 
   // Used to reduce the response. This parameter takes a comma-separated list of filters. It supports using wildcards to match any field or part of a field’s name. You can also exclude fields with \"-\".
-  optional StringOrStringArray filter_path = 17;
+  repeated string filter_path = 17;
 }
 
 message BulkResponse {
@@ -67,16 +67,16 @@ message BulkResponse {
 }
 message SearchRequest {
   // Comma-separated list of data streams, indexes, and aliases to search. Supports wildcards (`*`). To search all data streams and indexes, omit this parameter or use `*` or `_all`.
-  Indices index = 1;
+  repeated string index = 1;
 
   // Indicates which source fields are returned for matching documents. These fields are returned in the `hits._source` property of the search response. Valid values are: `true` to return the entire document source; `false` to not return the document source; `<string>` to return the source fields that are specified as a comma-separated list (supports wildcard (`*`) patterns).
   optional SourceConfigParam underscore_source = 2;
 
   // A comma-separated list of source fields to exclude from the response. You can also use this parameter to exclude fields from the subset specified in `_source_includes` query parameter. If the `_source` parameter is `false`, this parameter is ignored.
-  optional Fields underscore_source_excludes = 3;
+  repeated string underscore_source_excludes = 3;
 
   // A comma-separated list of source fields to include in the response. If this parameter is specified, only these source fields are returned. You can exclude fields from this subset using the `_source_excludes` query parameter. If the `_source` parameter is `false`, this parameter is ignored.
-  optional Fields underscore_source_includes = 4;
+  repeated string underscore_source_includes = 4;
 
   // If `false`, the request returns an error if any wildcard expression, index alias, or `_all` value targets only missing or closed indexes. This behavior applies even if the request targets other open indexes. For example, a request targeting `foo*,bar*` returns an error if an index starts with `foo` but no index starts with `bar`.
   optional bool allow_no_indices = 5;
@@ -106,10 +106,10 @@ message SearchRequest {
   optional string df = 13;
 
   // A comma-separated list of fields to return as the docvalue representation for each hit.
-  optional Fields docvalue_fields = 14;
+  repeated string docvalue_fields = 14;
 
   // Type of index that wildcard patterns can match. If the request can target data streams, this argument determines whether wildcard expressions match hidden data streams. Supports comma-separated values, such as `open,hidden`.
-  optional ExpandWildcards expand_wildcards = 15;
+  repeated ExpandWildcard expand_wildcards = 15;
 
   // If `true`, returns detailed information about score computation as part of a hit.
   optional bool explain = 16;
@@ -151,7 +151,7 @@ message SearchRequest {
   optional bool rest_total_hits_as_int = 28;
 
   // Custom value used to route operations to a specific shard.
-  optional StringOrStringArray routing = 29;
+  repeated string routing = 29;
 
   // Period to retain the search context for scrolling. See Scroll search results. By default, this value cannot exceed `1d` (24 hours). You can change this limit using the `search.max_keep_alive` cluster-level setting.
   optional string scroll = 30;
@@ -169,13 +169,13 @@ message SearchRequest {
   optional int32 size = 34;
 
   // A comma-separated list of <field>:<direction> pairs.
-  optional StringOrStringArray sort = 35;
+  repeated string sort = 35;
 
   // Specific `tag` of the request for logging and statistical purposes.
   repeated string stats = 36;
 
   // A comma-separated list of stored fields to return as part of a hit. If no fields are specified, no stored fields are included in the response. If this field is specified, the `_source` parameter defaults to `false`. You can pass `_source: true` to return both source fields and stored fields in the search response.
-  optional Fields stored_fields = 37;
+  repeated string stored_fields = 37;
 
   // Specifies which field to use for suggestions.
   optional string suggest_field = 38;
@@ -220,7 +220,7 @@ message SearchRequest {
   optional string source = 51;
 
   // Used to reduce the response. This parameter takes a comma-separated list of filters. It supports using wildcards to match any field or part of a field’s name. You can also exclude fields with \"-\".
-  optional StringOrStringArray filter_path = 52;
+  repeated string filter_path = 52;
 
   optional SearchRequest search_request = 53;
 }
