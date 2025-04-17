@@ -48,8 +48,8 @@ try {
   const original_spec = read_yaml(opts.input)
   const filtered_spec = new Filter().filter_spec(original_spec, opts.filtered_path);
   const sanitized_spec = new Sanitizer().sanitize(filtered_spec);
-  //const schema_modified_spec = new SchemaModifier(sanitized_spec).modify();
-  write_yaml(opts.output, filtered_spec);
+  const schema_modified_spec = new SchemaModifier(sanitized_spec).modify();
+  write_yaml(opts.output, schema_modified_spec);
 
 } catch (err) {
   logger.error(`Error in preprocessing: ${err}`);
