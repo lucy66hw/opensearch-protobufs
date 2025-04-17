@@ -2147,10 +2147,13 @@ message FieldSuggester {
 
   optional string text = 3;
 
+  // completion, phrase, term are mutual exclusive
   optional CompletionSuggester completion = 4;
 
+  // completion, phrase, term are mutual exclusive
   optional PhraseSuggester phrase = 5;
 
+  // completion, phrase, term are mutual exclusive
   optional TermSuggester term = 6;
 }
 enum FieldType {
@@ -3329,9 +3332,10 @@ message InferenceClassImportance {
   float importance = 2;
 }
 message InferenceConfigContainer {
-  optional RegressionInferenceOptions regression = 1;
-
-  optional ClassificationInferenceOptions classification = 2;
+  oneof inference_config_container {
+    RegressionInferenceOptions regression = 1;
+    ClassificationInferenceOptions classification = 2;
+  }
 }
 message InferenceFeatureImportance {
   string feature_name = 1;
@@ -3445,36 +3449,27 @@ message IntervalsAnyOf {
   optional IntervalsFilter filter = 2;
 }
 message IntervalsContainer {
-  optional IntervalsAllOf all_of = 1;
-
-  optional IntervalsAnyOf any_of = 2;
-
-  optional IntervalsFuzzy fuzzy = 3;
-
-  optional IntervalsMatch match = 4;
-
-  optional IntervalsPrefix prefix = 5;
-
-  optional IntervalsWildcard wildcard = 6;
+  oneof intervals_container {
+    IntervalsAllOf all_of = 1;
+    IntervalsAnyOf any_of = 2;
+    IntervalsFuzzy fuzzy = 3;
+    IntervalsMatch match = 4;
+    IntervalsPrefix prefix = 5;
+    IntervalsWildcard wildcard = 6;
+  }
 }
 message IntervalsFilter {
-  optional IntervalsContainer after = 1;
-
-  optional IntervalsContainer before = 2;
-
-  optional IntervalsContainer contained_by = 3;
-
-  optional IntervalsContainer containing = 4;
-
-  optional IntervalsContainer not_contained_by = 5;
-
-  optional IntervalsContainer not_containing = 6;
-
-  optional IntervalsContainer not_overlapping = 7;
-
-  optional IntervalsContainer overlapping = 8;
-
-  optional Script script = 9;
+  oneof intervals_filter {
+    IntervalsContainer after = 1;
+    IntervalsContainer before = 2;
+    IntervalsContainer contained_by = 3;
+    IntervalsContainer containing = 4;
+    IntervalsContainer not_contained_by = 5;
+    IntervalsContainer not_containing = 6;
+    IntervalsContainer not_overlapping = 7;
+    IntervalsContainer overlapping = 8;
+    Script script = 9;
+  }
 }
 message IntervalsFuzzy {
   // Analyzer used to normalize the term.
@@ -3528,16 +3523,22 @@ message IntervalsQuery {
 
   optional string underscore_name = 2;
 
+  // all_of, any_of, fuzzy, match, prefix, wildcard are mutual exclusive
   optional IntervalsAllOf all_of = 3;
 
+  // all_of, any_of, fuzzy, match, prefix, wildcard are mutual exclusive
   optional IntervalsAnyOf any_of = 4;
 
+  // all_of, any_of, fuzzy, match, prefix, wildcard are mutual exclusive
   optional IntervalsFuzzy fuzzy = 5;
 
+  // all_of, any_of, fuzzy, match, prefix, wildcard are mutual exclusive
   optional IntervalsMatch match = 6;
 
+  // all_of, any_of, fuzzy, match, prefix, wildcard are mutual exclusive
   optional IntervalsPrefix prefix = 7;
 
+  // all_of, any_of, fuzzy, match, prefix, wildcard are mutual exclusive
   optional IntervalsWildcard wildcard = 8;
 
   optional string field = 9;
@@ -4727,13 +4728,12 @@ message OperationBase {
   optional string underscore_index = 7;
 }
 message OperationContainer {
-  optional WriteOperation index = 1;
-
-  optional WriteOperation create = 2;
-
-  optional UpdateOperation update = 3;
-
-  optional OperationBase delete = 4;
+  oneof operation_container {
+    WriteOperation index = 1;
+    WriteOperation create = 2;
+    UpdateOperation update = 3;
+    OperationBase delete = 4;
+  }
 }
 enum Operator {
   OPERATOR_UNSPECIFIED = 0;
@@ -5001,9 +5001,11 @@ message PinnedQuery {
   QueryContainer organic = 3;
 
   // Document IDs listed in the order they are to appear in results. Required if `docs` is not specified.
+  // ids, docs are mutual exclusive
   repeated string ids = 4;
 
   // Documents listed in the order they are to appear in results. Required if `ids` is not specified.
+  // ids, docs are mutual exclusive
   repeated PinnedDoc docs = 5;
 }
 message PipelineAggregationBase {
@@ -5094,133 +5096,79 @@ message QueryBreakdown {
   int64 set_min_competitive_score_count = 18;
 }
 message QueryContainer {
-  optional BoolQuery bool = 1;
-
-  optional BoostingQuery boosting = 2;
-
-  optional CommonTermsQuery common = 3;
-
-  optional CombinedFieldsQuery combined_fields = 4;
-
-  optional ConstantScoreQuery constant_score = 5;
-
-  optional DisMaxQuery dis_max = 6;
-
-  optional DistanceFeatureQuery distance_feature = 7;
-
-  optional ExistsQuery exists = 8;
-
-  optional FunctionScoreQuery function_score = 9;
-
-  // Returns documents that contain terms similar to the search term, as measured by a Levenshtein edit distance.
-  optional FuzzyQuery fuzzy = 10;
-
-  optional GeoBoundingBoxQuery geo_bounding_box = 11;
-
-  optional GeoDistanceQuery geo_distance = 12;
-
-  optional GeoPolygonQuery geo_polygon = 13;
-
-  optional GeoShapeQuery geo_shape = 14;
-
-  optional HasChildQuery has_child = 15;
-
-  optional HasParentQuery has_parent = 16;
-
-  optional HybridQuery hybrid = 17;
-
-  optional IdsQuery ids = 18;
-
-  // Returns documents based on the order and proximity of matching terms.
-  optional IntervalsQuery intervals = 19;
-
-  optional KnnQuery knn = 20;
-
-  // Returns documents that match a provided text, number, date or Boolean value. The provided text is analyzed before matching.
-  optional MatchQuery match = 21;
-
-  optional MatchAllQuery match_all = 22;
-
-  // Analyzes its input and constructs a `bool` query from the terms. Each term except the last is used in a `term` query. The last term is used in a prefix query.
-  optional MatchBoolPrefixQuery match_bool_prefix = 23;
-
-  optional MatchNoneQuery match_none = 24;
-
-  // Analyzes the text and creates a phrase query out of the analyzed text.
-  optional MatchPhraseQuery match_phrase = 25;
-
-  // Returns documents that contain the words of a provided text, in the same order as provided. The last term of the provided text is treated as a prefix, matching any words that begin with that term.
-  optional MatchPhrasePrefixQuery match_phrase_prefix = 26;
-
-  optional MoreLikeThisQuery more_like_this = 27;
-
-  optional MultiMatchQuery multi_match = 28;
-
-  optional NestedQuery nested = 29;
-
-  optional NeuralQuery neural = 30;
-
-  optional ParentIdQuery parent_id = 31;
-
-  optional PercolateQuery percolate = 32;
-
-  optional PinnedQuery pinned = 33;
-
-  // Returns documents that contain a specific prefix in a provided field.
-  optional PrefixQuery prefix = 34;
-
-  optional QueryStringQuery query_string = 35;
-
-  // Returns documents that contain terms within a provided range.
-  optional RangeQuery range = 36;
-
-  optional RankFeatureQuery rank_feature = 37;
-
-  // Returns documents that contain terms matching a regular expression.
-  optional RegexpQuery regexp = 38;
-
-  optional ScriptQuery script = 39;
-
-  optional ScriptScoreQuery script_score = 40;
-
-  optional SimpleQueryStringQuery simple_query_string = 41;
-
-  optional SpanContainingQuery span_containing = 42;
-
-  optional SpanFieldMaskingQuery field_masking_span = 43;
-
-  optional SpanFirstQuery span_first = 44;
-
-  optional SpanMultiTermQuery span_multi = 45;
-
-  optional SpanNearQuery span_near = 46;
-
-  optional SpanNotQuery span_not = 47;
-
-  optional SpanOrQuery span_or = 48;
-
-  // Matches spans containing a term.
-  optional SpanTermQuery span_term = 49;
-
-  optional SpanWithinQuery span_within = 50;
-
-  // Returns documents that contain an exact term in a provided field. To return a document, the query term must exactly match the queried field's value, including white space and capitalization.
-  optional TermQuery term = 51;
-
-  // Returns documents that contain one or more exact terms in a provided field.
-  optional TermsQuery terms = 52;
-
-  // Returns documents that contain a minimum number of exact terms in a provided field. To return a document, a required number of terms must exactly match the field values, including white space and capitalization.
-  optional TermsSetQuery terms_set = 53;
-
-  optional TypeQuery type = 54;
-
-  // Returns documents that contain terms matching a wildcard pattern.
-  optional WildcardQuery wildcard = 55;
-
-  optional WrapperQuery wrapper = 56;
-
-  optional XyShapeQuery xy_shape = 57;
+  oneof query_container {
+    BoolQuery bool = 1;
+    BoostingQuery boosting = 2;
+    CommonTermsQuery common = 3;
+    CombinedFieldsQuery combined_fields = 4;
+    ConstantScoreQuery constant_score = 5;
+    DisMaxQuery dis_max = 6;
+    DistanceFeatureQuery distance_feature = 7;
+    ExistsQuery exists = 8;
+    FunctionScoreQuery function_score = 9;
+    // Returns documents that contain terms similar to the search term, as measured by a Levenshtein edit distance.
+    FuzzyQuery fuzzy = 10;
+    GeoBoundingBoxQuery geo_bounding_box = 11;
+    GeoDistanceQuery geo_distance = 12;
+    GeoPolygonQuery geo_polygon = 13;
+    GeoShapeQuery geo_shape = 14;
+    HasChildQuery has_child = 15;
+    HasParentQuery has_parent = 16;
+    HybridQuery hybrid = 17;
+    IdsQuery ids = 18;
+    // Returns documents based on the order and proximity of matching terms.
+    IntervalsQuery intervals = 19;
+    KnnQuery knn = 20;
+    // Returns documents that match a provided text, number, date or Boolean value. The provided text is analyzed before matching.
+    MatchQuery match = 21;
+    MatchAllQuery match_all = 22;
+    // Analyzes its input and constructs a `bool` query from the terms. Each term except the last is used in a `term` query. The last term is used in a prefix query.
+    MatchBoolPrefixQuery match_bool_prefix = 23;
+    MatchNoneQuery match_none = 24;
+    // Analyzes the text and creates a phrase query out of the analyzed text.
+    MatchPhraseQuery match_phrase = 25;
+    // Returns documents that contain the words of a provided text, in the same order as provided. The last term of the provided text is treated as a prefix, matching any words that begin with that term.
+    MatchPhrasePrefixQuery match_phrase_prefix = 26;
+    MoreLikeThisQuery more_like_this = 27;
+    MultiMatchQuery multi_match = 28;
+    NestedQuery nested = 29;
+    NeuralQuery neural = 30;
+    ParentIdQuery parent_id = 31;
+    PercolateQuery percolate = 32;
+    PinnedQuery pinned = 33;
+    // Returns documents that contain a specific prefix in a provided field.
+    PrefixQuery prefix = 34;
+    QueryStringQuery query_string = 35;
+    // Returns documents that contain terms within a provided range.
+    RangeQuery range = 36;
+    RankFeatureQuery rank_feature = 37;
+    // Returns documents that contain terms matching a regular expression.
+    RegexpQuery regexp = 38;
+    ScriptQuery script = 39;
+    ScriptScoreQuery script_score = 40;
+    SimpleQueryStringQuery simple_query_string = 41;
+    SpanContainingQuery span_containing = 42;
+    SpanFieldMaskingQuery field_masking_span = 43;
+    SpanFirstQuery span_first = 44;
+    SpanMultiTermQuery span_multi = 45;
+    SpanNearQuery span_near = 46;
+    SpanNotQuery span_not = 47;
+    SpanOrQuery span_or = 48;
+    // Matches spans containing a term.
+    SpanTermQuery span_term = 49;
+    SpanWithinQuery span_within = 50;
+    // Returns documents that contain an exact term in a provided field. To return a document, the query term must exactly match the queried field's value, including white space and capitalization.
+    TermQuery term = 51;
+    // Returns documents that contain one or more exact terms in a provided field.
+    TermsQuery terms = 52;
+    // Returns documents that contain a minimum number of exact terms in a provided field. To return a document, a required number of terms must exactly match the field values, including white space and capitalization.
+    TermsSetQuery terms_set = 53;
+    TypeQuery type = 54;
+    // Returns documents that contain terms matching a wildcard pattern.
+    WildcardQuery wildcard = 55;
+    WrapperQuery wrapper = 56;
+    XyShapeQuery xy_shape = 57;
+  }
 }
 message QueryContainerArray {
   repeated QueryContainer query_container_array = 1;
@@ -5451,8 +5399,10 @@ enum RangeRelation {
   RANGE_RELATION_WITHIN = 3;
 }
 message RankContainer {
-  // The reciprocal rank fusion configuration.
-  optional RrfRank rrf = 1;
+  oneof rank_container {
+    // The reciprocal rank fusion configuration.
+    RrfRank rrf = 1;
+  }
 }
 message RankFeatureFunctionLinear {}
 message RankFeatureFunctionLogarithm {
@@ -6314,11 +6264,11 @@ enum SmartcnAnalyzerType {
   SMARTCN_ANALYZER_TYPE_SMARTCN = 1;
 }
 message SmoothingModel {
-  optional LaplaceSmoothingModel laplace = 1;
-
-  optional LinearInterpolationSmoothingModel linear_interpolation = 2;
-
-  optional StupidBackoffSmoothingModel stupid_backoff = 3;
+  oneof smoothing_model {
+    LaplaceSmoothingModel laplace = 1;
+    LinearInterpolationSmoothingModel linear_interpolation = 2;
+    StupidBackoffSmoothingModel stupid_backoff = 3;
+  }
 }
 message SnowballAnalyzer {
   SnowballAnalyzerType type = 1;
@@ -6394,13 +6344,12 @@ message SortOptions {
   }
 }
 message SortOptionsOneOf {
-  optional ScoreSort underscore_score = 1;
-
-  optional ScoreSort underscore_doc = 2;
-
-  optional GeoDistanceSort underscore_geo_distance = 3;
-
-  optional ScriptSort underscore_script = 4;
+  oneof sort_options_one_of {
+    ScoreSort underscore_score = 1;
+    ScoreSort underscore_doc = 2;
+    GeoDistanceSort underscore_geo_distance = 3;
+    ScriptSort underscore_script = 4;
+  }
 }
 enum SortOptionsOneOfNot {
   SORT_OPTIONS_ONE_OF_NOT_UNSPECIFIED = 0;
@@ -6520,26 +6469,19 @@ message SpanOrQuery {
   repeated SpanQuery clauses = 3;
 }
 message SpanQuery {
-  optional SpanContainingQuery span_containing = 1;
-
-  optional SpanFieldMaskingQuery field_masking_span = 2;
-
-  optional SpanFirstQuery span_first = 3;
-
-  optional SpanGapQuery span_gap = 4;
-
-  optional SpanMultiTermQuery span_multi = 5;
-
-  optional SpanNearQuery span_near = 6;
-
-  optional SpanNotQuery span_not = 7;
-
-  optional SpanOrQuery span_or = 8;
-
-  // The equivalent of the `term` query but for use with other span queries.
-  optional SpanTermQuery span_term = 9;
-
-  optional SpanWithinQuery span_within = 10;
+  oneof span_query {
+    SpanContainingQuery span_containing = 1;
+    SpanFieldMaskingQuery field_masking_span = 2;
+    SpanFirstQuery span_first = 3;
+    SpanGapQuery span_gap = 4;
+    SpanMultiTermQuery span_multi = 5;
+    SpanNearQuery span_near = 6;
+    SpanNotQuery span_not = 7;
+    SpanOrQuery span_or = 8;
+    // The equivalent of the `term` query but for use with other span queries.
+    SpanTermQuery span_term = 9;
+    SpanWithinQuery span_within = 10;
+  }
 }
 message SpanTermQuery {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
