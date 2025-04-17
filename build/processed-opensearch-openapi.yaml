@@ -7546,7 +7546,6 @@ components:
         coordinates:
           type: array
     GeoShapeRelation:
-      type: string
       oneOf:
         - type: string
           const: contains
