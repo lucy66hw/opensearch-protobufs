@@ -707,6 +707,8 @@ components:
               ext:
                 description: Configuration of search extensions defined by OpenSearch plugins.
                 type: object
+                additionalProperties:
+                  type: object
               from:
                 description: |-
                   Starting document offset.
@@ -753,9 +755,11 @@ components:
                 $ref: '#/components/schemas/QueryContainer'
               rescore:
                 description: Can be used to improve precision by reordering just the top (for example 100 - 500) documents returned by the `query` and `post_filter` phases.
-                type: array
-                items:
-                  $ref: '#/components/schemas/Rescore'
+                oneOf:
+                  - $ref: '#/components/schemas/Rescore'
+                  - type: array
+                    items:
+                      $ref: '#/components/schemas/Rescore'
               script_fields:
                 description: Retrieve a script evaluation (based on different fields) for each hit.
                 type: object
@@ -884,22 +888,24 @@ components:
         - title: fields
           $ref: '#/components/schemas/Fields'
     Fields:
-      type: array
-      items:
-        $ref: '#/components/schemas/Field'
+      oneOf:
+        - $ref: '#/components/schemas/Field'
+        - type: array
+          items:
+            $ref: '#/components/schemas/Field'
     Refresh:
       oneOf:
         - type: boolean
           description: Whether to refresh the affected shards immediately.
-        - type: boolean
+        - type: string
+          const: 'false'
           description: Do not refresh the affected shards.
-          title: Refresh_false
-        - type: boolean
+        - type: string
+          const: 'true'
           description: Refresh the affected shards immediately.
-          title: Refresh_true
-        - type: boolean
+        - type: string
+          const: wait_for
           description: Wait for the changes to become visible before replying.
-          title: Refresh_wait_for
     RoutingInQueryString:
       $ref: '#/components/schemas/StringOrStringArray'
     Duration:
@@ -916,9 +922,11 @@ components:
           $ref: '#/components/schemas/WaitForActiveShardOptions'
           description: Determines how many shards to wait for.
     StringOrStringArray:
-      type: array
-      items:
-        type: string
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
     OperationContainer:
       type: object
       properties:
@@ -1008,27 +1016,33 @@ components:
         A comma-separated list of data streams, indexes, and aliases used to limit the request.
         Supports wildcards (`*`).
         To target all data streams and indexes, omit this parameter or use `*` or `_all`.
-      type: array
-      items:
-        $ref: '#/components/schemas/IndexName'
+      oneOf:
+        - $ref: '#/components/schemas/IndexName'
+        - type: array
+          items:
+            $ref: '#/components/schemas/IndexName'
     Operator:
       type: string
       enum:
         - and
+        - AND
         - or
+        - OR
     ExpandWildcards:
       description: Specifies the type of index that wildcard expressions can match. Supports comma-separated values.
-      type: array
-      items:
-        $ref: '#/components/schemas/ExpandWildcard'
+      oneOf:
+        - $ref: '#/components/schemas/ExpandWildcard'
+        - type: array
+          items:
+            $ref: '#/components/schemas/ExpandWildcard'
     SearchType:
       oneOf:
-        - type: boolean
+        - type: string
+          const: dfs_query_then_fetch
           description: Documents are scored using global term and document frequencies across all shards. This is usually slower but more accurate.
-          title: SearchType_dfs_query_then_fetch
-        - type: boolean
+        - type: string
+          const: query_then_fetch
           description: Documents are scored using local term and document frequencies for the shard. This is usually faster but less accurate.
-          title: SearchType_query_then_fetch
     Field:
       description: The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
       type: string
@@ -1499,9 +1513,11 @@ components:
           $ref: '#/components/schemas/Field'
         inner_hits:
           description: The number of inner hits and their sort order.
-          type: array
-          items:
-            $ref: '#/components/schemas/InnerHits'
+          oneOf:
+            - $ref: '#/components/schemas/InnerHits'
+            - type: array
+              items:
+                $ref: '#/components/schemas/InnerHits'
         max_concurrent_group_searches:
           description: The number of concurrent requests that are allowed to be retrieved by the `inner_hits` parameter per group.
           type: integer
@@ -1521,17 +1537,20 @@ components:
           required:
             - fields
     FieldAndFormat:
-      type: object
-      properties:
-        field:
+      oneOf:
+        - title: field
           $ref: '#/components/schemas/Field'
-        format:
-          description: Format in which the values are returned.
-          type: string
-        include_unmapped:
-          type: boolean
-      required:
-        - field
+        - type: object
+          properties:
+            field:
+              $ref: '#/components/schemas/Field'
+            format:
+              description: Format in which the values are returned.
+              type: string
+            include_unmapped:
+              type: boolean
+          required:
+            - field
     RankContainer:
       type: object
       description: The container for ranking configuration.
@@ -1550,7 +1569,13 @@ components:
           $ref: '#/components/schemas/BoostingQuery'
         common:
           deprecated: true
-          $ref: '#/components/schemas/CommonTermsQuery'
+          type: object
+          propertyNames:
+            $ref: '#/components/schemas/Field'
+          additionalProperties:
+            $ref: '#/components/schemas/CommonTermsQuery'
+          minProperties: 1
+          maxProperties: 1
         combined_fields:
           $ref: '#/components/schemas/CombinedFieldsQuery'
         constant_score:
@@ -1565,7 +1590,13 @@ components:
           $ref: '#/components/schemas/FunctionScoreQuery'
         fuzzy:
           description: Returns documents that contain terms similar to the search term, as measured by a Levenshtein edit distance.
-          $ref: '#/components/schemas/FuzzyQuery'
+          type: object
+          propertyNames:
+            $ref: '#/components/schemas/Field'
+          additionalProperties:
+            $ref: '#/components/schemas/FuzzyQuery'
+          minProperties: 1
+          maxProperties: 1
         geo_bounding_box:
           $ref: '#/components/schemas/GeoBoundingBoxQuery'
         geo_distance:
@@ -1584,14 +1615,32 @@ components:
           $ref: '#/components/schemas/IdsQuery'
         intervals:
           description: Returns documents based on the order and proximity of matching terms.
-          $ref: '#/components/schemas/IntervalsQuery'
+          type: object
+          propertyNames:
+            $ref: '#/components/schemas/Field'
+          additionalProperties:
+            $ref: '#/components/schemas/IntervalsQuery'
+          minProperties: 1
+          maxProperties: 1
         knn:
-          $ref: '#/components/schemas/KnnQuery'
+          type: object
+          propertyNames:
+            $ref: '#/components/schemas/Field'
+          additionalProperties:
+            $ref: '#/components/schemas/KnnQuery'
+          minProperties: 1
+          maxProperties: 1
         match:
           description: |-
             Returns documents that match a provided text, number, date or Boolean value.
             The provided text is analyzed before matching.
-          $ref: '#/components/schemas/MatchQuery'
+          type: object
+          propertyNames:
+            $ref: '#/components/schemas/Field'
+          additionalProperties:
+            $ref: '#/components/schemas/MatchQuery'
+          minProperties: 1
+          maxProperties: 1
         match_all:
           $ref: '#/components/schemas/MatchAllQuery'
         match_bool_prefix:
@@ -1599,17 +1648,35 @@ components:
             Analyzes its input and constructs a `bool` query from the terms.
             Each term except the last is used in a `term` query.
             The last term is used in a prefix query.
-          $ref: '#/components/schemas/MatchBoolPrefixQuery'
+          type: object
+          propertyNames:
+            $ref: '#/components/schemas/Field'
+          additionalProperties:
+            $ref: '#/components/schemas/MatchBoolPrefixQuery'
+          minProperties: 1
+          maxProperties: 1
         match_none:
           $ref: '#/components/schemas/MatchNoneQuery'
         match_phrase:
           description: Analyzes the text and creates a phrase query out of the analyzed text.
-          $ref: '#/components/schemas/MatchPhraseQuery'
+          type: object
+          propertyNames:
+            $ref: '#/components/schemas/Field'
+          additionalProperties:
+            $ref: '#/components/schemas/MatchPhraseQuery'
+          minProperties: 1
+          maxProperties: 1
         match_phrase_prefix:
           description: |-
             Returns documents that contain the words of a provided text, in the same order as provided.
             The last term of the provided text is treated as a prefix, matching any words that begin with that term.
-          $ref: '#/components/schemas/MatchPhrasePrefixQuery'
+          type: object
+          propertyNames:
+            $ref: '#/components/schemas/Field'
+          additionalProperties:
+            $ref: '#/components/schemas/MatchPhrasePrefixQuery'
+          minProperties: 1
+          maxProperties: 1
         more_like_this:
           $ref: '#/components/schemas/MoreLikeThisQuery'
         multi_match:
@@ -1617,7 +1684,13 @@ components:
         nested:
           $ref: '#/components/schemas/NestedQuery'
         neural:
-          $ref: '#/components/schemas/NeuralQuery'
+          type: object
+          propertyNames:
+            $ref: '#/components/schemas/Field'
+          additionalProperties:
+            $ref: '#/components/schemas/NeuralQuery'
+          minProperties: 1
+          maxProperties: 1
         parent_id:
           $ref: '#/components/schemas/ParentIdQuery'
         percolate:
@@ -1626,17 +1699,35 @@ components:
           $ref: '#/components/schemas/PinnedQuery'
         prefix:
           description: Returns documents that contain a specific prefix in a provided field.
-          $ref: '#/components/schemas/PrefixQuery'
+          type: object
+          propertyNames:
+            $ref: '#/components/schemas/Field'
+          additionalProperties:
+            $ref: '#/components/schemas/PrefixQuery'
+          minProperties: 1
+          maxProperties: 1
         query_string:
           $ref: '#/components/schemas/QueryStringQuery'
         range:
           description: Returns documents that contain terms within a provided range.
-          $ref: '#/components/schemas/RangeQuery'
+          type: object
+          propertyNames:
+            $ref: '#/components/schemas/Field'
+          additionalProperties:
+            $ref: '#/components/schemas/RangeQuery'
+          minProperties: 1
+          maxProperties: 1
         rank_feature:
           $ref: '#/components/schemas/RankFeatureQuery'
         regexp:
           description: Returns documents that contain terms matching a regular expression.
-          $ref: '#/components/schemas/RegexpQuery'
+          type: object
+          propertyNames:
+            $ref: '#/components/schemas/Field'
+          additionalProperties:
+            $ref: '#/components/schemas/RegexpQuery'
+          minProperties: 1
+          maxProperties: 1
         script:
           $ref: '#/components/schemas/ScriptQuery'
         script_score:
@@ -1659,14 +1750,26 @@ components:
           $ref: '#/components/schemas/SpanOrQuery'
         span_term:
           description: Matches spans containing a term.
-          $ref: '#/components/schemas/SpanTermQuery'
+          type: object
+          propertyNames:
+            $ref: '#/components/schemas/Field'
+          additionalProperties:
+            $ref: '#/components/schemas/SpanTermQuery'
+          minProperties: 1
+          maxProperties: 1
         span_within:
           $ref: '#/components/schemas/SpanWithinQuery'
         term:
           description: |-
             Returns documents that contain an exact term in a provided field.
             To return a document, the query term must exactly match the queried field's value, including white space and capitalization.
-          $ref: '#/components/schemas/TermQuery'
+          type: object
+          propertyNames:
+            $ref: '#/components/schemas/Field'
+          additionalProperties:
+            $ref: '#/components/schemas/TermQuery'
+          minProperties: 1
+          maxProperties: 1
         terms:
           description: Returns documents that contain one or more exact terms in a provided field.
           $ref: '#/components/schemas/TermsQuery'
@@ -1674,12 +1777,24 @@ components:
           description: |-
             Returns documents that contain a minimum number of exact terms in a provided field.
             To return a document, a required number of terms must exactly match the field values, including white space and capitalization.
-          $ref: '#/components/schemas/TermsSetQuery'
+          type: object
+          propertyNames:
+            $ref: '#/components/schemas/Field'
+          additionalProperties:
+            $ref: '#/components/schemas/TermsSetQuery'
+          minProperties: 1
+          maxProperties: 1
         type:
           $ref: '#/components/schemas/TypeQuery'
         wildcard:
           description: Returns documents that contain terms matching a wildcard pattern.
-          $ref: '#/components/schemas/WildcardQuery'
+          type: object
+          propertyNames:
+            $ref: '#/components/schemas/Field'
+          additionalProperties:
+            $ref: '#/components/schemas/WildcardQuery'
+          minProperties: 1
+          maxProperties: 1
         wrapper:
           $ref: '#/components/schemas/WrapperQuery'
         xy_shape:
@@ -1731,10 +1846,13 @@ components:
         - id
         - max
     Sort:
-      type: array
-      description: The list of sort options.
-      items:
-        $ref: '#/components/schemas/SortOptions'
+      oneOf:
+        - $ref: '#/components/schemas/SortOptions'
+          description: The single sort option.
+        - type: array
+          description: The list of sort options.
+          items:
+            $ref: '#/components/schemas/SortOptions'
     SourceConfig:
       description: Defines how to fetch a source. Fetching can be disabled entirely, or the source can be filtered.
       oneOf:
@@ -1780,6 +1898,8 @@ components:
             $ref: '#/components/schemas/Aggregate'
         fields:
           type: object
+          additionalProperties:
+            type: object
         max_score:
           type: number
           format: float
@@ -1820,12 +1940,12 @@ components:
           description: The HTTP status code for the error.
     WaitForActiveShardOptions:
       oneOf:
-        - type: boolean
+        - type: string
+          const: all
           description: Wait for all shards to be active.
-          title: WaitForActiveShardOptions_all
-        - type: boolean
+        - type: string
+          const: index-setting
           description: Wait for the number of shards specified in the index settings.
-          title: WaitForActiveShardOptions_index-setting
     IndexOperation:
       $ref: '#/components/schemas/WriteOperation'
     CreateOperation:
@@ -1909,6 +2029,8 @@ components:
         fields:
           type: object
           description: The fields retrieved from the document.
+          additionalProperties:
+            type: object
         found:
           type: boolean
           description: Whether the document was found.
@@ -1923,28 +2045,30 @@ components:
         underscore_source:
           type: object
           description: The source of the document.
+          additionalProperties: true
       required:
         - found
     ExpandWildcard:
       oneOf:
-        - type: boolean
+        - type: string
+          const: all
           description: Match any index, including hidden ones.
-          title: ExpandWildcard_all
-        - type: boolean
+        - type: string
+          const: closed
           description: Match closed, non-hidden indexes.
-          title: ExpandWildcard_closed
-        - type: boolean
+        - type: string
+          const: hidden
           description: Match hidden indexes. Must be combined with open, closed, or both.
-          title: ExpandWildcard_hidden
-        - type: boolean
+        - type: string
+          const: none
           description: Wildcard expressions are not accepted.
-          title: ExpandWildcard_none
-        - type: boolean
+        - type: string
+          const: open
           description: Match open, non-hidden indexes.
-          title: ExpandWildcard_open
     Metadata:
       type: object
       description: The custom metadata attached to a resource.
+      additionalProperties: true
     AdjacencyMatrixAggregation:
       allOf:
         - $ref: '#/components/schemas/BucketAggregationBase'
@@ -1982,6 +2106,7 @@ components:
               type: string
             params:
               type: object
+              additionalProperties: true
             script:
               $ref: '#/components/schemas/Script'
             time_zone:
@@ -2122,6 +2247,7 @@ components:
               $ref: '#/components/schemas/HistogramOrder'
             params:
               type: object
+              additionalProperties: true
             script:
               $ref: '#/components/schemas/Script'
             time_zone:
@@ -2666,6 +2792,7 @@ components:
                 A global object with script parameters for `init`, `map` and `combine` scripts.
                 It is shared between the scripts.
               type: object
+              additionalProperties: true
             reduce_script:
               $ref: '#/components/schemas/Script'
     SerialDifferencingAggregation:
@@ -2907,9 +3034,11 @@ components:
           properties:
             metrics:
               description: The fields of the top document to return.
-              type: array
-              items:
-                $ref: '#/components/schemas/TopMetricsValue'
+              oneOf:
+                - $ref: '#/components/schemas/TopMetricsValue'
+                - type: array
+                  items:
+                    $ref: '#/components/schemas/TopMetricsValue'
             size:
               description: The number of top documents from which to return metrics.
               type: integer
@@ -3058,6 +3187,8 @@ components:
           format: int32
         options:
           type: object
+          additionalProperties:
+            type: object
         order:
           $ref: '#/components/schemas/HighlighterOrder'
         phrase_limit:
@@ -3124,28 +3255,36 @@ components:
               description: |-
                 The clause (query) must appear in matching documents.
                 However, unlike `must`, the score of the query will be ignored.
-              type: array
-              items:
-                $ref: '#/components/schemas/QueryContainer'
+              oneOf:
+                - $ref: '#/components/schemas/QueryContainer'
+                - type: array
+                  items:
+                    $ref: '#/components/schemas/QueryContainer'
             minimum_should_match:
               $ref: '#/components/schemas/MinimumShouldMatch'
             must:
               description: The clause (query) must appear in matching documents and will contribute to the score.
-              type: array
-              items:
-                $ref: '#/components/schemas/QueryContainer'
+              oneOf:
+                - $ref: '#/components/schemas/QueryContainer'
+                - type: array
+                  items:
+                    $ref: '#/components/schemas/QueryContainer'
             must_not:
               description: |-
                 The clause (query) must not appear in the matching documents.
                 Because scoring is ignored, a score of `0` is returned for all documents.
-              type: array
-              items:
-                $ref: '#/components/schemas/QueryContainer'
+              oneOf:
+                - $ref: '#/components/schemas/QueryContainer'
+                - type: array
+                  items:
+                    $ref: '#/components/schemas/QueryContainer'
             should:
               description: The clause (query) should appear in the matching document.
-              type: array
-              items:
-                $ref: '#/components/schemas/QueryContainer'
+              oneOf:
+                - $ref: '#/components/schemas/QueryContainer'
+                - type: array
+                  items:
+                    $ref: '#/components/schemas/QueryContainer'
             adjust_pure_negative:
               description: |-
                 Ensures correct behavior when a query contains only `must_not` clauses.
@@ -3171,29 +3310,28 @@ components:
             - negative_boost
             - positive
     CommonTermsQuery:
-      allOf:
-        - $ref: '#/components/schemas/QueryBase'
-        - type: object
-          properties:
-            analyzer:
-              type: string
-            cutoff_frequency:
-              type: number
-              format: float
-            high_freq_operator:
-              $ref: '#/components/schemas/Operator'
-            low_freq_operator:
-              $ref: '#/components/schemas/Operator'
-            minimum_should_match:
-              $ref: '#/components/schemas/MinimumShouldMatch'
-            query:
-              type: string
-          required:
-            - query
-        - type: object
-          properties:
-            field:
-              type: string
+      oneOf:
+        - title: query
+          type: string
+        - allOf:
+            - $ref: '#/components/schemas/QueryBase'
+            - type: object
+              properties:
+                analyzer:
+                  type: string
+                cutoff_frequency:
+                  type: number
+                  format: float
+                high_freq_operator:
+                  $ref: '#/components/schemas/Operator'
+                low_freq_operator:
+                  $ref: '#/components/schemas/Operator'
+                minimum_should_match:
+                  $ref: '#/components/schemas/MinimumShouldMatch'
+                query:
+                  type: string
+              required:
+                - query
     CombinedFieldsQuery:
       allOf:
         - $ref: '#/components/schemas/QueryBase'
@@ -3313,34 +3451,33 @@ components:
             score_mode:
               $ref: '#/components/schemas/FunctionScoreMode'
     FuzzyQuery:
-      allOf:
-        - $ref: '#/components/schemas/QueryBase'
-        - type: object
-          properties:
-            max_expansions:
-              description: Maximum number of variations created.
-              type: integer
-              format: int32
-            prefix_length:
-              description: Number of beginning characters left unchanged when creating expansions.
-              type: integer
-              format: int32
-            rewrite:
-              $ref: '#/components/schemas/MultiTermQueryRewrite'
-            transpositions:
-              description: Indicates whether edits include transpositions of two adjacent characters (for example, `ab` to `ba`).
-              type: boolean
-            fuzziness:
-              $ref: '#/components/schemas/Fuzziness'
-            value:
-              description: Term you wish to find in the provided field.
-              $ref: '#/components/schemas/FieldValue'
-          required:
-            - value
-        - type: object
-          properties:
-            field:
-              type: string
+      oneOf:
+        - title: value
+          $ref: '#/components/schemas/FieldValue'
+        - allOf:
+            - $ref: '#/components/schemas/QueryBase'
+            - type: object
+              properties:
+                max_expansions:
+                  description: Maximum number of variations created.
+                  type: integer
+                  format: int32
+                prefix_length:
+                  description: Number of beginning characters left unchanged when creating expansions.
+                  type: integer
+                  format: int32
+                rewrite:
+                  $ref: '#/components/schemas/MultiTermQueryRewrite'
+                transpositions:
+                  description: Indicates whether edits include transpositions of two adjacent characters (for example, `ab` to `ba`).
+                  type: boolean
+                fuzziness:
+                  $ref: '#/components/schemas/Fuzziness'
+                value:
+                  description: Term you wish to find in the provided field.
+                  $ref: '#/components/schemas/FieldValue'
+              required:
+                - value
     GeoBoundingBoxQuery:
       allOf:
         - $ref: '#/components/schemas/QueryBase'
@@ -3502,10 +3639,6 @@ components:
               $ref: '#/components/schemas/IntervalsWildcard'
           minProperties: 1
           maxProperties: 1
-        - type: object
-          properties:
-            field:
-              type: string
     KnnQuery:
       allOf:
         - $ref: '#/components/schemas/QueryBase'
@@ -3533,6 +3666,7 @@ components:
             method_parameters:
               type: object
               x-version-added: '2.16'
+              additionalProperties: true
             rescore:
               $ref: '#/components/schemas/KnnQueryRescore'
               x-version-added: '2.17'
@@ -3541,161 +3675,153 @@ components:
               x-version-added: '2.19'
           required:
             - vector
-        - type: object
-          properties:
-            field:
-              type: string
     MatchQuery:
-      allOf:
-        - $ref: '#/components/schemas/QueryBase'
-        - type: object
-          properties:
-            analyzer:
-              description: Analyzer used to convert the text in the query value into tokens.
-              type: string
-            auto_generate_synonyms_phrase_query:
-              description: If `true`, match phrase queries are automatically created for multi-term synonyms.
-              type: boolean
-            cutoff_frequency:
-              deprecated: true
-              type: number
-              format: float
-            fuzziness:
-              $ref: '#/components/schemas/Fuzziness'
-            fuzzy_rewrite:
-              $ref: '#/components/schemas/MultiTermQueryRewrite'
-            fuzzy_transpositions:
-              description: If `true`, edits for fuzzy matching include transpositions of two adjacent characters (for example, `ab` to `ba`).
-              type: boolean
-            lenient:
-              description: If `true`, format-based errors, such as providing a text query value for a numeric field, are ignored.
-              type: boolean
-            max_expansions:
-              description: Maximum number of terms to which the query will expand.
-              type: integer
-              format: int32
-            minimum_should_match:
-              $ref: '#/components/schemas/MinimumShouldMatch'
-            operator:
-              $ref: '#/components/schemas/Operator'
-            prefix_length:
-              description: Number of beginning characters left unchanged for fuzzy matching.
-              type: integer
-              format: int32
-            query:
-              description: Text, number, Boolean value or date you wish to find in the provided field.
-              $ref: '#/components/schemas/FieldValue'
-            zero_terms_query:
-              $ref: '#/components/schemas/ZeroTermsQuery'
-          required:
-            - query
-        - type: object
-          properties:
-            field:
-              type: string
+      oneOf:
+        - title: query
+          $ref: '#/components/schemas/FieldValue'
+        - allOf:
+            - $ref: '#/components/schemas/QueryBase'
+            - type: object
+              properties:
+                analyzer:
+                  description: Analyzer used to convert the text in the query value into tokens.
+                  type: string
+                auto_generate_synonyms_phrase_query:
+                  description: If `true`, match phrase queries are automatically created for multi-term synonyms.
+                  type: boolean
+                cutoff_frequency:
+                  deprecated: true
+                  type: number
+                  format: float
+                fuzziness:
+                  $ref: '#/components/schemas/Fuzziness'
+                fuzzy_rewrite:
+                  $ref: '#/components/schemas/MultiTermQueryRewrite'
+                fuzzy_transpositions:
+                  description: If `true`, edits for fuzzy matching include transpositions of two adjacent characters (for example, `ab` to `ba`).
+                  type: boolean
+                lenient:
+                  description: If `true`, format-based errors, such as providing a text query value for a numeric field, are ignored.
+                  type: boolean
+                max_expansions:
+                  description: Maximum number of terms to which the query will expand.
+                  type: integer
+                  format: int32
+                minimum_should_match:
+                  $ref: '#/components/schemas/MinimumShouldMatch'
+                operator:
+                  $ref: '#/components/schemas/Operator'
+                prefix_length:
+                  description: Number of beginning characters left unchanged for fuzzy matching.
+                  type: integer
+                  format: int32
+                query:
+                  description: Text, number, Boolean value or date you wish to find in the provided field.
+                  $ref: '#/components/schemas/FieldValue'
+                zero_terms_query:
+                  $ref: '#/components/schemas/ZeroTermsQuery'
+              required:
+                - query
     MatchAllQuery:
       allOf:
         - $ref: '#/components/schemas/QueryBase'
         - type: object
           properties: {}
     MatchBoolPrefixQuery:
-      allOf:
-        - $ref: '#/components/schemas/QueryBase'
-        - type: object
-          properties:
-            analyzer:
-              description: Analyzer used to convert the text in the query value into tokens.
-              type: string
-            fuzziness:
-              $ref: '#/components/schemas/Fuzziness'
-            fuzzy_rewrite:
-              $ref: '#/components/schemas/MultiTermQueryRewrite'
-            fuzzy_transpositions:
-              description: |-
-                If `true`, edits for fuzzy matching include transpositions of two adjacent characters (for example, `ab` to `ba`).
-                Can be applied to the term subqueries constructed for all terms but the final term.
-              type: boolean
-            max_expansions:
-              description: |-
-                Maximum number of terms to which the query will expand.
-                Can be applied to the term subqueries constructed for all terms but the final term.
-              type: integer
-              format: int32
-            minimum_should_match:
-              $ref: '#/components/schemas/MinimumShouldMatch'
-            operator:
-              $ref: '#/components/schemas/Operator'
-            prefix_length:
-              description: |-
-                Number of beginning characters left unchanged for fuzzy matching.
-                Can be applied to the term subqueries constructed for all terms but the final term.
-              type: integer
-              format: int32
-            query:
-              description: |-
-                Terms you wish to find in the provided field.
-                The last term is used in a prefix query.
-              type: string
-          required:
-            - query
-        - type: object
-          properties:
-            field:
-              type: string
+      oneOf:
+        - title: query
+          type: string
+        - allOf:
+            - $ref: '#/components/schemas/QueryBase'
+            - type: object
+              properties:
+                analyzer:
+                  description: Analyzer used to convert the text in the query value into tokens.
+                  type: string
+                fuzziness:
+                  $ref: '#/components/schemas/Fuzziness'
+                fuzzy_rewrite:
+                  $ref: '#/components/schemas/MultiTermQueryRewrite'
+                fuzzy_transpositions:
+                  description: |-
+                    If `true`, edits for fuzzy matching include transpositions of two adjacent characters (for example, `ab` to `ba`).
+                    Can be applied to the term subqueries constructed for all terms but the final term.
+                  type: boolean
+                max_expansions:
+                  description: |-
+                    Maximum number of terms to which the query will expand.
+                    Can be applied to the term subqueries constructed for all terms but the final term.
+                  type: integer
+                  format: int32
+                minimum_should_match:
+                  $ref: '#/components/schemas/MinimumShouldMatch'
+                operator:
+                  $ref: '#/components/schemas/Operator'
+                prefix_length:
+                  description: |-
+                    Number of beginning characters left unchanged for fuzzy matching.
+                    Can be applied to the term subqueries constructed for all terms but the final term.
+                  type: integer
+                  format: int32
+                query:
+                  description: |-
+                    Terms you wish to find in the provided field.
+                    The last term is used in a prefix query.
+                  type: string
+              required:
+                - query
     MatchNoneQuery:
       allOf:
         - $ref: '#/components/schemas/QueryBase'
         - type: object
     MatchPhraseQuery:
-      allOf:
-        - $ref: '#/components/schemas/QueryBase'
-        - type: object
-          properties:
-            analyzer:
-              description: Analyzer used to convert the text in the query value into tokens.
-              type: string
-            query:
-              description: Query terms that are analyzed and turned into a phrase query.
-              type: string
-            slop:
-              description: Maximum number of positions allowed between matching tokens.
-              type: integer
-              format: int32
-            zero_terms_query:
-              $ref: '#/components/schemas/ZeroTermsQuery'
-          required:
-            - query
-        - type: object
-          properties:
-            field:
-              type: string
+      oneOf:
+        - title: query
+          type: string
+        - allOf:
+            - $ref: '#/components/schemas/QueryBase'
+            - type: object
+              properties:
+                analyzer:
+                  description: Analyzer used to convert the text in the query value into tokens.
+                  type: string
+                query:
+                  description: Query terms that are analyzed and turned into a phrase query.
+                  type: string
+                slop:
+                  description: Maximum number of positions allowed between matching tokens.
+                  type: integer
+                  format: int32
+                zero_terms_query:
+                  $ref: '#/components/schemas/ZeroTermsQuery'
+              required:
+                - query
     MatchPhrasePrefixQuery:
-      allOf:
-        - $ref: '#/components/schemas/QueryBase'
-        - type: object
-          properties:
-            analyzer:
-              description: Analyzer used to convert text in the query value into tokens.
-              type: string
-            max_expansions:
-              description: Maximum number of terms to which the last provided term of the query value will expand.
-              type: integer
-              format: int32
-            query:
-              description: Text you wish to find in the provided field.
-              type: string
-            slop:
-              description: Maximum number of positions allowed between matching tokens.
-              type: integer
-              format: int32
-            zero_terms_query:
-              $ref: '#/components/schemas/ZeroTermsQuery'
-          required:
-            - query
-        - type: object
-          properties:
-            field:
-              type: string
+      oneOf:
+        - title: query
+          type: string
+        - allOf:
+            - $ref: '#/components/schemas/QueryBase'
+            - type: object
+              properties:
+                analyzer:
+                  description: Analyzer used to convert text in the query value into tokens.
+                  type: string
+                max_expansions:
+                  description: Maximum number of terms to which the last provided term of the query value will expand.
+                  type: integer
+                  format: int32
+                query:
+                  description: Text you wish to find in the provided field.
+                  type: string
+                slop:
+                  description: Maximum number of positions allowed between matching tokens.
+                  type: integer
+                  format: int32
+                zero_terms_query:
+                  $ref: '#/components/schemas/ZeroTermsQuery'
+              required:
+                - query
     MoreLikeThisQuery:
       allOf:
         - $ref: '#/components/schemas/QueryBase'
@@ -3728,9 +3854,11 @@ components:
               type: boolean
             like:
               description: Specifies free form text and/or a single or multiple documents for which you want to find similar documents.
-              type: array
-              items:
-                $ref: '#/components/schemas/Like'
+              oneOf:
+                - $ref: '#/components/schemas/Like'
+                - type: array
+                  items:
+                    $ref: '#/components/schemas/Like'
             max_doc_freq:
               description: The maximum document frequency above which the terms are ignored from the input document.
               type: integer
@@ -3770,9 +3898,11 @@ components:
               $ref: '#/components/schemas/StopWords'
             unlike:
               description: Used in combination with `like` to exclude documents that match a set of terms.
-              type: array
-              items:
-                $ref: '#/components/schemas/Like'
+              oneOf:
+                - $ref: '#/components/schemas/Like'
+                - type: array
+                  items:
+                    $ref: '#/components/schemas/Like'
             version:
               $ref: '#/components/schemas/VersionNumber'
             version_type:
@@ -3878,10 +4008,6 @@ components:
               format: float
             filter:
               $ref: '#/components/schemas/QueryContainer'
-        - type: object
-          properties:
-            field:
-              type: string
     ParentIdQuery:
       allOf:
         - $ref: '#/components/schemas/QueryBase'
@@ -3952,26 +4078,25 @@ components:
               minProperties: 1
               maxProperties: 1
     PrefixQuery:
-      allOf:
-        - $ref: '#/components/schemas/QueryBase'
-        - type: object
-          properties:
-            rewrite:
-              $ref: '#/components/schemas/MultiTermQueryRewrite'
-            value:
-              description: Beginning characters of terms you wish to find in the provided field.
-              type: string
-            case_insensitive:
-              description: |-
-                Allows ASCII case insensitive matching of the value with the indexed field values when set to `true`.
-                Default is `false` which means the case sensitivity of matching depends on the underlying field's mapping.
-              type: boolean
-          required:
-            - value
-        - type: object
-          properties:
-            field:
-              type: string
+      oneOf:
+        - title: value
+          type: string
+        - allOf:
+            - $ref: '#/components/schemas/QueryBase'
+            - type: object
+              properties:
+                rewrite:
+                  $ref: '#/components/schemas/MultiTermQueryRewrite'
+                value:
+                  description: Beginning characters of terms you wish to find in the provided field.
+                  type: string
+                case_insensitive:
+                  description: |-
+                    Allows ASCII case insensitive matching of the value with the indexed field values when set to `true`.
+                    Default is `false` which means the case sensitivity of matching depends on the underlying field's mapping.
+                  type: boolean
+              required:
+                - value
     QueryStringQuery:
       allOf:
         - $ref: '#/components/schemas/QueryBase'
@@ -4061,17 +4186,9 @@ components:
         - allOf:
             - $ref: '#/components/schemas/RangeQueryBase'
             - $ref: '#/components/schemas/NumberRangeQueryParameters'
-            - type: object
-              properties:
-                field:
-                  type: string
         - allOf:
             - $ref: '#/components/schemas/RangeQueryBase'
             - $ref: '#/components/schemas/DateRangeQueryParameters'
-            - type: object
-              properties:
-                field:
-                  type: string
     RankFeatureQuery:
       allOf:
         - $ref: '#/components/schemas/QueryBase'
@@ -4090,33 +4207,32 @@ components:
           required:
             - field
     RegexpQuery:
-      allOf:
-        - $ref: '#/components/schemas/QueryBase'
-        - type: object
-          properties:
-            case_insensitive:
-              description: |-
-                Allows case insensitive matching of the regular expression value with the indexed field values when set to `true`.
-                When `false`, case sensitivity of matching depends on the underlying field's mapping.
-              type: boolean
-            flags:
-              description: Enables optional operators for the regular expression.
-              type: string
-            max_determinized_states:
-              description: Maximum number of automaton states required for the query.
-              type: integer
-              format: int32
-            rewrite:
-              $ref: '#/components/schemas/MultiTermQueryRewrite'
-            value:
-              description: Regular expression for terms you wish to find in the provided field.
-              type: string
-          required:
-            - value
-        - type: object
-          properties:
-            field:
-              type: string
+      oneOf:
+        - title: value
+          type: string
+        - allOf:
+            - $ref: '#/components/schemas/QueryBase'
+            - type: object
+              properties:
+                case_insensitive:
+                  description: |-
+                    Allows case insensitive matching of the regular expression value with the indexed field values when set to `true`.
+                    When `false`, case sensitivity of matching depends on the underlying field's mapping.
+                  type: boolean
+                flags:
+                  description: Enables optional operators for the regular expression.
+                  type: string
+                max_determinized_states:
+                  description: Maximum number of automaton states required for the query.
+                  type: integer
+                  format: int32
+                rewrite:
+                  $ref: '#/components/schemas/MultiTermQueryRewrite'
+                value:
+                  description: Regular expression for terms you wish to find in the provided field.
+                  type: string
+              required:
+                - value
     ScriptQuery:
       allOf:
         - $ref: '#/components/schemas/QueryBase'
@@ -4298,18 +4414,17 @@ components:
           required:
             - clauses
     SpanTermQuery:
-      allOf:
-        - $ref: '#/components/schemas/QueryBase'
-        - type: object
-          properties:
-            value:
-              type: string
-          required:
-            - value
-        - type: object
-          properties:
-            field:
-              type: string
+      oneOf:
+        - title: value
+          type: string
+        - allOf:
+            - $ref: '#/components/schemas/QueryBase'
+            - type: object
+              properties:
+                value:
+                  type: string
+              required:
+                - value
     SpanWithinQuery:
       allOf:
         - $ref: '#/components/schemas/QueryBase'
@@ -4323,23 +4438,22 @@ components:
             - big
             - little
     TermQuery:
-      allOf:
-        - $ref: '#/components/schemas/QueryBase'
-        - type: object
-          properties:
-            value:
-              $ref: '#/components/schemas/FieldValue'
-            case_insensitive:
-              description: |-
-                Allows ASCII case insensitive matching of the value with the indexed field values when set to `true`.
-                When `false`, the case sensitivity of matching depends on the underlying field's mapping.
-              type: boolean
-          required:
-            - value
-        - type: object
-          properties:
-            field:
-              type: string
+      oneOf:
+        - title: value
+          $ref: '#/components/schemas/FieldValue'
+        - allOf:
+            - $ref: '#/components/schemas/QueryBase'
+            - type: object
+              properties:
+                value:
+                  $ref: '#/components/schemas/FieldValue'
+                case_insensitive:
+                  description: |-
+                    Allows ASCII case insensitive matching of the value with the indexed field values when set to `true`.
+                    When `false`, the case sensitivity of matching depends on the underlying field's mapping.
+                  type: boolean
+              required:
+                - value
     TermsQuery:
       allOf:
         - $ref: '#/components/schemas/QueryBase'
@@ -4369,10 +4483,6 @@ components:
                 type: string
           required:
             - terms
-        - type: object
-          properties:
-            field:
-              type: string
     TypeQuery:
       allOf:
         - $ref: '#/components/schemas/QueryBase'
@@ -4383,25 +4493,24 @@ components:
           required:
             - value
     WildcardQuery:
-      allOf:
-        - $ref: '#/components/schemas/QueryBase'
-        - type: object
-          properties:
-            case_insensitive:
-              description: Allows case insensitive matching of the pattern with the indexed field values when set to `true`. Default is `false` which means the case sensitivity of matching depends on the underlying field's mapping.
-              type: boolean
-            rewrite:
-              $ref: '#/components/schemas/MultiTermQueryRewrite'
-            value:
-              description: Wildcard pattern for terms you wish to find in the provided field. Required, when wildcard is not set.
-              type: string
-            wildcard:
-              description: Wildcard pattern for terms you wish to find in the provided field. Required, when value is not set.
-              type: string
-        - type: object
-          properties:
-            field:
-              type: string
+      oneOf:
+        - title: value
+          type: string
+        - allOf:
+            - $ref: '#/components/schemas/QueryBase'
+            - type: object
+              properties:
+                case_insensitive:
+                  description: Allows case insensitive matching of the pattern with the indexed field values when set to `true`. Default is `false` which means the case sensitivity of matching depends on the underlying field's mapping.
+                  type: boolean
+                rewrite:
+                  $ref: '#/components/schemas/MultiTermQueryRewrite'
+                value:
+                  description: Wildcard pattern for terms you wish to find in the provided field. Required, when wildcard is not set.
+                  type: string
+                wildcard:
+                  description: Wildcard pattern for terms you wish to find in the provided field. Required, when value is not set.
+                  type: string
     WrapperQuery:
       allOf:
         - $ref: '#/components/schemas/QueryBase'
@@ -4455,12 +4564,12 @@ components:
         - string
     SortOptions:
       oneOf:
-        - type: boolean
+        - type: string
+          const: _score
           description: Sort by document score.
-          title: SortOptions_score
-        - type: boolean
+        - type: string
+          const: _doc
           description: Sort by document index order.
-          title: SortOptions_doc
         - type: string
           description: Sort by field name.
           not:
@@ -4481,15 +4590,32 @@ components:
               $ref: '#/components/schemas/ScriptSort'
           minProperties: 1
           maxProperties: 1
-        - description: Sort by field options.
-          $ref: '#/components/schemas/FieldSort'
+        - type: object
+          description: Sort by field options.
+          propertyNames:
+            allOf:
+              - $ref: '#/components/schemas/Field'
+              - not:
+                  type: string
+                  enum:
+                    - _doc
+                    - _geo_distance
+                    - _score
+                    - _script
+          additionalProperties:
+            $ref: '#/components/schemas/FieldSort'
+          minProperties: 1
+          maxProperties: 1
     SourceFilter:
-      type: object
-      properties:
-        excludes:
+      oneOf:
+        - title: includes
           $ref: '#/components/schemas/Fields'
-        includes:
-          $ref: '#/components/schemas/Fields'
+        - type: object
+          properties:
+            excludes:
+              $ref: '#/components/schemas/Fields'
+            includes:
+              $ref: '#/components/schemas/Fields'
     FieldSuggester:
       allOf:
         - type: object
@@ -4741,21 +4867,24 @@ components:
         underscore_index:
           $ref: '#/components/schemas/IndexName'
     InlineScript:
-      allOf:
-        - $ref: '#/components/schemas/ScriptBase'
-        - type: object
-          properties:
-            lang:
-              $ref: '#/components/schemas/ScriptLanguage'
-            options:
-              type: object
-              additionalProperties:
-                type: string
-            source:
-              description: The script source.
-              type: string
-          required:
-            - source
+      oneOf:
+        - title: source
+          type: string
+        - allOf:
+            - $ref: '#/components/schemas/ScriptBase'
+            - type: object
+              properties:
+                lang:
+                  $ref: '#/components/schemas/ScriptLanguage'
+                options:
+                  type: object
+                  additionalProperties:
+                    type: string
+                source:
+                  description: The script source.
+                  type: string
+              required:
+                - source
     StoredScriptId:
       allOf:
         - $ref: '#/components/schemas/ScriptBase'
@@ -4908,7 +5037,7 @@ components:
           type: string
           enum:
             - month
-            - 1m
+            - 1M
         - title: quarter
           type: string
           enum:
@@ -4918,7 +5047,7 @@ components:
           type: string
           enum:
             - year
-            - 1y
+            - 1Y
     ExtendedBoundsFieldDateMath:
       type: object
       properties:
@@ -4990,12 +5119,12 @@ components:
           type: string
     GeoDistanceType:
       oneOf:
-        - type: boolean
+        - type: string
+          const: arc
           description: The arc calculation method uses great circle distance.
-          title: GeoDistanceType_arc
-        - type: boolean
+        - type: string
+          const: plane
           description: The plane calculation method uses faster but less accurate flat-earth distance.
-          title: GeoDistanceType_plane
     AggregationRange:
       type: object
       properties:
@@ -5016,24 +5145,33 @@ components:
             - string
     DistanceUnit:
       oneOf:
-        - title: DistanceUnit_cm
-          type: boolean
-        - title: DistanceUnit_ft
-          type: boolean
-        - title: DistanceUnit_in
-          type: boolean
-        - title: DistanceUnit_km
-          type: boolean
-        - title: DistanceUnit_m
-          type: boolean
-        - title: DistanceUnit_mi
-          type: boolean
-        - title: DistanceUnit_mm
-          type: boolean
-        - title: DistanceUnit_nmi
-          type: boolean
-        - title: DistanceUnit_yd
-          type: boolean
+        - title: centimeters
+          type: string
+          const: cm
+        - title: feet
+          type: string
+          const: ft
+        - title: inches
+          type: string
+          const: in
+        - title: kilometers
+          type: string
+          const: km
+        - title: meters
+          type: string
+          const: m
+        - title: miles
+          type: string
+          const: mi
+        - title: millimeters
+          type: string
+          const: mm
+        - title: nautical miles
+          type: string
+          const: nmi
+        - title: yards
+          type: string
+          const: yd
     GeoBounds:
       description: |-
         A geo-bounding box. It can be represented in the following ways:
@@ -5144,21 +5282,21 @@ components:
                 format: double
     SortMode:
       oneOf:
-        - type: boolean
+        - type: string
+          const: avg
           description: Use the average of all values.
-          title: SortMode_avg
-        - type: boolean
+        - type: string
+          const: max
           description: Use the maximum value.
-          title: SortMode_max
-        - type: boolean
+        - type: string
+          const: median
           description: Use the median value.
-          title: SortMode_median
-        - type: boolean
+        - type: string
+          const: min
           description: Use the minimum value.
-          title: SortMode_min
-        - type: boolean
+        - type: string
+          const: sum
           description: Use the sum of all values.
-          title: SortMode_sum
     LinearMovingAverageAggregation:
       allOf:
         - $ref: '#/components/schemas/MovingAverageAggregationBase'
@@ -5267,12 +5405,17 @@ components:
           type: integer
           format: int32
     TermsExclude:
-      title: terms
-      type: array
-      items:
-        type: string
+      oneOf:
+        - title: regexp
+          type: string
+        - title: terms
+          type: array
+          items:
+            type: string
     TermsInclude:
       oneOf:
+        - title: regexp
+          type: string
         - title: terms
           type: array
           items:
@@ -5337,13 +5480,19 @@ components:
         - first
         - last
     AggregateOrder:
-      type: array
-      items:
-        type: object
-        additionalProperties:
-          $ref: '#/components/schemas/SortOrder'
-        minProperties: 1
-        maxProperties: 1
+      oneOf:
+        - type: object
+          additionalProperties:
+            $ref: '#/components/schemas/SortOrder'
+          minProperties: 1
+          maxProperties: 1
+        - type: array
+          items:
+            type: object
+            additionalProperties:
+              $ref: '#/components/schemas/SortOrder'
+            minProperties: 1
+            maxProperties: 1
     TestPopulation:
       type: object
       properties:
@@ -5527,15 +5676,15 @@ components:
         - sum
     MultiTermQueryRewrite:
       oneOf:
-        - type: boolean
+        - type: string
+          const: constant_score
           description: The constant score rewrite method assigns the same score to all matching documents.
-          title: MultiTermQueryRewrite_constant_score
-        - type: boolean
+        - type: string
+          const: constant_score_boolean
           description: The constant score Boolean rewrite method creates a Boolean query with a constant score.
-          title: MultiTermQueryRewrite_constant_score_boolean
-        - type: boolean
+        - type: string
+          const: scoring_boolean
           description: The scoring Boolean rewrite method creates a Boolean query that scores each term separately.
-          title: MultiTermQueryRewrite_scoring_boolean
         - type: string
           pattern: top_terms(_blended_freqs|_boost)?_\d+
           description: The top terms query rewrite method with optional parameters.
@@ -5592,10 +5741,13 @@ components:
         - none
         - sum
     Ids:
-      type: array
-      items:
-        $ref: '#/components/schemas/Id'
-        description: An array of document IDs.
+      oneOf:
+        - $ref: '#/components/schemas/Id'
+          description: A single document ID.
+        - type: array
+          items:
+            $ref: '#/components/schemas/Id'
+            description: An array of document IDs.
     IntervalsAllOf:
       type: object
       properties:
@@ -5718,7 +5870,9 @@ components:
       type: string
       enum:
         - all
+        - ALL
         - none
+        - NONE
     Like:
       description: Text that we want similar documents for or a lookup to a document's field for the text.
       oneOf:
@@ -5734,18 +5888,18 @@ components:
       $ref: '#/components/schemas/StringOrStringArray'
     VersionType:
       oneOf:
-        - type: boolean
+        - type: string
+          const: external
           description: The version number must be higher than the current version.
-          title: VersionType_external
-        - type: boolean
+        - type: string
+          const: external_gte
           description: The version number must be higher than or equal to the current version.
-          title: VersionType_external_gte
-        - type: boolean
+        - type: string
+          const: force
           description: The version number is forced to be the given value.
-          title: VersionType_force
-        - type: boolean
+        - type: string
+          const: internal
           description: The version number is managed internally by OpenSearch.
-          title: VersionType_internal
     TextQueryType:
       type: string
       enum:
@@ -5894,7 +6048,11 @@ components:
           $ref: '#/components/schemas/SpanOrQuery'
         span_term:
           description: The equivalent of the `term` query but for use with other span queries.
-          $ref: '#/components/schemas/SpanTermQuery'
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/SpanTermQuery'
+          minProperties: 1
+          maxProperties: 1
         span_within:
           $ref: '#/components/schemas/SpanWithinQuery'
       minProperties: 1
@@ -5975,30 +6133,34 @@ components:
       required:
         - script
     FieldSort:
-      type: object
-      description: The detailed field sort options.
-      properties:
-        missing:
-          $ref: '#/components/schemas/FieldValue'
-          description: The value to use when the field is missing.
-        mode:
-          $ref: '#/components/schemas/SortMode'
-          description: The mode for sorting on array fields.
-        nested:
-          $ref: '#/components/schemas/NestedSortValue'
-          description: The nested path sort options.
-        order:
-          $ref: '#/components/schemas/SortOrder'
+      oneOf:
+        - title: order
           description: The sort order direction.
-        unmapped_type:
-          $ref: '#/components/schemas/FieldType'
-          description: The type to use for unmapped fields.
-        numeric_type:
-          $ref: '#/components/schemas/FieldSortNumericType'
-          description: The numeric type to use for sorting.
-        format:
-          type: string
-          description: The format to use for the sort values.
+          $ref: '#/components/schemas/SortOrder'
+        - type: object
+          description: The detailed field sort options.
+          properties:
+            missing:
+              $ref: '#/components/schemas/FieldValue'
+              description: The value to use when the field is missing.
+            mode:
+              $ref: '#/components/schemas/SortMode'
+              description: The mode for sorting on array fields.
+            nested:
+              $ref: '#/components/schemas/NestedSortValue'
+              description: The nested path sort options.
+            order:
+              $ref: '#/components/schemas/SortOrder'
+              description: The sort order direction.
+            unmapped_type:
+              $ref: '#/components/schemas/FieldType'
+              description: The type to use for unmapped fields.
+            numeric_type:
+              $ref: '#/components/schemas/FieldSortNumericType'
+              description: The numeric type to use for sorting.
+            format:
+              type: string
+              description: The format to use for the sort values.
     CompletionSuggester:
       allOf:
         - $ref: '#/components/schemas/SuggesterBase'
@@ -6107,6 +6269,7 @@ components:
       properties:
         fields:
           type: object
+          additionalProperties: true
         highlight:
           type: object
           additionalProperties:
@@ -6759,9 +6922,11 @@ components:
         - type: object
           properties:
             options:
-              type: array
-              items:
-                $ref: '#/components/schemas/CompletionSuggestOption'
+              oneOf:
+                - $ref: '#/components/schemas/CompletionSuggestOption'
+                - type: array
+                  items:
+                    $ref: '#/components/schemas/CompletionSuggestOption'
           required:
             - options
     PhraseSuggest:
@@ -6770,9 +6935,11 @@ components:
         - type: object
           properties:
             options:
-              type: array
-              items:
-                $ref: '#/components/schemas/PhraseSuggestOption'
+              oneOf:
+                - $ref: '#/components/schemas/PhraseSuggestOption'
+                - type: array
+                  items:
+                    $ref: '#/components/schemas/PhraseSuggestOption'
           required:
             - options
     TermSuggest:
@@ -6781,9 +6948,11 @@ components:
         - type: object
           properties:
             options:
-              type: array
-              items:
-                $ref: '#/components/schemas/TermSuggestOption'
+              oneOf:
+                - $ref: '#/components/schemas/TermSuggestOption'
+                - type: array
+                  items:
+                    $ref: '#/components/schemas/TermSuggestOption'
           required:
             - options
     RootCause:
@@ -6806,6 +6975,7 @@ components:
             Specifies any named parameters that are passed into the script as variables. 
             Use parameters instead of hard-coded values to decrease compilation time. 
           type: object
+          additionalProperties: true
     ScriptLanguage:
       anyOf:
         - title: builtin
@@ -7045,12 +7215,13 @@ components:
         - partition
     BuiltinHighlighterType:
       oneOf:
-        - type: boolean
-          title: BuiltinHighlighterType_plain
-        - title: BuiltinHighlighterType_fvh
-          type: boolean
-        - type: boolean
-          title: BuiltinHighlighterType_unified
+        - type: string
+          const: plain
+        - title: fast_vector
+          type: string
+          const: fvh
+        - type: string
+          const: unified
     CustomAnalyzer:
       type: object
       properties:
@@ -7377,18 +7548,18 @@ components:
     GeoShapeRelation:
       type: string
       oneOf:
-        - type: boolean
+        - type: string
+          const: contains
           description: The shape contains the query shape.
-          title: GeoShapeRelation_contains
-        - type: boolean
+        - type: string
+          const: disjoint
           description: The shape has no points in common with the query shape.
-          title: GeoShapeRelation_disjoint
-        - type: boolean
+        - type: string
+          const: intersects
           description: The shape shares any points in common with the query shape.
-          title: GeoShapeRelation_intersects
-        - type: boolean
+        - type: string
+          const: within
           description: The shape is within the query shape.
-          title: GeoShapeRelation_within
     IntervalsContainer:
       type: object
       properties:
@@ -7474,28 +7645,30 @@ components:
     SimpleQueryStringFlag:
       type: string
       enum:
-        - all
-        - and
-        - escape
-        - fuzzy
-        - near
-        - none
-        - not
-        - or
-        - phrase
-        - precedence
-        - prefix
-        - slop
-        - whitespace
+        - ALL
+        - AND
+        - ESCAPE
+        - FUZZY
+        - NEAR
+        - NONE
+        - NOT
+        - OR
+        - PHRASE
+        - PRECEDENCE
+        - PREFIX
+        - SLOP
+        - WHITESPACE
     SpanGapQuery:
       description: Can only be used as a clause in a `span_near` query.
-      properties:
-        field:
-          type: string
-        span_width:
-          title: span_width
-          type: integer
-          format: int32
+      type: object
+      propertyNames:
+        $ref: '#/components/schemas/Field'
+      additionalProperties:
+        title: span_width
+        type: integer
+        format: int32
+      minProperties: 1
+      maxProperties: 1
     TermsLookup:
       type: object
       properties:
@@ -7516,15 +7689,15 @@ components:
           type: array
     ScriptSortType:
       oneOf:
-        - type: boolean
+        - type: string
+          const: number
           description: The script returns a numeric value.
-          title: ScriptSortType_number
-        - type: boolean
+        - type: string
+          const: string
           description: The script returns a string value.
-          title: ScriptSortType_string
-        - type: boolean
+        - type: string
+          const: version
           description: The script returns a version value.
-          title: ScriptSortType_version
     NestedSortValue:
       type: object
       properties:
@@ -7594,18 +7767,18 @@ components:
         - xy_shape
     FieldSortNumericType:
       oneOf:
-        - type: boolean
+        - type: string
+          const: date
           description: The field contains date values.
-          title: FieldSortNumericType_date
-        - type: boolean
+        - type: string
+          const: date_nanos
           description: The field contains date values with nanosecond precision.
-          title: FieldSortNumericType_date_nanos
-        - type: boolean
+        - type: string
+          const: double
           description: The field contains double-precision floating-point values.
-          title: FieldSortNumericType_double
-        - type: boolean
+        - type: string
+          const: long
           description: The field contains long integer values.
-          title: FieldSortNumericType_long
     SuggesterBase:
       type: object
       properties:
@@ -7619,23 +7792,26 @@ components:
       required:
         - field
     CompletionContext:
-      type: object
-      properties:
-        boost:
-          type: number
-          format: double
-        context:
+      oneOf:
+        - title: context
           $ref: '#/components/schemas/Context'
-        neighbours:
-          type: array
-          items:
-            $ref: '#/components/schemas/GeoHashPrecision'
-        precision:
-          $ref: '#/components/schemas/GeoHashPrecision'
-        prefix:
-          type: boolean
-      required:
-        - context
+        - type: object
+          properties:
+            boost:
+              type: number
+              format: double
+            context:
+              $ref: '#/components/schemas/Context'
+            neighbours:
+              type: array
+              items:
+                $ref: '#/components/schemas/GeoHashPrecision'
+            precision:
+              $ref: '#/components/schemas/GeoHashPrecision'
+            prefix:
+              type: boolean
+          required:
+            - context
     SuggestFuzziness:
       type: object
       properties:
@@ -7662,6 +7838,7 @@ components:
       properties:
         params:
           type: object
+          additionalProperties: true
         prune:
           type: boolean
         query:
@@ -7738,12 +7915,12 @@ components:
         - ngram
     TotalHitsRelation:
       oneOf:
-        - type: boolean
+        - type: string
+          const: eq
           description: Accurate.
-          title: TotalHitsRelation_eq
-        - type: boolean
+        - type: string
+          const: gte
           description: Lower bound, including returned events or sequences.
-          title: TotalHitsRelation_gte
     Type:
       type: string
       description: The type of document or resource.
@@ -8276,6 +8453,8 @@ components:
               $ref: '#/components/schemas/Context'
         fields:
           type: object
+          additionalProperties:
+            type: object
         text:
           type: string
         score:
@@ -8344,6 +8523,8 @@ components:
         forms depending on its type. Refer to each aggregation's documentation to know what buckets
         path forms they accept.
       oneOf:
+        - title: single
+          type: string
         - title: array
           type: array
           items:
@@ -8372,49 +8553,51 @@ components:
       description: The geohash string representation of a geographical location.
     HoltWintersType:
       oneOf:
-        - title: HoltWintersType_add
-          type: boolean
-        - title: HoltWintersType_mult
-          type: boolean
+        - title: additive
+          type: string
+          const: add
+        - title: multiplicative
+          type: string
+          const: mult
     VersionString:
       type: string
     Language:
       type: string
       enum:
-        - arabic
-        - armenian
-        - basque
-        - brazilian
-        - bulgarian
-        - catalan
-        - chinese
-        - cjk
-        - czech
-        - danish
-        - dutch
-        - english
-        - estonian
-        - finnish
-        - french
-        - galician
-        - german
-        - greek
-        - hindi
-        - hungarian
-        - indonesian
-        - irish
-        - italian
-        - latvian
-        - norwegian
-        - persian
-        - portuguese
-        - romanian
-        - russian
-        - sorani
-        - spanish
-        - swedish
-        - thai
-        - turkish
+        - Arabic
+        - Armenian
+        - Basque
+        - Brazilian
+        - Bulgarian
+        - Catalan
+        - Chinese
+        - Cjk
+        - Czech
+        - Danish
+        - Dutch
+        - English
+        - Estonian
+        - Finnish
+        - French
+        - Galician
+        - German
+        - Greek
+        - Hindi
+        - Hungarian
+        - Indonesian
+        - Irish
+        - Italian
+        - Latvian
+        - Norwegian
+        - Persian
+        - Portuguese
+        - Romanian
+        - Russian
+        - Sorani
+        - Spanish
+        - Swedish
+        - Thai
+        - Turkish
     NoriDecompoundMode:
       type: string
       enum:
@@ -8441,28 +8624,28 @@ components:
     SnowballLanguage:
       type: string
       enum:
-        - armenian
-        - basque
-        - catalan
-        - danish
-        - dutch
-        - english
-        - finnish
-        - french
-        - german
-        - german2
-        - hungarian
-        - italian
-        - kp
-        - lovins
-        - norwegian
-        - porter
-        - portuguese
-        - romanian
-        - russian
-        - spanish
-        - swedish
-        - turkish
+        - Armenian
+        - Basque
+        - Catalan
+        - Danish
+        - Dutch
+        - English
+        - Finnish
+        - French
+        - German
+        - German2
+        - Hungarian
+        - Italian
+        - Kp
+        - Lovins
+        - Norwegian
+        - Porter
+        - Portuguese
+        - Romanian
+        - Russian
+        - Spanish
+        - Swedish
+        - Turkish
     DecayFunctionBase:
       type: object
       properties:
