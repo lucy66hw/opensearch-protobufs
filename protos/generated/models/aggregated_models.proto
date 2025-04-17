@@ -29,19 +29,15 @@ message ObjectMap {
     repeated Value value = 1;
   }
 }
-enum Additive {
-  ADDITIVE_UNSPECIFIED = 0;
-  ADDITIVE_ADD = 1;
-}
 message AdjacencyMatrixAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsAdjacencyMatrixBucket buckets = 2;
 }
 message AdjacencyMatrixAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -194,18 +190,11 @@ message Aggregate {
 }
 message AggregateBase {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
-}
-message AggregateOrder {
-  oneof aggregate_order {
-    StringMap string_map = 1;
-
-    StringMapArray string_map_array = 2;
-  }
+  optional ObjectMap meta = 1;
 }
 message Aggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 }
@@ -242,7 +231,7 @@ message AggregationContainer {
   map<string, AggregationContainer> aggs = 2;
 
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 3;
+  optional ObjectMap meta = 3;
 
   AdjacencyMatrixAggregation adjacency_matrix = 4;
 
@@ -537,7 +526,7 @@ message ArrayPercentilesItemValue {
 }
 message AutoDateHistogramAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsDateHistogramBucket buckets = 2;
 
@@ -546,7 +535,7 @@ message AutoDateHistogramAggregate {
 }
 message AutoDateHistogramAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -566,7 +555,7 @@ message AutoDateHistogramAggregation {
   // Time zone specified as a ISO 8601 UTC offset.
   optional string offset = 8;
 
-  map<string, ObjectMap> params = 9;
+  optional ObjectMap params = 9;
 
   optional Script script = 10;
 
@@ -585,7 +574,7 @@ message AverageAggregation {
 }
 message AverageBucketAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -598,7 +587,7 @@ message AverageBucketAggregation {
 }
 message AvgAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   SingleMetricAggregateBaseAllOfValue value = 2;
 
@@ -610,46 +599,22 @@ message BoolQuery {
 
   optional string underscore_name = 2;
 
-  optional BoolQueryAllOfFilter filter = 3;
+  // The clause (query) must appear in matching documents. However, unlike `must`, the score of the query will be ignored.
+  repeated QueryContainer filter = 3;
 
   optional MinimumShouldMatch minimum_should_match = 4;
 
-  optional BoolQueryAllOfMust must = 5;
+  // The clause (query) must appear in matching documents and will contribute to the score.
+  repeated QueryContainer must = 5;
 
-  optional BoolQueryAllOfMustNot must_not = 6;
+  // The clause (query) must not appear in the matching documents. Because scoring is ignored, a score of `0` is returned for all documents.
+  repeated QueryContainer must_not = 6;
 
-  optional BoolQueryAllOfShould should = 7;
+  // The clause (query) should appear in the matching document.
+  repeated QueryContainer should = 7;
 
   // Ensures correct behavior when a query contains only `must_not` clauses. By default set to true, OpenSearch adds a match-all clause to ensure results are returned from Lucene, with the `must_not` conditions applied as filters. If set to false, the query may return no results, as Lucene typically requires at least one positive condition.
   optional bool adjust_pure_negative = 8;
-}
-message BoolQueryAllOfFilter {
-  oneof bool_query_all_of_filter {
-    QueryContainer query_container = 1;
-
-    QueryContainerArray query_container_array = 2;
-  }
-}
-message BoolQueryAllOfMust {
-  oneof bool_query_all_of_must {
-    QueryContainer query_container = 1;
-
-    QueryContainerArray query_container_array = 2;
-  }
-}
-message BoolQueryAllOfMustNot {
-  oneof bool_query_all_of_must_not {
-    QueryContainer query_container = 1;
-
-    QueryContainerArray query_container_array = 2;
-  }
-}
-message BoolQueryAllOfShould {
-  oneof bool_query_all_of_should {
-    QueryContainer query_container = 1;
-
-    QueryContainerArray query_container_array = 2;
-  }
 }
 message BoostingQuery {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
@@ -672,7 +637,7 @@ enum BoundaryScanner {
 }
 message BoxPlotAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   float min = 2;
 
@@ -715,13 +680,13 @@ message BoxplotAggregation {
 }
 message BucketAggregationBase {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 }
 message BucketMetricValueAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   SingleMetricAggregateBaseAllOfValue value = 2;
 
@@ -731,7 +696,7 @@ message BucketMetricValueAggregate {
 }
 message BucketPathAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -739,7 +704,7 @@ message BucketPathAggregation {
 }
 message BucketScriptAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -754,7 +719,7 @@ message BucketScriptAggregation {
 }
 message BucketSelectorAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -769,7 +734,7 @@ message BucketSelectorAggregation {
 }
 message BucketSortAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -781,7 +746,8 @@ message BucketSortAggregation {
   // The number of buckets to return. Defaults to all buckets of the parent aggregation.
   optional int32 size = 5;
 
-  optional Sort sort = 6;
+  // The list of sort options.
+  repeated SortOptions sort = 6;
 }
 message BucketsAdjacencyMatrixBucket {
   oneof buckets_adjacency_matrix_bucket {
@@ -869,11 +835,9 @@ message BucketsMultiTermsBucket {
 }
 message BucketsPath {
   oneof buckets_path {
-    string single = 1;
+    StringArray string_array = 1;
 
-    StringArray string_array = 2;
-
-    StringMap dict = 3;
+    StringMap dict = 2;
   }
 }
 message BucketsQueryContainer {
@@ -934,20 +898,12 @@ message BucketsVoid {
 }
 message BuiltinHighlighterType {
   oneof builtin_highlighter_type {
-    BuiltinHighlighterTypeOneOf builtin_highlighter_type_one_of = 1;
+    bool builtin_highlighter_type_plain = 1;
 
-    FastVector fast_vector = 2;
+    bool builtin_highlighter_type_fvh = 2;
 
-    BuiltinHighlighterTypeOneOf1 builtin_highlighter_type_one_of1 = 3;
+    bool builtin_highlighter_type_unified = 3;
   }
-}
-enum BuiltinHighlighterTypeOneOf {
-  BUILTIN_HIGHLIGHTER_TYPE_ONE_OF_UNSPECIFIED = 0;
-  BUILTIN_HIGHLIGHTER_TYPE_ONE_OF_PLAIN = 1;
-}
-enum BuiltinHighlighterTypeOneOf1 {
-  BUILTIN_HIGHLIGHTER_TYPE_ONE_OF1_UNSPECIFIED = 0;
-  BUILTIN_HIGHLIGHTER_TYPE_ONE_OF1_UNIFIED = 1;
 }
 enum BuiltinScriptLanguage {
   BUILTIN_SCRIPT_LANGUAGE_UNSPECIFIED = 0;
@@ -984,7 +940,7 @@ message CalendarInterval {
 }
 message CardinalityAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   float value = 2;
 }
@@ -1011,10 +967,6 @@ enum CardinalityExecutionMode {
   CARDINALITY_EXECUTION_MODE_SAVE_TIME_HEURISTIC = 4;
   CARDINALITY_EXECUTION_MODE_SEGMENT_ORDINALS = 5;
 }
-enum Centimeters {
-  CENTIMETERS_UNSPECIFIED = 0;
-  CENTIMETERS_CM = 1;
-}
 message ChiSquareHeuristic {
   // Set to `false` if you defined a custom background filter that represents a different set of documents that you want to compare to.
   bool background_is_superset = 1;
@@ -1032,7 +984,7 @@ enum ChildScoreMode {
 }
 message ChildrenAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   float doc_count = 2;
 
@@ -1040,7 +992,7 @@ message ChildrenAggregate {
 }
 message ChildrenAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -1050,8 +1002,7 @@ message ChildrenAggregation {
 message CjkAnalyzer {
   optional CjkAnalyzerType type = 1;
 
-  // Language value, such as `arabic` or `thai`. Defaults to `english`. Each language value corresponds to a predefined list of stop words in Lucene. See Stop words by language for supported language values and their stop words. Also accepts an array of stop words.
-  optional StringOrStringArray stopwords = 2;
+  repeated string stopwords = 2;
 
   optional string stopwords_path = 3;
 }
@@ -1154,13 +1105,6 @@ enum CombinedFieldsZeroTerms {
   COMBINED_FIELDS_ZERO_TERMS_NONE = 2;
 }
 message CommonTermsQuery {
-  oneof common_terms_query {
-    string query = 1;
-
-    CommonTermsQueryOneOf common_terms_query_one_of = 2;
-  }
-}
-message CommonTermsQueryOneOf {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
 
@@ -1177,18 +1121,10 @@ message CommonTermsQueryOneOf {
   optional MinimumShouldMatch minimum_should_match = 7;
 
   string query = 8;
+
+  optional string field = 9;
 }
 message CompletionContext {
-  oneof completion_context {
-    Context context = 1;
-
-    CompletionContextOneOf completion_context_one_of = 2;
-  }
-}
-message CompletionContextArray {
-  repeated CompletionContext completion_context_array = 1;
-}
-message CompletionContextOneOf {
   optional double boost = 1;
 
   Context context = 2;
@@ -1199,6 +1135,9 @@ message CompletionContextOneOf {
 
   optional bool prefix = 5;
 }
+message CompletionContextArray {
+  repeated CompletionContext completion_context_array = 1;
+}
 message CompletionSuggest {
   int32 length = 1;
 
@@ -1206,21 +1145,14 @@ message CompletionSuggest {
 
   string text = 3;
 
-  CompletionSuggestAllOfOptions options = 4;
-}
-message CompletionSuggestAllOfOptions {
-  oneof completion_suggest_all_of_options {
-    CompletionSuggestOption completion_suggest_option = 1;
-
-    CompletionSuggestOptionArray completion_suggest_option_array = 2;
-  }
+  repeated CompletionSuggestOption options = 4;
 }
 message CompletionSuggestOption {
   optional bool collate_match = 1;
 
   map<string, ContextArray> contexts = 2;
 
-  map<string, ObjectMap> fields = 3;
+  optional ObjectMap fields = 3;
 
   string text = 4;
 
@@ -1236,9 +1168,6 @@ message CompletionSuggestOption {
   optional float underscore_score = 9;
 
   optional ObjectMap underscore_source = 10;
-}
-message CompletionSuggestOptionArray {
-  repeated CompletionSuggestOption completion_suggest_option_array = 1;
 }
 message CompletionSuggester {
   optional string analyzer = 1;
@@ -1257,7 +1186,7 @@ message CompletionSuggester {
 }
 message CompositeAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsCompositeBucket buckets = 2;
 
@@ -1265,7 +1194,7 @@ message CompositeAggregate {
 }
 message CompositeAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -1423,7 +1352,7 @@ message CoordsGeoBounds {
 }
 message CumulativeCardinalityAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   float value = 2;
 
@@ -1431,7 +1360,7 @@ message CumulativeCardinalityAggregate {
 }
 message CumulativeCardinalityAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -1444,7 +1373,7 @@ message CumulativeCardinalityAggregation {
 }
 message CumulativeSumAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -1485,13 +1414,13 @@ message DateDecayPlacement {
 }
 message DateHistogramAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsDateHistogramBucket buckets = 2;
 }
 message DateHistogramAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -1523,7 +1452,7 @@ message DateHistogramAggregation {
 
   optional HistogramOrder order = 13;
 
-  map<string, ObjectMap> params = 14;
+  optional ObjectMap params = 14;
 
   optional Script script = 15;
 
@@ -1549,13 +1478,13 @@ message DateHistogramBucketMap {
 }
 message DateRangeAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsRangeBucket buckets = 2;
 }
 message DateRangeAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -1633,7 +1562,7 @@ message DecayPlacement {
 }
 message DerivativeAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   SingleMetricAggregateBaseAllOfValue value = 2;
 
@@ -1645,7 +1574,7 @@ message DerivativeAggregate {
 }
 message DerivativeAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -1727,28 +1656,28 @@ message DistanceFeatureQueryOneOf1 {
 }
 message DistanceUnit {
   oneof distance_unit {
-    Centimeters centimeters = 1;
+    bool distance_unit_cm = 1;
 
-    Feet feet = 2;
+    bool distance_unit_ft = 2;
 
-    Inches inches = 3;
+    bool distance_unit_in = 3;
 
-    Kilometers kilometers = 4;
+    bool distance_unit_km = 4;
 
-    Meters meters = 5;
+    bool distance_unit_m = 5;
 
-    Miles miles = 6;
+    bool distance_unit_mi = 6;
 
-    Millimeters millimeters = 7;
+    bool distance_unit_mm = 7;
 
-    NauticalMiles nautical_miles = 8;
+    bool distance_unit_nmi = 8;
 
-    Yards yards = 9;
+    bool distance_unit_yd = 9;
   }
 }
 message DiversifiedSamplerAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -1770,7 +1699,7 @@ message DoubleArray {
 }
 message DoubleTermsAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsDoubleTermsBucket buckets = 2;
 
@@ -1796,8 +1725,7 @@ message DoubleTermsBucketMap {
 message DutchAnalyzer {
   DutchAnalyzerType type = 1;
 
-  // Language value, such as `arabic` or `thai`. Defaults to `english`. Each language value corresponds to a predefined list of stop words in Lucene. See Stop words by language for supported language values and their stop words. Also accepts an array of stop words.
-  optional StringOrStringArray stopwords = 2;
+  repeated string stopwords = 2;
 }
 enum DutchAnalyzerType {
   DUTCH_ANALYZER_TYPE_UNSPECIFIED = 0;
@@ -1839,7 +1767,7 @@ message EwmaModelSettings {
 }
 message EwmaMovingAverageAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -1875,45 +1803,20 @@ message ExistsQuery {
 }
 message ExpandWildcard {
   oneof expand_wildcard {
-    ExpandWildcardOneOf expand_wildcard_one_of = 1;
+    // Match any index, including hidden ones.
+    bool expand_wildcard_all = 1;
 
-    ExpandWildcardOneOf1 expand_wildcard_one_of1 = 2;
+    // Match closed, non-hidden indexes.
+    bool expand_wildcard_closed = 2;
 
-    ExpandWildcardOneOf2 expand_wildcard_one_of2 = 3;
+    // Match hidden indexes. Must be combined with open, closed, or both.
+    bool expand_wildcard_hidden = 3;
 
-    ExpandWildcardOneOf3 expand_wildcard_one_of3 = 4;
+    // Wildcard expressions are not accepted.
+    bool expand_wildcard_none = 4;
 
-    ExpandWildcardOneOf4 expand_wildcard_one_of4 = 5;
-  }
-}
-message ExpandWildcardArray {
-  repeated ExpandWildcard expand_wildcard_array = 1;
-}
-enum ExpandWildcardOneOf {
-  EXPAND_WILDCARD_ONE_OF_UNSPECIFIED = 0;
-  EXPAND_WILDCARD_ONE_OF_ALL = 1;
-}
-enum ExpandWildcardOneOf1 {
-  EXPAND_WILDCARD_ONE_OF1_UNSPECIFIED = 0;
-  EXPAND_WILDCARD_ONE_OF1_CLOSED = 1;
-}
-enum ExpandWildcardOneOf2 {
-  EXPAND_WILDCARD_ONE_OF2_UNSPECIFIED = 0;
-  EXPAND_WILDCARD_ONE_OF2_HIDDEN = 1;
-}
-enum ExpandWildcardOneOf3 {
-  EXPAND_WILDCARD_ONE_OF3_UNSPECIFIED = 0;
-  EXPAND_WILDCARD_ONE_OF3_NONE = 1;
-}
-enum ExpandWildcardOneOf4 {
-  EXPAND_WILDCARD_ONE_OF4_UNSPECIFIED = 0;
-  EXPAND_WILDCARD_ONE_OF4_OPEN = 1;
-}
-message ExpandWildcards {
-  oneof expand_wildcards {
-    ExpandWildcard expand_wildcard = 1;
-
-    ExpandWildcardArray expand_wildcard_array = 2;
+    // Match open, non-hidden indexes.
+    bool expand_wildcard_open = 5;
   }
 }
 message Explanation {
@@ -1964,7 +1867,7 @@ message ExtendedBoundsdouble {
 }
 message ExtendedStatsAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   float count = 2;
 
@@ -2062,7 +1965,7 @@ message ExtendedStatsAggregation {
 }
 message ExtendedStatsBucketAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   float count = 2;
 
@@ -2112,7 +2015,7 @@ message ExtendedStatsBucketAggregate {
 }
 message ExtendedStatsBucketAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -2125,14 +2028,6 @@ message ExtendedStatsBucketAggregation {
 
   // The number of standard deviations above/below the mean to display.
   optional double sigma = 6;
-}
-enum FastVector {
-  FAST_VECTOR_UNSPECIFIED = 0;
-  FAST_VECTOR_FVH = 1;
-}
-enum Feet {
-  FEET_UNSPECIFIED = 0;
-  FEET_FT = 1;
 }
 message FetchProfile {
   string type = 1;
@@ -2171,14 +2066,6 @@ message FetchProfileDebug {
   optional int32 fast_path = 2;
 }
 message FieldAndFormat {
-  oneof field_and_format {
-    // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-    string field = 1;
-
-    FieldAndFormatOneOf field_and_format_one_of = 2;
-  }
-}
-message FieldAndFormatOneOf {
   // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
   string field = 1;
 
@@ -2191,17 +2078,11 @@ message FieldCollapse {
   // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
   string field = 1;
 
-  optional FieldCollapseInnerHits inner_hits = 2;
+  // The number of inner hits and their sort order.
+  repeated InnerHits inner_hits = 2;
 
   // The number of concurrent requests that are allowed to be retrieved by the `inner_hits` parameter per group.
   optional int32 max_concurrent_group_searches = 3;
-}
-message FieldCollapseInnerHits {
-  oneof field_collapse_inner_hits {
-    InnerHits inner_hits = 1;
-
-    InnerHitsArray inner_hits_array = 2;
-  }
 }
 message FieldDateMath {
   oneof field_date_math {
@@ -2223,45 +2104,6 @@ message FieldLookup {
   optional string routing = 4;
 }
 message FieldSort {
-  oneof field_sort {
-    // The sort order direction.
-    SortOrder order = 1;
-
-    FieldSortOneOf field_sort_one_of = 2;
-  }
-}
-message FieldSortMap {
-  // Sort by field options.
-  map<string, FieldSort> field_sort_map = 1;
-}
-message FieldSortNumericType {
-  oneof field_sort_numeric_type {
-    FieldSortNumericTypeOneOf field_sort_numeric_type_one_of = 1;
-
-    FieldSortNumericTypeOneOf1 field_sort_numeric_type_one_of1 = 2;
-
-    FieldSortNumericTypeOneOf2 field_sort_numeric_type_one_of2 = 3;
-
-    FieldSortNumericTypeOneOf3 field_sort_numeric_type_one_of3 = 4;
-  }
-}
-enum FieldSortNumericTypeOneOf {
-  FIELD_SORT_NUMERIC_TYPE_ONE_OF_UNSPECIFIED = 0;
-  FIELD_SORT_NUMERIC_TYPE_ONE_OF_DATE = 1;
-}
-enum FieldSortNumericTypeOneOf1 {
-  FIELD_SORT_NUMERIC_TYPE_ONE_OF1_UNSPECIFIED = 0;
-  FIELD_SORT_NUMERIC_TYPE_ONE_OF1_DATE_NANOS = 1;
-}
-enum FieldSortNumericTypeOneOf2 {
-  FIELD_SORT_NUMERIC_TYPE_ONE_OF2_UNSPECIFIED = 0;
-  FIELD_SORT_NUMERIC_TYPE_ONE_OF2_DOUBLE = 1;
-}
-enum FieldSortNumericTypeOneOf3 {
-  FIELD_SORT_NUMERIC_TYPE_ONE_OF3_UNSPECIFIED = 0;
-  FIELD_SORT_NUMERIC_TYPE_ONE_OF3_LONG = 1;
-}
-message FieldSortOneOf {
   // The value to use when the field is missing.
   optional FieldValue missing = 1;
 
@@ -2282,6 +2124,21 @@ message FieldSortOneOf {
 
   // The format to use for the sort values.
   optional string format = 7;
+}
+message FieldSortNumericType {
+  oneof field_sort_numeric_type {
+    // The field contains date values.
+    bool field_sort_numeric_type_date = 1;
+
+    // The field contains date values with nanosecond precision.
+    bool field_sort_numeric_type_date_nanos = 2;
+
+    // The field contains double-precision floating-point values.
+    bool field_sort_numeric_type_double = 3;
+
+    // The field contains long integer values.
+    bool field_sort_numeric_type_long = 4;
+  }
 }
 message FieldSuggester {
   optional string prefix = 1;
@@ -2380,17 +2237,9 @@ message FieldValueFactorScoreFunction {
 
   optional FieldValueFactorModifier modifier = 4;
 }
-message Fields {
-  oneof fields {
-    // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-    string string = 1;
-
-    StringArray string_array = 2;
-  }
-}
 message FilterAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   float doc_count = 2;
 
@@ -2398,13 +2247,13 @@ message FilterAggregate {
 }
 message FiltersAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsFiltersBucket buckets = 2;
 }
 message FiltersAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -2439,8 +2288,7 @@ message FingerprintAnalyzer {
 
   string separator = 5;
 
-  // Language value, such as `arabic` or `thai`. Defaults to `english`. Each language value corresponds to a predefined list of stop words in Lucene. See Stop words by language for supported language values and their stop words. Also accepts an array of stop words.
-  optional StringOrStringArray stopwords = 6;
+  repeated string stopwords = 6;
 
   optional string stopwords_path = 7;
 }
@@ -2537,13 +2385,6 @@ message Fuzziness {
   }
 }
 message FuzzyQuery {
-  oneof fuzzy_query {
-    FieldValue value = 1;
-
-    FuzzyQueryOneOf fuzzy_query_one_of = 2;
-  }
-}
-message FuzzyQueryOneOf {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
 
@@ -2564,6 +2405,8 @@ message FuzzyQueryOneOf {
 
   // Term you wish to find in the provided field.
   FieldValue value = 8;
+
+  optional string field = 9;
 }
 enum GapPolicy {
   GAP_POLICY_UNSPECIFIED = 0;
@@ -2603,7 +2446,7 @@ message GeoBounds {
 }
 message GeoBoundsAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional GeoBounds bounds = 2;
 }
@@ -2620,7 +2463,7 @@ message GeoBoundsAggregation {
 }
 message GeoCentroidAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   float count = 2;
 
@@ -2649,13 +2492,13 @@ message GeoDecayPlacement {
 }
 message GeoDistanceAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsRangeBucket buckets = 2;
 }
 message GeoDistanceAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -2706,18 +2549,12 @@ message GeoDistanceSort {
 }
 message GeoDistanceType {
   oneof geo_distance_type {
-    GeoDistanceTypeOneOf geo_distance_type_one_of = 1;
+    // The arc calculation method uses great circle distance.
+    bool geo_distance_type_arc = 1;
 
-    GeoDistanceTypeOneOf1 geo_distance_type_one_of1 = 2;
+    // The plane calculation method uses faster but less accurate flat-earth distance.
+    bool geo_distance_type_plane = 2;
   }
-}
-enum GeoDistanceTypeOneOf {
-  GEO_DISTANCE_TYPE_ONE_OF_UNSPECIFIED = 0;
-  GEO_DISTANCE_TYPE_ONE_OF_ARC = 1;
-}
-enum GeoDistanceTypeOneOf1 {
-  GEO_DISTANCE_TYPE_ONE_OF1_UNSPECIFIED = 0;
-  GEO_DISTANCE_TYPE_ONE_OF1_PLANE = 1;
 }
 enum GeoExecution {
   GEO_EXECUTION_UNSPECIFIED = 0;
@@ -2726,13 +2563,13 @@ enum GeoExecution {
 }
 message GeoHashGridAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsGeoHashGridBucket buckets = 2;
 }
 message GeoHashGridAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -2783,7 +2620,7 @@ message GeoLine {
 }
 message GeoLineAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   string type = 2;
 
@@ -2871,40 +2708,28 @@ message GeoShapeQueryField {
 }
 message GeoShapeRelation {
   oneof geo_shape_relation {
-    GeoShapeRelationOneOf geo_shape_relation_one_of = 1;
+    // The shape contains the query shape.
+    bool geo_shape_relation_contains = 1;
 
-    GeoShapeRelationOneOf1 geo_shape_relation_one_of1 = 2;
+    // The shape has no points in common with the query shape.
+    bool geo_shape_relation_disjoint = 2;
 
-    GeoShapeRelationOneOf2 geo_shape_relation_one_of2 = 3;
+    // The shape shares any points in common with the query shape.
+    bool geo_shape_relation_intersects = 3;
 
-    GeoShapeRelationOneOf3 geo_shape_relation_one_of3 = 4;
+    // The shape is within the query shape.
+    bool geo_shape_relation_within = 4;
   }
-}
-enum GeoShapeRelationOneOf {
-  GEO_SHAPE_RELATION_ONE_OF_UNSPECIFIED = 0;
-  GEO_SHAPE_RELATION_ONE_OF_CONTAINS = 1;
-}
-enum GeoShapeRelationOneOf1 {
-  GEO_SHAPE_RELATION_ONE_OF1_UNSPECIFIED = 0;
-  GEO_SHAPE_RELATION_ONE_OF1_DISJOINT = 1;
-}
-enum GeoShapeRelationOneOf2 {
-  GEO_SHAPE_RELATION_ONE_OF2_UNSPECIFIED = 0;
-  GEO_SHAPE_RELATION_ONE_OF2_INTERSECTS = 1;
-}
-enum GeoShapeRelationOneOf3 {
-  GEO_SHAPE_RELATION_ONE_OF3_UNSPECIFIED = 0;
-  GEO_SHAPE_RELATION_ONE_OF3_WITHIN = 1;
 }
 message GeoTileGridAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsGeoTileGridBucket buckets = 2;
 }
 message GeoTileGridAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -2942,7 +2767,7 @@ enum GeoValidationMethod {
 }
 message GlobalAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   float doc_count = 2;
 
@@ -2950,7 +2775,7 @@ message GlobalAggregate {
 }
 message GlobalAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 }
@@ -3007,13 +2832,13 @@ message HdrMethod {
 }
 message HdrPercentileRanksAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   Percentiles values = 2;
 }
 message HdrPercentilesAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   Percentiles values = 2;
 }
@@ -3055,7 +2880,7 @@ message Highlight {
   // The maximum number of fragments to return. When the number of fragments is set to `0`, no fragments are returned. Instead, the entirety of a field's contents are highlighted and returned. This is useful when you need to highlight short texts, such as a title or address, in which fragmentation is not required. If `number_of_fragments` is set to `0`, the `fragment_size` is ignored.
   optional int32 number_of_fragments = 15;
 
-  map<string, ObjectMap> options = 16;
+  optional ObjectMap options = 16;
 
   optional HighlighterOrder order = 17;
 
@@ -3115,7 +2940,7 @@ message HighlightBase {
   // The maximum number of fragments to return. When the number of fragments is set to `0`, no fragments are returned. Instead, the entirety of a field's contents are highlighted and returned. This is useful when you need to highlight short texts, such as a title or address, in which fragmentation is not required. If `number_of_fragments` is set to `0`, the `fragment_size` is ignored.
   optional int32 number_of_fragments = 15;
 
-  map<string, ObjectMap> options = 16;
+  optional ObjectMap options = 16;
 
   optional HighlighterOrder order = 17;
 
@@ -3171,7 +2996,7 @@ message HighlightField {
   // The maximum number of fragments to return. When the number of fragments is set to `0`, no fragments are returned. Instead, the entirety of a field's contents are highlighted and returned. This is useful when you need to highlight short texts, such as a title or address, in which fragmentation is not required. If `number_of_fragments` is set to `0`, the `fragment_size` is ignored.
   optional int32 number_of_fragments = 15;
 
-  map<string, ObjectMap> options = 16;
+  optional ObjectMap options = 16;
 
   optional HighlighterOrder order = 17;
 
@@ -3189,7 +3014,7 @@ message HighlightField {
 
   optional HighlighterTagsSchema tags_schema = 22;
 
-  optional Fields matched_fields = 23;
+  repeated string matched_fields = 23;
 
   optional Analyzer analyzer = 24;
 }
@@ -3220,13 +3045,13 @@ message HighlighterType {
 }
 message HistogramAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsHistogramBucket buckets = 2;
 }
 message HistogramAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -3277,7 +3102,7 @@ message HistogramOrder {
   optional SortOrder underscore_key = 2;
 }
 message Hit {
-  map<string, ObjectMap> fields = 1;
+  optional ObjectMap fields = 1;
 
   map<string, StringArray> highlight = 2;
 
@@ -3351,7 +3176,7 @@ message HoltLinearModelSettings {
 }
 message HoltMovingAverageAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -3391,7 +3216,7 @@ message HoltWintersModelSettings {
 }
 message HoltWintersMovingAverageAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -3418,9 +3243,9 @@ enum HoltWintersMovingAverageAggregationAllOfModel {
 }
 message HoltWintersType {
   oneof holt_winters_type {
-    Additive additive = 1;
+    bool holt_winters_type_add = 1;
 
-    Multiplicative multiplicative = 2;
+    bool holt_winters_type_mult = 2;
   }
 }
 enum Hour {
@@ -3460,36 +3285,17 @@ enum IcuNormalizationType {
   ICU_NORMALIZATION_TYPE_NFKC = 2;
   ICU_NORMALIZATION_TYPE_NFKC_CF = 3;
 }
-message Ids {
-  oneof ids {
-    // A single document ID.
-    string string = 1;
-
-    StringArray string_array = 2;
-  }
-}
 message IdsQuery {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
 
   optional string underscore_name = 2;
 
-  optional Ids values = 3;
-}
-enum Inches {
-  INCHES_UNSPECIFIED = 0;
-  INCHES_IN = 1;
-}
-message Indices {
-  oneof indices {
-    string string = 1;
-
-    StringArray string_array = 2;
-  }
+  repeated string values = 3;
 }
 message InferenceAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional FieldValue value = 2;
 
@@ -3501,7 +3307,7 @@ message InferenceAggregate {
 }
 message InferenceAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -3543,7 +3349,7 @@ message InferenceTopClassEntry {
 }
 message InlineGetDictUserDefined {
   // The fields retrieved from the document.
-  map<string, ObjectMap> fields = 1;
+  optional ObjectMap fields = 1;
 
   // Whether the document was found.
   bool found = 2;
@@ -3558,7 +3364,7 @@ message InlineGetDictUserDefined {
   optional string underscore_routing = 5;
 
   // The source of the document.
-  map<string, ObjectMap> underscore_source = 6;
+  optional ObjectMap underscore_source = 6;
 }
 message InlineObject {
   bool errors = 1;
@@ -3570,15 +3376,8 @@ message InlineObject {
   optional int64 ingest_took = 4;
 }
 message InlineScript {
-  oneof inline_script {
-    string source = 1;
-
-    InlineScriptOneOf inline_script_one_of = 2;
-  }
-}
-message InlineScriptOneOf {
   // Specifies any named parameters that are passed into the script as variables.  Use parameters instead of hard-coded values to decrease compilation time.
-  map<string, ObjectMap> params = 1;
+  optional ObjectMap params = 1;
 
   optional ScriptLanguage lang = 2;
 
@@ -3611,20 +3410,18 @@ message InnerHits {
 
   optional bool seq_no_primary_term = 10;
 
-  optional Fields fields = 11;
+  repeated string fields = 11;
 
-  optional Sort sort = 12;
+  // The list of sort options.
+  repeated SortOptions sort = 12;
 
-  optional Fields stored_fields = 13;
+  repeated string stored_fields = 13;
 
   optional bool track_scores = 14;
 
   optional bool version = 15;
 
   optional SourceConfig underscore_source = 16;
-}
-message InnerHitsArray {
-  repeated InnerHits inner_hits_array = 1;
 }
 message InnerHitsResult {
   HitsMetadata hits = 1;
@@ -3742,6 +3539,8 @@ message IntervalsQuery {
   optional IntervalsPrefix prefix = 7;
 
   optional IntervalsWildcard wildcard = 8;
+
+  optional string field = 9;
 }
 message IntervalsWildcard {
   // Analyzer used to analyze the `pattern`. Defaults to the top-level field's analyzer.
@@ -3755,13 +3554,13 @@ message IntervalsWildcard {
 }
 message IpRangeAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsIpRangeBucket buckets = 2;
 }
 message IpRangeAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -3813,10 +3612,6 @@ enum KeywordAnalyzerType {
   KEYWORD_ANALYZER_TYPE_UNSPECIFIED = 0;
   KEYWORD_ANALYZER_TYPE_KEYWORD = 1;
 }
-enum Kilometers {
-  KILOMETERS_UNSPECIFIED = 0;
-  KILOMETERS_KM = 1;
-}
 message KnnQuery {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
@@ -3837,11 +3632,13 @@ message KnnQuery {
   // The filter for the k-NN search query.
   optional QueryContainer filter = 7;
 
-  map<string, ObjectMap> method_parameters = 8;
+  optional ObjectMap method_parameters = 8;
 
   optional KnnQueryRescore rescore = 9;
 
   optional bool expand_nested_docs = 10;
+
+  optional string field = 11;
 }
 message KnnQueryRescore {
   oneof knn_query_rescore {
@@ -3913,8 +3710,7 @@ message LanguageAnalyzer {
 
   repeated string stem_exclusion = 4;
 
-  // Language value, such as `arabic` or `thai`. Defaults to `english`. Each language value corresponds to a predefined list of stop words in Lucene. See Stop words by language for supported language values and their stop words. Also accepts an array of stop words.
-  optional StringOrStringArray stopwords = 5;
+  repeated string stopwords = 5;
 
   optional string stopwords_path = 6;
 }
@@ -3938,9 +3734,6 @@ message Like {
 
     LikeDocument document = 2;
   }
-}
-message LikeArray {
-  repeated Like like_array = 1;
 }
 message LikeDocument {
   optional ObjectMap doc = 1;
@@ -3973,7 +3766,7 @@ message LinearInterpolationSmoothingModel {
 }
 message LinearMovingAverageAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -4001,7 +3794,7 @@ enum LinearMovingAverageAggregationAllOfModel {
 }
 message LongRareTermsAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsLongRareTermsBucket buckets = 2;
 }
@@ -4020,7 +3813,7 @@ message LongRareTermsBucketMap {
 }
 message LongTermsAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsLongTermsBucket buckets = 2;
 
@@ -4050,13 +3843,6 @@ message MatchAllQuery {
   optional string underscore_name = 2;
 }
 message MatchBoolPrefixQuery {
-  oneof match_bool_prefix_query {
-    string query = 1;
-
-    MatchBoolPrefixQueryOneOf match_bool_prefix_query_one_of = 2;
-  }
-}
-message MatchBoolPrefixQueryOneOf {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
 
@@ -4084,6 +3870,8 @@ message MatchBoolPrefixQueryOneOf {
 
   // Terms you wish to find in the provided field. The last term is used in a prefix query.
   string query = 11;
+
+  optional string field = 12;
 }
 message MatchNoneQuery {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
@@ -4092,13 +3880,6 @@ message MatchNoneQuery {
   optional string underscore_name = 2;
 }
 message MatchPhrasePrefixQuery {
-  oneof match_phrase_prefix_query {
-    string query = 1;
-
-    MatchPhrasePrefixQueryOneOf match_phrase_prefix_query_one_of = 2;
-  }
-}
-message MatchPhrasePrefixQueryOneOf {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
 
@@ -4117,15 +3898,10 @@ message MatchPhrasePrefixQueryOneOf {
   optional int32 slop = 6;
 
   optional ZeroTermsQuery zero_terms_query = 7;
+
+  optional string field = 8;
 }
 message MatchPhraseQuery {
-  oneof match_phrase_query {
-    string query = 1;
-
-    MatchPhraseQueryOneOf match_phrase_query_one_of = 2;
-  }
-}
-message MatchPhraseQueryOneOf {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
 
@@ -4141,15 +3917,10 @@ message MatchPhraseQueryOneOf {
   optional int32 slop = 5;
 
   optional ZeroTermsQuery zero_terms_query = 6;
+
+  optional string field = 7;
 }
 message MatchQuery {
-  oneof match_query {
-    FieldValue query = 1;
-
-    MatchQueryOneOf match_query_one_of = 2;
-  }
-}
-message MatchQueryOneOf {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
 
@@ -4187,21 +3958,23 @@ message MatchQueryOneOf {
   FieldValue query = 14;
 
   optional ZeroTermsQuery zero_terms_query = 15;
+
+  optional string field = 16;
 }
 message MatrixAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
-  optional Fields fields = 3;
+  repeated string fields = 3;
 
   // The value to apply to documents that do not have a value. By default, documents without a value are ignored.
   map<string, double> missing = 4;
 }
 message MatrixStatsAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   float doc_count = 2;
 
@@ -4209,11 +3982,11 @@ message MatrixStatsAggregate {
 }
 message MatrixStatsAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
-  optional Fields fields = 3;
+  repeated string fields = 3;
 
   // The value to apply to documents that do not have a value. By default, documents without a value are ignored.
   map<string, double> missing = 4;
@@ -4240,7 +4013,7 @@ message MatrixStatsFields {
 }
 message MaxAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   SingleMetricAggregateBaseAllOfValue value = 2;
 
@@ -4258,7 +4031,7 @@ message MaxAggregation {
 }
 message MaxBucketAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -4271,7 +4044,7 @@ message MaxBucketAggregation {
 }
 message MedianAbsoluteDeviationAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   SingleMetricAggregateBaseAllOfValue value = 2;
 
@@ -4290,10 +4063,6 @@ message MedianAbsoluteDeviationAggregation {
   // Limits the maximum number of nodes used by the underlying TDigest algorithm to `20 * compression`, enabling control of memory usage and approximation error.
   optional double compression = 5;
 }
-enum Meters {
-  METERS_UNSPECIFIED = 0;
-  METERS_M = 1;
-}
 message MetricAggregationBase {
   // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
   optional string field = 1;
@@ -4302,17 +4071,9 @@ message MetricAggregationBase {
 
   optional Script script = 3;
 }
-enum Miles {
-  MILES_UNSPECIFIED = 0;
-  MILES_MI = 1;
-}
-enum Millimeters {
-  MILLIMETERS_UNSPECIFIED = 0;
-  MILLIMETERS_MM = 1;
-}
 message MinAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   SingleMetricAggregateBaseAllOfValue value = 2;
 
@@ -4330,7 +4091,7 @@ message MinAggregation {
 }
 message MinBucketAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -4364,7 +4125,7 @@ enum Minute {
 }
 message MissingAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   float doc_count = 2;
 
@@ -4372,7 +4133,7 @@ message MissingAggregate {
 }
 message MissingAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -4413,7 +4174,8 @@ message MoreLikeThisQuery {
   // Specifies whether the input documents should also be included in the search results returned.
   optional bool include = 7;
 
-  MoreLikeThisQueryAllOfLike like = 8;
+  // Specifies free form text and/or a single or multiple documents for which you want to find similar documents.
+  repeated Like like = 8;
 
   // The maximum document frequency above which the terms are ignored from the input document.
   optional int32 max_doc_freq = 9;
@@ -4441,28 +4203,14 @@ message MoreLikeThisQuery {
   // The routing value for the document.
   optional string routing = 17;
 
-  // Language value, such as `arabic` or `thai`. Defaults to `english`. Each language value corresponds to a predefined list of stop words in Lucene. See Stop words by language for supported language values and their stop words. Also accepts an array of stop words.
-  optional StringOrStringArray stop_words = 18;
+  repeated string stop_words = 18;
 
-  optional MoreLikeThisQueryAllOfUnlike unlike = 19;
+  // Used in combination with `like` to exclude documents that match a set of terms.
+  repeated Like unlike = 19;
 
   optional int64 version = 20;
 
   optional VersionType version_type = 21;
-}
-message MoreLikeThisQueryAllOfLike {
-  oneof more_like_this_query_all_of_like {
-    Like like = 1;
-
-    LikeArray like_array = 2;
-  }
-}
-message MoreLikeThisQueryAllOfUnlike {
-  oneof more_like_this_query_all_of_unlike {
-    Like like = 1;
-
-    LikeArray like_array = 2;
-  }
 }
 message MovingAverageAggregation {
   oneof moving_average_aggregation {
@@ -4479,7 +4227,7 @@ message MovingAverageAggregation {
 }
 message MovingAverageAggregationBase {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -4498,7 +4246,7 @@ message MovingAverageAggregationBase {
 }
 message MovingFunctionAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -4520,7 +4268,7 @@ message MovingFunctionAggregation {
 }
 message MovingPercentilesAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -4541,115 +4289,115 @@ message MovingPercentilesAggregation {
 }
 message MultiBucketAggregateBaseAdjacencyMatrixBucket {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsAdjacencyMatrixBucket buckets = 2;
 }
 message MultiBucketAggregateBaseCompositeBucket {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsCompositeBucket buckets = 2;
 }
 message MultiBucketAggregateBaseDateHistogramBucket {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsDateHistogramBucket buckets = 2;
 }
 message MultiBucketAggregateBaseDoubleTermsBucket {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsDoubleTermsBucket buckets = 2;
 }
 message MultiBucketAggregateBaseFiltersBucket {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsFiltersBucket buckets = 2;
 }
 message MultiBucketAggregateBaseGeoHashGridBucket {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsGeoHashGridBucket buckets = 2;
 }
 message MultiBucketAggregateBaseGeoTileGridBucket {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsGeoTileGridBucket buckets = 2;
 }
 message MultiBucketAggregateBaseHistogramBucket {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsHistogramBucket buckets = 2;
 }
 message MultiBucketAggregateBaseIpRangeBucket {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsIpRangeBucket buckets = 2;
 }
 message MultiBucketAggregateBaseLongRareTermsBucket {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsLongRareTermsBucket buckets = 2;
 }
 message MultiBucketAggregateBaseLongTermsBucket {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsLongTermsBucket buckets = 2;
 }
 message MultiBucketAggregateBaseMultiTermsBucket {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsMultiTermsBucket buckets = 2;
 }
 message MultiBucketAggregateBaseRangeBucket {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsRangeBucket buckets = 2;
 }
 message MultiBucketAggregateBaseSignificantLongTermsBucket {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsSignificantLongTermsBucket buckets = 2;
 }
 message MultiBucketAggregateBaseSignificantStringTermsBucket {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsSignificantStringTermsBucket buckets = 2;
 }
 message MultiBucketAggregateBaseStringRareTermsBucket {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsStringRareTermsBucket buckets = 2;
 }
 message MultiBucketAggregateBaseStringTermsBucket {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsStringTermsBucket buckets = 2;
 }
 message MultiBucketAggregateBaseVariableWidthHistogramBucket {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsVariableWidthHistogramBucket buckets = 2;
 }
 message MultiBucketAggregateBaseVoid {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsVoid buckets = 2;
 }
@@ -4670,7 +4418,7 @@ message MultiMatchQuery {
 
   optional float cutoff_frequency = 5;
 
-  optional Fields fields = 6;
+  repeated string fields = 6;
 
   optional Fuzziness fuzziness = 7;
 
@@ -4713,31 +4461,22 @@ message MultiTermLookup {
 }
 message MultiTermQueryRewrite {
   oneof multi_term_query_rewrite {
-    MultiTermQueryRewriteOneOf multi_term_query_rewrite_one_of = 1;
+    // The constant score rewrite method assigns the same score to all matching documents.
+    bool multi_term_query_rewrite_constant_score = 1;
 
-    MultiTermQueryRewriteOneOf1 multi_term_query_rewrite_one_of1 = 2;
+    // The constant score Boolean rewrite method creates a Boolean query with a constant score.
+    bool multi_term_query_rewrite_constant_score_boolean = 2;
 
-    MultiTermQueryRewriteOneOf2 multi_term_query_rewrite_one_of2 = 3;
+    // The scoring Boolean rewrite method creates a Boolean query that scores each term separately.
+    bool multi_term_query_rewrite_scoring_boolean = 3;
 
     // The top terms query rewrite method with optional parameters.
     string string = 4;
   }
 }
-enum MultiTermQueryRewriteOneOf {
-  MULTI_TERM_QUERY_REWRITE_ONE_OF_UNSPECIFIED = 0;
-  MULTI_TERM_QUERY_REWRITE_ONE_OF_CONSTANT_SCORE = 1;
-}
-enum MultiTermQueryRewriteOneOf1 {
-  MULTI_TERM_QUERY_REWRITE_ONE_OF1_UNSPECIFIED = 0;
-  MULTI_TERM_QUERY_REWRITE_ONE_OF1_CONSTANT_SCORE_BOOLEAN = 1;
-}
-enum MultiTermQueryRewriteOneOf2 {
-  MULTI_TERM_QUERY_REWRITE_ONE_OF2_UNSPECIFIED = 0;
-  MULTI_TERM_QUERY_REWRITE_ONE_OF2_SCORING_BOOLEAN = 1;
-}
 message MultiTermsAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsMultiTermsBucket buckets = 2;
 
@@ -4747,7 +4486,7 @@ message MultiTermsAggregate {
 }
 message MultiTermsAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -4795,10 +4534,6 @@ enum MultiValueMode {
   MULTI_VALUE_MODE_MIN = 3;
   MULTI_VALUE_MODE_SUM = 4;
 }
-enum Multiplicative {
-  MULTIPLICATIVE_UNSPECIFIED = 0;
-  MULTIPLICATIVE_MULT = 1;
-}
 message MutualInformationHeuristic {
   // Set to `false` if you defined a custom background filter that represents a different set of documents that you want to compare to.
   optional bool background_is_superset = 1;
@@ -4806,19 +4541,15 @@ message MutualInformationHeuristic {
   // Set to `false` to filter out the terms that appear less often in the subset than in documents outside the subset.
   optional bool include_negatives = 2;
 }
-enum NauticalMiles {
-  NAUTICAL_MILES_UNSPECIFIED = 0;
-  NAUTICAL_MILES_NMI = 1;
-}
 message NestedAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional float doc_count = 2;
 }
 message NestedAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -4883,6 +4614,8 @@ message NeuralQuery {
   optional float max_distance = 8;
 
   optional QueryContainer filter = 9;
+
+  optional string field = 10;
 }
 message NoriAnalyzer {
   NoriAnalyzerType type = 1;
@@ -4907,7 +4640,7 @@ enum NoriDecompoundMode {
 }
 message NormalizeAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -5005,13 +4738,11 @@ message OperationContainer {
 enum Operator {
   OPERATOR_UNSPECIFIED = 0;
   OPERATOR_AND = 1;
-  OPERATOR_AND2 = 2;
-  OPERATOR_OR = 3;
-  OPERATOR_OR2 = 4;
+  OPERATOR_OR = 2;
 }
 message ParentAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   float doc_count = 2;
 
@@ -5019,7 +4750,7 @@ message ParentAggregate {
 }
 message ParentAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -5052,8 +4783,7 @@ message PatternAnalyzer {
 
   string pattern = 5;
 
-  // Language value, such as `arabic` or `thai`. Defaults to `english`. Each language value corresponds to a predefined list of stop words in Lucene. See Stop words by language for supported language values and their stop words. Also accepts an array of stop words.
-  optional StringOrStringArray stopwords = 6;
+  repeated string stopwords = 6;
 }
 enum PatternAnalyzerType {
   PATTERN_ANALYZER_TYPE_UNSPECIFIED = 0;
@@ -5088,7 +4818,7 @@ message Percentiles {
 }
 message PercentilesAggregateBase {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   Percentiles values = 2;
 }
@@ -5114,13 +4844,13 @@ message PercentilesAggregation {
 }
 message PercentilesBucketAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   Percentiles values = 2;
 }
 message PercentilesBucketAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -5195,17 +4925,10 @@ message PhraseSuggest {
 
   string text = 3;
 
-  PhraseSuggestAllOfOptions options = 4;
-}
-message PhraseSuggestAllOfOptions {
-  oneof phrase_suggest_all_of_options {
-    PhraseSuggestOption phrase_suggest_option = 1;
-
-    PhraseSuggestOptionArray phrase_suggest_option_array = 2;
-  }
+  repeated PhraseSuggestOption options = 4;
 }
 message PhraseSuggestCollate {
-  map<string, ObjectMap> params = 1;
+  optional ObjectMap params = 1;
 
   optional bool prune = 2;
 
@@ -5229,9 +4952,6 @@ message PhraseSuggestOption {
   optional string highlighted = 3;
 
   optional bool collate_match = 4;
-}
-message PhraseSuggestOptionArray {
-  repeated PhraseSuggestOption phrase_suggest_option_array = 1;
 }
 message PhraseSuggester {
   optional string analyzer = 1;
@@ -5288,7 +5008,7 @@ message PinnedQuery {
 }
 message PipelineAggregationBase {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -5307,13 +5027,6 @@ message PointInTimeReference {
   optional string keep_alive = 2;
 }
 message PrefixQuery {
-  oneof prefix_query {
-    string value = 1;
-
-    PrefixQueryOneOf prefix_query_one_of = 2;
-  }
-}
-message PrefixQueryOneOf {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
 
@@ -5326,6 +5039,8 @@ message PrefixQueryOneOf {
 
   // Allows ASCII case insensitive matching of the value with the indexed field values when set to `true`. Default is `false` which means the case sensitivity of matching depends on the underlying field's mapping.
   optional bool case_insensitive = 5;
+
+  optional string field = 6;
 }
 message Profile {
   repeated ShardProfile shards = 1;
@@ -5383,7 +5098,7 @@ message QueryContainer {
 
   optional BoostingQuery boosting = 2;
 
-  map<string, CommonTermsQuery> common = 3;
+  optional CommonTermsQuery common = 3;
 
   optional CombinedFieldsQuery combined_fields = 4;
 
@@ -5398,7 +5113,7 @@ message QueryContainer {
   optional FunctionScoreQuery function_score = 9;
 
   // Returns documents that contain terms similar to the search term, as measured by a Levenshtein edit distance.
-  map<string, FuzzyQuery> fuzzy = 10;
+  optional FuzzyQuery fuzzy = 10;
 
   optional GeoBoundingBoxQuery geo_bounding_box = 11;
 
@@ -5417,25 +5132,25 @@ message QueryContainer {
   optional IdsQuery ids = 18;
 
   // Returns documents based on the order and proximity of matching terms.
-  map<string, IntervalsQuery> intervals = 19;
+  optional IntervalsQuery intervals = 19;
 
-  map<string, KnnQuery> knn = 20;
+  optional KnnQuery knn = 20;
 
   // Returns documents that match a provided text, number, date or Boolean value. The provided text is analyzed before matching.
-  map<string, MatchQuery> match = 21;
+  optional MatchQuery match = 21;
 
   optional MatchAllQuery match_all = 22;
 
   // Analyzes its input and constructs a `bool` query from the terms. Each term except the last is used in a `term` query. The last term is used in a prefix query.
-  map<string, MatchBoolPrefixQuery> match_bool_prefix = 23;
+  optional MatchBoolPrefixQuery match_bool_prefix = 23;
 
   optional MatchNoneQuery match_none = 24;
 
   // Analyzes the text and creates a phrase query out of the analyzed text.
-  map<string, MatchPhraseQuery> match_phrase = 25;
+  optional MatchPhraseQuery match_phrase = 25;
 
   // Returns documents that contain the words of a provided text, in the same order as provided. The last term of the provided text is treated as a prefix, matching any words that begin with that term.
-  map<string, MatchPhrasePrefixQuery> match_phrase_prefix = 26;
+  optional MatchPhrasePrefixQuery match_phrase_prefix = 26;
 
   optional MoreLikeThisQuery more_like_this = 27;
 
@@ -5443,7 +5158,7 @@ message QueryContainer {
 
   optional NestedQuery nested = 29;
 
-  map<string, NeuralQuery> neural = 30;
+  optional NeuralQuery neural = 30;
 
   optional ParentIdQuery parent_id = 31;
 
@@ -5452,17 +5167,17 @@ message QueryContainer {
   optional PinnedQuery pinned = 33;
 
   // Returns documents that contain a specific prefix in a provided field.
-  map<string, PrefixQuery> prefix = 34;
+  optional PrefixQuery prefix = 34;
 
   optional QueryStringQuery query_string = 35;
 
   // Returns documents that contain terms within a provided range.
-  map<string, RangeQuery> range = 36;
+  optional RangeQuery range = 36;
 
   optional RankFeatureQuery rank_feature = 37;
 
   // Returns documents that contain terms matching a regular expression.
-  map<string, RegexpQuery> regexp = 38;
+  optional RegexpQuery regexp = 38;
 
   optional ScriptQuery script = 39;
 
@@ -5485,23 +5200,23 @@ message QueryContainer {
   optional SpanOrQuery span_or = 48;
 
   // Matches spans containing a term.
-  map<string, SpanTermQuery> span_term = 49;
+  optional SpanTermQuery span_term = 49;
 
   optional SpanWithinQuery span_within = 50;
 
   // Returns documents that contain an exact term in a provided field. To return a document, the query term must exactly match the queried field's value, including white space and capitalization.
-  map<string, TermQuery> term = 51;
+  optional TermQuery term = 51;
 
   // Returns documents that contain one or more exact terms in a provided field.
   optional TermsQuery terms = 52;
 
   // Returns documents that contain a minimum number of exact terms in a provided field. To return a document, a required number of terms must exactly match the field values, including white space and capitalization.
-  map<string, TermsSetQuery> terms_set = 53;
+  optional TermsSetQuery terms_set = 53;
 
   optional TypeQuery type = 54;
 
   // Returns documents that contain terms matching a wildcard pattern.
-  map<string, WildcardQuery> wildcard = 55;
+  optional WildcardQuery wildcard = 55;
 
   optional WrapperQuery wrapper = 56;
 
@@ -5614,13 +5329,13 @@ message RandomScoreFunctionSeed {
 }
 message RangeAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsRangeBucket buckets = 2;
 }
 message RangeAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -5698,6 +5413,8 @@ message RangeQueryOneOf {
   optional NumberRangeQueryParametersFrom from = 8;
 
   optional NumberRangeQueryParametersTo to = 9;
+
+  optional string field = 10;
 }
 message RangeQueryOneOf1 {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
@@ -5724,6 +5441,8 @@ message RangeQueryOneOf1 {
 
   // The time zone identifier.
   optional string time_zone = 11;
+
+  optional string field = 12;
 }
 enum RangeRelation {
   RANGE_RELATION_UNSPECIFIED = 0;
@@ -5770,11 +5489,11 @@ message RankFeatureQuery {
 }
 message RareTermsAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
-  optional TermsExclude exclude = 3;
+  repeated string exclude = 3;
 
   // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
   optional string field = 4;
@@ -5793,7 +5512,7 @@ message RareTermsAggregation {
 }
 message RateAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   float value = 2;
 
@@ -5823,33 +5542,17 @@ message Refresh {
     // Whether to refresh the affected shards immediately.
     bool bool = 1;
 
-    RefreshOneOf refresh_one_of = 2;
+    // Do not refresh the affected shards.
+    bool refresh_false = 2;
 
-    RefreshOneOf1 refresh_one_of1 = 3;
+    // Refresh the affected shards immediately.
+    bool refresh_true = 3;
 
-    RefreshOneOf2 refresh_one_of2 = 4;
+    // Wait for the changes to become visible before replying.
+    bool refresh_wait_for = 4;
   }
-}
-enum RefreshOneOf {
-  REFRESH_ONE_OF_UNSPECIFIED = 0;
-  REFRESH_ONE_OF_FALSE = 1;
-}
-enum RefreshOneOf1 {
-  REFRESH_ONE_OF1_UNSPECIFIED = 0;
-  REFRESH_ONE_OF1_TRUE = 1;
-}
-enum RefreshOneOf2 {
-  REFRESH_ONE_OF2_UNSPECIFIED = 0;
-  REFRESH_ONE_OF2_WAIT_FOR = 1;
 }
 message RegexpQuery {
-  oneof regexp_query {
-    string value = 1;
-
-    RegexpQueryOneOf regexp_query_one_of = 2;
-  }
-}
-message RegexpQueryOneOf {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
 
@@ -5868,6 +5571,8 @@ message RegexpQueryOneOf {
 
   // Regular expression for terms you wish to find in the provided field.
   string value = 7;
+
+  optional string field = 8;
 }
 message RegressionInferenceOptions {
   // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
@@ -5880,9 +5585,6 @@ message Rescore {
   RescoreQuery query = 1;
 
   optional int32 window_size = 2;
-}
-message RescoreArray {
-  repeated Rescore rescore_array = 1;
 }
 message RescoreContext {
   optional float oversample_factor = 1;
@@ -5909,7 +5611,7 @@ message ResponseBody {
 
   map<string, Aggregate> aggregations = 5;
 
-  map<string, ObjectMap> fields = 6;
+  optional ObjectMap fields = 6;
 
   optional float max_score = 7;
 
@@ -5967,7 +5669,7 @@ message ResponseItemMap {
 }
 message ReverseNestedAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   float doc_count = 2;
 
@@ -5975,7 +5677,7 @@ message ReverseNestedAggregate {
 }
 message ReverseNestedAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -5998,7 +5700,7 @@ message RrfRank {
 }
 message SamplerAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   float doc_count = 2;
 
@@ -6006,7 +5708,7 @@ message SamplerAggregate {
 }
 message SamplerAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -6039,7 +5741,7 @@ message Script {
 }
 message ScriptBase {
   // Specifies any named parameters that are passed into the script as variables.  Use parameters instead of hard-coded values to decrease compilation time.
-  map<string, ObjectMap> params = 1;
+  optional ObjectMap params = 1;
 }
 message ScriptField {
   // The script to execute for this field.
@@ -6094,31 +5796,22 @@ message ScriptSort {
 }
 message ScriptSortType {
   oneof script_sort_type {
-    ScriptSortTypeOneOf script_sort_type_one_of = 1;
+    // The script returns a numeric value.
+    bool script_sort_type_number = 1;
 
-    ScriptSortTypeOneOf1 script_sort_type_one_of1 = 2;
+    // The script returns a string value.
+    bool script_sort_type_string = 2;
 
-    ScriptSortTypeOneOf2 script_sort_type_one_of2 = 3;
+    // The script returns a version value.
+    bool script_sort_type_version = 3;
   }
-}
-enum ScriptSortTypeOneOf {
-  SCRIPT_SORT_TYPE_ONE_OF_UNSPECIFIED = 0;
-  SCRIPT_SORT_TYPE_ONE_OF_NUMBER = 1;
-}
-enum ScriptSortTypeOneOf1 {
-  SCRIPT_SORT_TYPE_ONE_OF1_UNSPECIFIED = 0;
-  SCRIPT_SORT_TYPE_ONE_OF1_STRING = 1;
-}
-enum ScriptSortTypeOneOf2 {
-  SCRIPT_SORT_TYPE_ONE_OF2_UNSPECIFIED = 0;
-  SCRIPT_SORT_TYPE_ONE_OF2_VERSION = 1;
 }
 message ScriptedHeuristic {
   Script script = 1;
 }
 message ScriptedMetricAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   ObjectMap value = 2;
 }
@@ -6137,7 +5830,7 @@ message ScriptedMetricAggregation {
   optional Script map_script = 6;
 
   // A global object with script parameters for `init`, `map` and `combine` scripts. It is shared between the scripts.
-  map<string, ObjectMap> params = 7;
+  optional ObjectMap params = 7;
 
   optional Script reduce_script = 8;
 }
@@ -6161,7 +5854,7 @@ message SearchRequest {
   optional bool explain = 4;
 
   // Configuration of search extensions defined by OpenSearch plugins.
-  map<string, ObjectMap> ext = 5;
+  optional ObjectMap ext = 5;
 
   // Starting document offset. Needs to be non-negative. By default, you cannot page through more than 10,000 hits using the `from` and `size` parameters. To page through more hits, use the `search_after` parameter.
   optional int32 from = 6;
@@ -6188,7 +5881,8 @@ message SearchRequest {
 
   optional QueryContainer query = 15;
 
-  optional SearchRequestRescore rescore = 16;
+  // Can be used to improve precision by reordering just the top (for example 100 - 500) documents returned by the `query` and `post_filter` phases.
+  repeated Rescore rescore = 16;
 
   // Retrieve a script evaluation (based on different fields) for each hit.
   map<string, ScriptField> script_fields = 17;
@@ -6200,7 +5894,8 @@ message SearchRequest {
 
   optional SlicedScroll slice = 20;
 
-  optional Sort sort = 21;
+  // The list of sort options.
+  repeated SortOptions sort = 21;
 
   // Array of wildcard (`*`) patterns. The request returns values for field names matching these patterns in the `hits.fields` property of the response.
   repeated FieldAndFormat fields = 22;
@@ -6222,7 +5917,7 @@ message SearchRequest {
   // If `true`, returns sequence number and primary term of the last modification of each hit.
   optional bool seq_no_primary_term = 28;
 
-  optional Fields stored_fields = 29;
+  repeated string stored_fields = 29;
 
   optional PointInTimeReference pit = 30;
 
@@ -6231,27 +5926,14 @@ message SearchRequest {
 
   optional SourceConfig underscore_source = 32;
 }
-message SearchRequestRescore {
-  oneof search_request_rescore {
-    Rescore rescore = 1;
-
-    RescoreArray rescore_array = 2;
-  }
-}
 message SearchType {
   oneof search_type {
-    SearchTypeOneOf search_type_one_of = 1;
+    // Documents are scored using global term and document frequencies across all shards. This is usually slower but more accurate.
+    bool search_type_dfs_query_then_fetch = 1;
 
-    SearchTypeOneOf1 search_type_one_of1 = 2;
+    // Documents are scored using local term and document frequencies for the shard. This is usually faster but less accurate.
+    bool search_type_query_then_fetch = 2;
   }
-}
-enum SearchTypeOneOf {
-  SEARCH_TYPE_ONE_OF_UNSPECIFIED = 0;
-  SEARCH_TYPE_ONE_OF_DFS_QUERY_THEN_FETCH = 1;
-}
-enum SearchTypeOneOf1 {
-  SEARCH_TYPE_ONE_OF1_UNSPECIFIED = 0;
-  SEARCH_TYPE_ONE_OF1_QUERY_THEN_FETCH = 1;
 }
 enum Second {
   SECOND_UNSPECIFIED = 0;
@@ -6260,7 +5942,7 @@ enum Second {
 }
 message SerialDifferencingAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -6307,7 +5989,7 @@ message ShardStatistics {
 }
 message SignificantLongTermsAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsSignificantLongTermsBucket buckets = 2;
 
@@ -6334,7 +6016,7 @@ message SignificantLongTermsBucketMap {
 }
 message SignificantStringTermsAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsSignificantStringTermsBucket buckets = 2;
 
@@ -6359,7 +6041,7 @@ message SignificantStringTermsBucketMap {
 }
 message SignificantTermsAggregateBaseSignificantLongTermsBucket {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsSignificantLongTermsBucket buckets = 2;
 
@@ -6369,7 +6051,7 @@ message SignificantTermsAggregateBaseSignificantLongTermsBucket {
 }
 message SignificantTermsAggregateBaseSignificantStringTermsBucket {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsSignificantStringTermsBucket buckets = 2;
 
@@ -6379,7 +6061,7 @@ message SignificantTermsAggregateBaseSignificantStringTermsBucket {
 }
 message SignificantTermsAggregateBaseVoid {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsVoid buckets = 2;
 
@@ -6389,7 +6071,7 @@ message SignificantTermsAggregateBaseVoid {
 }
 message SignificantTermsAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -6397,7 +6079,7 @@ message SignificantTermsAggregation {
 
   optional ChiSquareHeuristic chi_square = 4;
 
-  optional TermsExclude exclude = 5;
+  repeated string exclude = 5;
 
   optional TermsAggregationExecutionHint execution_hint = 6;
 
@@ -6438,7 +6120,7 @@ message SignificantTermsBucketBase {
 }
 message SignificantTextAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -6446,7 +6128,7 @@ message SignificantTextAggregation {
 
   optional ChiSquareHeuristic chi_square = 4;
 
-  optional TermsExclude exclude = 5;
+  repeated string exclude = 5;
 
   optional TermsAggregationExecutionHint execution_hint = 6;
 
@@ -6481,7 +6163,7 @@ message SignificantTextAggregation {
   // The number of buckets returned out of the overall terms list.
   optional int32 size = 18;
 
-  optional Fields source_fields = 19;
+  repeated string source_fields = 19;
 }
 message SimpleAnalyzer {
   SimpleAnalyzerType type = 1;
@@ -6494,7 +6176,7 @@ enum SimpleAnalyzerType {
 }
 message SimpleMovingAverageAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -6587,7 +6269,7 @@ message SimpleQueryStringQuery {
 }
 message SimpleValueAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   SingleMetricAggregateBaseAllOfValue value = 2;
 
@@ -6595,7 +6277,7 @@ message SimpleValueAggregate {
 }
 message SingleBucketAggregateBase {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   float doc_count = 2;
 
@@ -6603,7 +6285,7 @@ message SingleBucketAggregateBase {
 }
 message SingleMetricAggregateBase {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   SingleMetricAggregateBaseAllOfValue value = 2;
 
@@ -6645,8 +6327,7 @@ message SnowballAnalyzer {
 
   SnowballLanguage language = 3;
 
-  // Language value, such as `arabic` or `thai`. Defaults to `english`. Each language value corresponds to a predefined list of stop words in Lucene. See Stop words by language for supported language values and their stop words. Also accepts an array of stop words.
-  optional StringOrStringArray stopwords = 4;
+  repeated string stopwords = 4;
 }
 enum SnowballAnalyzerType {
   SNOWBALL_ANALYZER_TYPE_UNSPECIFIED = 0;
@@ -6677,74 +6358,42 @@ enum SnowballLanguage {
   SNOWBALL_LANGUAGE_SWEDISH = 21;
   SNOWBALL_LANGUAGE_TURKISH = 22;
 }
-message Sort {
-  oneof sort {
-    // The single sort option.
-    SortOptions sort_options = 1;
-
-    SortOptionsArray sort_options_array = 2;
-  }
-}
 message SortMode {
   oneof sort_mode {
-    SortModeOneOf sort_mode_one_of = 1;
+    // Use the average of all values.
+    bool sort_mode_avg = 1;
 
-    SortModeOneOf1 sort_mode_one_of1 = 2;
+    // Use the maximum value.
+    bool sort_mode_max = 2;
 
-    SortModeOneOf2 sort_mode_one_of2 = 3;
+    // Use the median value.
+    bool sort_mode_median = 3;
 
-    SortModeOneOf3 sort_mode_one_of3 = 4;
+    // Use the minimum value.
+    bool sort_mode_min = 4;
 
-    SortModeOneOf4 sort_mode_one_of4 = 5;
+    // Use the sum of all values.
+    bool sort_mode_sum = 5;
   }
-}
-enum SortModeOneOf {
-  SORT_MODE_ONE_OF_UNSPECIFIED = 0;
-  SORT_MODE_ONE_OF_AVG = 1;
-}
-enum SortModeOneOf1 {
-  SORT_MODE_ONE_OF1_UNSPECIFIED = 0;
-  SORT_MODE_ONE_OF1_MAX = 1;
-}
-enum SortModeOneOf2 {
-  SORT_MODE_ONE_OF2_UNSPECIFIED = 0;
-  SORT_MODE_ONE_OF2_MEDIAN = 1;
-}
-enum SortModeOneOf3 {
-  SORT_MODE_ONE_OF3_UNSPECIFIED = 0;
-  SORT_MODE_ONE_OF3_MIN = 1;
-}
-enum SortModeOneOf4 {
-  SORT_MODE_ONE_OF4_UNSPECIFIED = 0;
-  SORT_MODE_ONE_OF4_SUM = 1;
 }
 message SortOptions {
   oneof sort_options {
-    SortOptionsOneOf sort_options_one_of = 1;
+    // Sort by document score.
+    bool sort_options_score = 1;
 
-    SortOptionsOneOf1 sort_options_one_of1 = 2;
+    // Sort by document index order.
+    bool sort_options_doc = 2;
 
     // Sort by field name.
     string string = 3;
 
-    SortOptionsOneOf2 sort_options_one_of2 = 4;
+    SortOptionsOneOf sort_options_one_of = 4;
 
-    FieldSortMap field_sort_map = 5;
+    // Sort by field options.
+    FieldSort field_sort = 5;
   }
 }
-message SortOptionsArray {
-  // The list of sort options.
-  repeated SortOptions sort_options_array = 1;
-}
-enum SortOptionsOneOf {
-  SORT_OPTIONS_ONE_OF_UNSPECIFIED = 0;
-  SORT_OPTIONS_ONE_OF__SCORE = 1;
-}
-enum SortOptionsOneOf1 {
-  SORT_OPTIONS_ONE_OF1_UNSPECIFIED = 0;
-  SORT_OPTIONS_ONE_OF1__DOC = 1;
-}
-message SortOptionsOneOf2 {
+message SortOptionsOneOf {
   optional ScoreSort underscore_score = 1;
 
   optional ScoreSort underscore_doc = 2;
@@ -6753,10 +6402,10 @@ message SortOptionsOneOf2 {
 
   optional ScriptSort underscore_script = 4;
 }
-enum SortOptionsOneOf2Not {
-  SORT_OPTIONS_ONE_OF2_NOT_UNSPECIFIED = 0;
-  SORT_OPTIONS_ONE_OF2_NOT__DOC = 1;
-  SORT_OPTIONS_ONE_OF2_NOT__SCORE = 2;
+enum SortOptionsOneOfNot {
+  SORT_OPTIONS_ONE_OF_NOT_UNSPECIFIED = 0;
+  SORT_OPTIONS_ONE_OF_NOT__DOC = 1;
+  SORT_OPTIONS_ONE_OF_NOT__SCORE = 2;
 }
 enum SortOrder {
   SORT_ORDER_UNSPECIFIED = 0;
@@ -6774,20 +6423,13 @@ message SourceConfigParam {
   oneof source_config_param {
     bool fetch = 1;
 
-    Fields fields = 2;
+    StringArray fields = 2;
   }
 }
 message SourceFilter {
-  oneof source_filter {
-    Fields includes = 1;
+  repeated string excludes = 1;
 
-    SourceFilterOneOf source_filter_one_of = 2;
-  }
-}
-message SourceFilterOneOf {
-  optional Fields excludes = 1;
-
-  optional Fields includes = 2;
+  repeated string includes = 2;
 }
 message SpanContainingQuery {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
@@ -6820,6 +6462,11 @@ message SpanFirstQuery {
   int32 end = 3;
 
   SpanQuery match = 4;
+}
+message SpanGapQuery {
+  optional string field = 1;
+
+  optional int32 span_width = 2;
 }
 message SpanMultiTermQuery {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
@@ -6879,8 +6526,7 @@ message SpanQuery {
 
   optional SpanFirstQuery span_first = 3;
 
-  // Can only be used as a clause in a `span_near` query.
-  map<string, int32> span_gap = 4;
+  optional SpanGapQuery span_gap = 4;
 
   optional SpanMultiTermQuery span_multi = 5;
 
@@ -6891,24 +6537,19 @@ message SpanQuery {
   optional SpanOrQuery span_or = 8;
 
   // The equivalent of the `term` query but for use with other span queries.
-  map<string, SpanTermQuery> span_term = 9;
+  optional SpanTermQuery span_term = 9;
 
   optional SpanWithinQuery span_within = 10;
 }
 message SpanTermQuery {
-  oneof span_term_query {
-    string value = 1;
-
-    SpanTermQueryOneOf span_term_query_one_of = 2;
-  }
-}
-message SpanTermQueryOneOf {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
 
   optional string underscore_name = 2;
 
   string value = 3;
+
+  optional string field = 4;
 }
 message SpanWithinQuery {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
@@ -6925,8 +6566,7 @@ message StandardAnalyzer {
 
   optional int32 max_token_length = 2;
 
-  // Language value, such as `arabic` or `thai`. Defaults to `english`. Each language value corresponds to a predefined list of stop words in Lucene. See Stop words by language for supported language values and their stop words. Also accepts an array of stop words.
-  optional StringOrStringArray stopwords = 3;
+  repeated string stopwords = 3;
 }
 enum StandardAnalyzerType {
   STANDARD_ANALYZER_TYPE_UNSPECIFIED = 0;
@@ -6990,7 +6630,7 @@ message StandardDeviationBoundsUpperSampling {
 }
 message StatsAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   float count = 2;
 
@@ -7037,7 +6677,7 @@ message StatsAggregation {
 }
 message StatsBucketAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   float count = 2;
 
@@ -7059,7 +6699,7 @@ message StatsBucketAggregate {
 }
 message StatsBucketAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -7075,8 +6715,7 @@ message StopAnalyzer {
 
   optional string version = 2;
 
-  // Language value, such as `arabic` or `thai`. Defaults to `english`. Each language value corresponds to a predefined list of stop words in Lucene. See Stop words by language for supported language values and their stop words. Also accepts an array of stop words.
-  optional StringOrStringArray stopwords = 3;
+  repeated string stopwords = 3;
 
   optional string stopwords_path = 4;
 }
@@ -7086,7 +6725,7 @@ enum StopAnalyzerType {
 }
 message StoredScriptId {
   // Specifies any named parameters that are passed into the script as variables.  Use parameters instead of hard-coded values to decrease compilation time.
-  map<string, ObjectMap> params = 1;
+  optional ObjectMap params = 1;
 
   // The unique identifier for a resource.
   string id = 2;
@@ -7105,19 +6744,9 @@ enum StringDistance {
 message StringMap {
   map<string, string> string_map = 1;
 }
-message StringMapArray {
-  repeated StringMap string_map_array = 1;
-}
-message StringOrStringArray {
-  oneof string_or_string_array {
-    string string = 1;
-
-    StringArray string_array = 2;
-  }
-}
 message StringRareTermsAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsStringRareTermsBucket buckets = 2;
 }
@@ -7134,7 +6763,7 @@ message StringRareTermsBucketMap {
 }
 message StringStatsAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   float count = 2;
 
@@ -7194,7 +6823,7 @@ message StringStatsAggregation {
 }
 message StringTermsAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsStringTermsBucket buckets = 2;
 
@@ -7272,7 +6901,7 @@ message SuggesterBase {
 }
 message SumAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   SingleMetricAggregateBaseAllOfValue value = 2;
 
@@ -7290,7 +6919,7 @@ message SumAggregation {
 }
 message SumBucketAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -7307,19 +6936,19 @@ message TDigest {
 }
 message TDigestPercentileRanksAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   Percentiles values = 2;
 }
 message TDigestPercentilesAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   Percentiles values = 2;
 }
 message TTestAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   TTestAggregateAllOfValue value = 2;
 
@@ -7332,7 +6961,7 @@ message TTestAggregateAllOfValue {
 }
 message TTestAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -7349,13 +6978,6 @@ enum TTestType {
   T_TEST_TYPE_PAIRED = 3;
 }
 message TermQuery {
-  oneof term_query {
-    FieldValue value = 1;
-
-    TermQueryOneOf term_query_one_of = 2;
-  }
-}
-message TermQueryOneOf {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
 
@@ -7365,6 +6987,8 @@ message TermQueryOneOf {
 
   // Allows ASCII case insensitive matching of the value with the indexed field values when set to `true`. When `false`, the case sensitivity of matching depends on the underlying field's mapping.
   optional bool case_insensitive = 4;
+
+  optional string field = 5;
 }
 message TermSuggest {
   int32 length = 1;
@@ -7373,14 +6997,7 @@ message TermSuggest {
 
   string text = 3;
 
-  TermSuggestAllOfOptions options = 4;
-}
-message TermSuggestAllOfOptions {
-  oneof term_suggest_all_of_options {
-    TermSuggestOption term_suggest_option = 1;
-
-    TermSuggestOptionArray term_suggest_option_array = 2;
-  }
+  repeated TermSuggestOption options = 4;
 }
 message TermSuggestOption {
   string text = 1;
@@ -7392,9 +7009,6 @@ message TermSuggestOption {
   optional string highlighted = 4;
 
   optional bool collate_match = 5;
-}
-message TermSuggestOptionArray {
-  repeated TermSuggestOption term_suggest_option_array = 1;
 }
 message TermSuggester {
   optional string analyzer = 1;
@@ -7429,7 +7043,7 @@ message TermSuggester {
 }
 message TermsAggregateBaseDoubleTermsBucket {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsDoubleTermsBucket buckets = 2;
 
@@ -7439,7 +7053,7 @@ message TermsAggregateBaseDoubleTermsBucket {
 }
 message TermsAggregateBaseLongTermsBucket {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsLongTermsBucket buckets = 2;
 
@@ -7449,7 +7063,7 @@ message TermsAggregateBaseLongTermsBucket {
 }
 message TermsAggregateBaseMultiTermsBucket {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsMultiTermsBucket buckets = 2;
 
@@ -7459,7 +7073,7 @@ message TermsAggregateBaseMultiTermsBucket {
 }
 message TermsAggregateBaseStringTermsBucket {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsStringTermsBucket buckets = 2;
 
@@ -7469,7 +7083,7 @@ message TermsAggregateBaseStringTermsBucket {
 }
 message TermsAggregateBaseVoid {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsVoid buckets = 2;
 
@@ -7479,13 +7093,13 @@ message TermsAggregateBaseVoid {
 }
 message TermsAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
   optional TermsAggregationCollectMode collect_mode = 3;
 
-  optional TermsExclude exclude = 4;
+  repeated string exclude = 4;
 
   optional TermsAggregationExecutionHint execution_hint = 5;
 
@@ -7506,7 +7120,7 @@ message TermsAggregation {
   // Coerced unmapped fields into the specified type.
   optional string value_type = 12;
 
-  optional AggregateOrder order = 13;
+  repeated StringMap order = 13;
 
   optional Script script = 14;
 
@@ -7538,20 +7152,11 @@ message TermsBucketBase {
 
   optional float doc_count_error = 2;
 }
-message TermsExclude {
-  oneof terms_exclude {
-    string regexp = 1;
-
-    StringArray string_array = 2;
-  }
-}
 message TermsInclude {
   oneof terms_include {
-    string regexp = 1;
+    StringArray string_array = 1;
 
-    StringArray string_array = 2;
-
-    TermsPartition partition = 3;
+    TermsPartition partition = 2;
   }
 }
 message TermsLookup {
@@ -7599,6 +7204,8 @@ message TermsSetQuery {
   optional Script minimum_should_match_script = 4;
 
   repeated string terms = 5;
+
+  optional string field = 6;
 }
 message TestPopulation {
   // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
@@ -7619,7 +7226,7 @@ enum TextQueryType {
 }
 message TopHitsAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   HitsMetadata hits = 2;
 }
@@ -7631,7 +7238,7 @@ message TopHitsAggregation {
 
   optional Script script = 3;
 
-  optional Fields docvalue_fields = 4;
+  repeated string docvalue_fields = 4;
 
   // If `true`, returns detailed information about score computation as part of a hit.
   optional bool explain = 5;
@@ -7647,9 +7254,10 @@ message TopHitsAggregation {
   // The maximum number of top matching hits to return per bucket.
   optional int32 size = 9;
 
-  optional Sort sort = 10;
+  // The list of sort options.
+  repeated SortOptions sort = 10;
 
-  optional Fields stored_fields = 11;
+  repeated string stored_fields = 11;
 
   // If `true`, calculates and returns document scores, even if the scores are not used for sorting.
   optional bool track_scores = 12;
@@ -7676,7 +7284,7 @@ message TopMetrics {
 }
 message TopMetricsAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   repeated TopMetrics top = 2;
 }
@@ -7688,26 +7296,18 @@ message TopMetricsAggregation {
 
   optional Script script = 3;
 
-  optional TopMetricsAggregationAllOfMetrics metrics = 4;
+  // The fields of the top document to return.
+  repeated TopMetricsValue metrics = 4;
 
   // The number of top documents from which to return metrics.
   optional int32 size = 5;
 
-  optional Sort sort = 6;
-}
-message TopMetricsAggregationAllOfMetrics {
-  oneof top_metrics_aggregation_all_of_metrics {
-    TopMetricsValue top_metrics_value = 1;
-
-    TopMetricsValueArray top_metrics_value_array = 2;
-  }
+  // The list of sort options.
+  repeated SortOptions sort = 6;
 }
 message TopMetricsValue {
   // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
   string field = 1;
-}
-message TopMetricsValueArray {
-  repeated TopMetricsValue top_metrics_value_array = 1;
 }
 message TopRightBottomLeftGeoBounds {
   // The upper-right corner coordinates.
@@ -7723,18 +7323,12 @@ message TotalHits {
 }
 message TotalHitsRelation {
   oneof total_hits_relation {
-    TotalHitsRelationOneOf total_hits_relation_one_of = 1;
+    // Accurate.
+    bool total_hits_relation_eq = 1;
 
-    TotalHitsRelationOneOf1 total_hits_relation_one_of1 = 2;
+    // Lower bound, including returned events or sequences.
+    bool total_hits_relation_gte = 2;
   }
-}
-enum TotalHitsRelationOneOf {
-  TOTAL_HITS_RELATION_ONE_OF_UNSPECIFIED = 0;
-  TOTAL_HITS_RELATION_ONE_OF_EQ = 1;
-}
-enum TotalHitsRelationOneOf1 {
-  TOTAL_HITS_RELATION_ONE_OF1_UNSPECIFIED = 0;
-  TOTAL_HITS_RELATION_ONE_OF1_GTE = 1;
 }
 message TrackHits {
   oneof track_hits {
@@ -7753,13 +7347,13 @@ message TypeQuery {
 }
 message UnmappedRareTermsAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsVoid buckets = 2;
 }
 message UnmappedSamplerAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   float doc_count = 2;
 
@@ -7767,7 +7361,7 @@ message UnmappedSamplerAggregate {
 }
 message UnmappedSignificantTermsAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsVoid buckets = 2;
 
@@ -7777,7 +7371,7 @@ message UnmappedSignificantTermsAggregate {
 }
 message UnmappedTermsAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsVoid buckets = 2;
 
@@ -7830,7 +7424,7 @@ message UpdateOperation {
 }
 message ValueCountAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   SingleMetricAggregateBaseAllOfValue value = 2;
 
@@ -7861,7 +7455,7 @@ enum ValueType {
 }
 message VariableWidthHistogramAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   BucketsVariableWidthHistogramBucket buckets = 2;
 }
@@ -7901,45 +7495,27 @@ message VariableWidthHistogramBucketMap {
 }
 message VersionType {
   oneof version_type {
-    VersionTypeOneOf version_type_one_of = 1;
+    // The version number must be higher than the current version.
+    bool version_type_external = 1;
 
-    VersionTypeOneOf1 version_type_one_of1 = 2;
+    // The version number must be higher than or equal to the current version.
+    bool version_type_external_gte = 2;
 
-    VersionTypeOneOf2 version_type_one_of2 = 3;
+    // The version number is forced to be the given value.
+    bool version_type_force = 3;
 
-    VersionTypeOneOf3 version_type_one_of3 = 4;
+    // The version number is managed internally by OpenSearch.
+    bool version_type_internal = 4;
   }
-}
-enum VersionTypeOneOf {
-  VERSION_TYPE_ONE_OF_UNSPECIFIED = 0;
-  VERSION_TYPE_ONE_OF_EXTERNAL = 1;
-}
-enum VersionTypeOneOf1 {
-  VERSION_TYPE_ONE_OF1_UNSPECIFIED = 0;
-  VERSION_TYPE_ONE_OF1_EXTERNAL_GTE = 1;
-}
-enum VersionTypeOneOf2 {
-  VERSION_TYPE_ONE_OF2_UNSPECIFIED = 0;
-  VERSION_TYPE_ONE_OF2_FORCE = 1;
-}
-enum VersionTypeOneOf3 {
-  VERSION_TYPE_ONE_OF3_UNSPECIFIED = 0;
-  VERSION_TYPE_ONE_OF3_INTERNAL = 1;
 }
 message WaitForActiveShardOptions {
   oneof wait_for_active_shard_options {
-    WaitForActiveShardOptionsOneOf wait_for_active_shard_options_one_of = 1;
+    // Wait for all shards to be active.
+    bool wait_for_active_shard_options_all = 1;
 
-    WaitForActiveShardOptionsOneOf1 wait_for_active_shard_options_one_of1 = 2;
+    // Wait for the number of shards specified in the index settings.
+    bool wait_for_active_shard_options_index_setting = 2;
   }
-}
-enum WaitForActiveShardOptionsOneOf {
-  WAIT_FOR_ACTIVE_SHARD_OPTIONS_ONE_OF_UNSPECIFIED = 0;
-  WAIT_FOR_ACTIVE_SHARD_OPTIONS_ONE_OF_ALL = 1;
-}
-enum WaitForActiveShardOptionsOneOf1 {
-  WAIT_FOR_ACTIVE_SHARD_OPTIONS_ONE_OF1_UNSPECIFIED = 0;
-  WAIT_FOR_ACTIVE_SHARD_OPTIONS_ONE_OF1_INDEX_SETTING = 1;
 }
 message WaitForActiveShards {
   oneof wait_for_active_shards {
@@ -7957,7 +7533,7 @@ enum Week {
 }
 message WeightedAverageAggregation {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   optional string name = 2;
 
@@ -7981,7 +7557,7 @@ message WeightedAverageValue {
 }
 message WeightedAvgAggregate {
   // The custom metadata attached to a resource.
-  map<string, ObjectMap> meta = 1;
+  optional ObjectMap meta = 1;
 
   SingleMetricAggregateBaseAllOfValue value = 2;
 
@@ -7997,13 +7573,6 @@ enum WhitespaceAnalyzerType {
   WHITESPACE_ANALYZER_TYPE_WHITESPACE = 1;
 }
 message WildcardQuery {
-  oneof wildcard_query {
-    string value = 1;
-
-    WildcardQueryOneOf wildcard_query_one_of = 2;
-  }
-}
-message WildcardQueryOneOf {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
 
@@ -8019,6 +7588,8 @@ message WildcardQueryOneOf {
 
   // Wildcard pattern for terms you wish to find in the provided field. Required, when value is not set.
   optional string wildcard = 6;
+
+  optional string field = 7;
 }
 message WktGeoBounds {
   // The WKT string representation of the geographical bounds.
@@ -8082,10 +7653,6 @@ message XyShapeQueryField {
 
   optional GeoShapeRelation relation = 3;
 }
-enum Yards {
-  YARDS_UNSPECIFIED = 0;
-  YARDS_YD = 1;
-}
 enum Year {
   YEAR_UNSPECIFIED = 0;
   YEAR_YEAR = 1;
@@ -8094,7 +7661,5 @@ enum Year {
 enum ZeroTermsQuery {
   ZERO_TERMS_QUERY_UNSPECIFIED = 0;
   ZERO_TERMS_QUERY_ALL = 1;
-  ZERO_TERMS_QUERY_ALL2 = 2;
-  ZERO_TERMS_QUERY_NONE = 3;
-  ZERO_TERMS_QUERY_NONE2 = 4;
+  ZERO_TERMS_QUERY_NONE = 2;
 }
