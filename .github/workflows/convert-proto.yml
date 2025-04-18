@@ -1,14 +1,15 @@
 name: Auto Proto Convert
 
 on:
-  # Manual trigger.
+  # Allows manual triggers from the GitHub UI
   workflow_dispatch:
 
-  # Auto trigger from external repository.
+  # Allows external triggers from opensearch spec repositories
   repository_dispatch:
     types: [trigger]
 jobs:
   auto-proto-convert:
+    name: ${{ github.event_name == 'repository_dispatch' && format('Convert Protos for {0}', github.event.client_payload.commit_hash) || 'Convert Protos (Manual)' }}
     runs-on: ubuntu-latest
     # if: github.repository == 'opensearch-project/opensearch-protobufs'
     steps:
