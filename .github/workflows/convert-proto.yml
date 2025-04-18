@@ -7,6 +7,9 @@ on:
   # Allows external triggers from opensearch spec repositories
   repository_dispatch:
     types: [trigger]
+
+run-name: ${{ github.event_name == 'workflow_dispatch' && 'Auto Proto Convert Triggered Manually' || 'Auto Proto Convert Triggered By Spec' }}
+
 jobs:
   auto-proto-convert:
     name: ${{ github.event_name == 'repository_dispatch' && format('Convert Protos for {0}', github.event.client_payload.commit_hash) || 'Convert Protos (Manual)' }}
