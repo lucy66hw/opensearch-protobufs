@@ -9,7 +9,7 @@ on:
 jobs:
   auto-proto-convert:
     runs-on: ubuntu-latest
-    if: github.repository == 'opensearch-project/opensearch-protobufs'
+    #if: github.repository == 'opensearch-project/opensearch-protobufs'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -30,14 +30,14 @@ jobs:
           npm install -g @bufbuild/buf
           buf --version
 
-      - name: Download Release Assets
-        uses: robinraju/release-downloader@v1
-        with:
-          repository: 'opensearch-project/opensearch-api-specification'
-          latest: true
-          fileName: 'opensearch-openapi.yaml'
-          tag: 'main-latest'
-          preRelease: true
+#      - name: Download Release Assets
+#        uses: robinraju/release-downloader@v1
+#        with:
+#          repository: 'opensearch-project/opensearch-api-specification'
+#          latest: true
+#          fileName: 'opensearch-openapi.yaml'
+#          tag: 'main-latest'
+#          preRelease: true
 
       - name: Get Latest Commit ID
         id: get_commit
