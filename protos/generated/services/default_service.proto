@@ -62,7 +62,7 @@ message BulkRequest {
 
 message BulkResponse {
   oneof response {
-    InlineObject inline_object = 1;
+    InlineObject inline_object_200 = 1;
   }
 }
 message SearchRequest {
@@ -230,8 +230,8 @@ message SearchRequest {
 
 message SearchResponse {
   oneof response {
-    ResponseBody response_body = 1;
-    ErrorResponse error_response = 2;
-    ErrorResponse error_response = 3;
+    ResponseBody response_body_200 = 1;
+    ErrorResponse error_response_400 = 2;
+    ErrorResponse error_response_404 = 3;
   }
 }
