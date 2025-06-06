@@ -1,5 +1,3 @@
 paths:
-  - /_bulk
-  - /{index}/_bulk
-  - /{index}/_search
-  - /_search
+  - /_analyze
+  - /{index}/_analyze
