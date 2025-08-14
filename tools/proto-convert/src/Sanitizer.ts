@@ -1,12 +1,19 @@
 import _ from "lodash";
 import type {OpenAPIV3} from "openapi-types";
 import {traverse} from "./utils/OpenApiTraverser";
+import Logger from "./utils/logger";
 /**
  * Sanitizer class:
  * Provides a static method to sanitize a spec by updating $ref strings
  * and renaming schema definitions.
  */
 export class Sanitizer {
+  logger: Logger;
+  
+  constructor(logger: Logger = new Logger()) {
+    this.logger = logger;
+  }
+  
   public sanitize(spec: any): any {
     this.sanitize_ref(spec);
     this.sanitize_spec_name(spec as OpenAPIV3.Document);
@@ -73,7 +80,9 @@ export class Sanitizer {
       onResponseSchema: (schema) => this.sanitize_schema(schema),
       onParameter: (param, _paramName) => {
         if (param.name.startsWith('_')) {
-          param.name = `underscore${param.name}`;
+          const oldName = param.name;
+          param.name = `x${param.name}`;
+          this.logger.info(`Renamed parameter: ${oldName} -> ${param.name}`);
         }
       }
     });
@@ -93,7 +102,7 @@ export class Sanitizer {
   public rename_properties_name(properties: Record<string, OpenAPIV3.SchemaObject>) {
     for (var propName in properties) {
       if(propName.startsWith("_")) {
-        const newPropName = "underscore" + propName;
+        const newPropName = "x" + propName;
         properties[newPropName] = properties[propName];
         delete properties[propName];
       }
@@ -104,7 +113,7 @@ export class Sanitizer {
     for (var index in requireList) {
       var propName = requireList[index];
       if(propName.startsWith("_")) {
-        requireList[index] = "underscore" + propName;
+        requireList[index] = "x" + propName;
       }
     }
   }
