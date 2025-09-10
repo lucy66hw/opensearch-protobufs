@@ -44,27 +44,16 @@ message BulkRequest {
   // The number of shard copies that must be active before proceeding with the operation. Set to all or any positive integer up to the total number of shards in the index (`number_of_replicas+1`).
   optional WaitForActiveShards wait_for_active_shards = 12;
 
-  // Whether to pretty-format the returned JSON response.
-  optional bool pretty = 13;
-
   // Whether to return human-readable values for statistics.
-  optional bool human = 14;
+  optional bool human = 13;
 
   // Whether to include the stack trace of returned errors.
-  optional bool error_trace = 15;
-
-  // The URL-encoded request definition. Useful for libraries that do not accept a request body for non-POST requests.
-  optional string source = 16;
+  optional bool error_trace = 14;
 
   // A comma-separated list of filters used to filter the response. Use wildcards to match any field or part of a field's name. To exclude fields, use `-`.
-  repeated string filter_path = 17;
+  repeated string filter_path = 15;
 }
 
-message BulkResponse {
-  oneof response {
-    BulkResponseBase bulk_response_base_200 = 1;
-  }
-}
 message SearchRequest {
   // A comma-separated list of data streams, indexes, and aliases to search. Supports wildcards (`*`). To search all data streams and indexes, omit this parameter or use `*` or `_all`.
   repeated string index = 1;
@@ -210,28 +199,14 @@ message SearchRequest {
   // If `true`, returns document version as part of a hit.
   optional bool version = 48;
 
-  // Whether to pretty-format the returned JSON response.
-  optional bool pretty = 49;
-
   // Whether to return human-readable values for statistics.
-  optional bool human = 50;
+  optional bool human = 49;
 
   // Whether to include the stack trace of returned errors.
-  optional bool error_trace = 51;
-
-  // The URL-encoded request definition. Useful for libraries that do not accept a request body for non-POST requests.
-  optional string source = 52;
+  optional bool error_trace = 50;
 
   // A comma-separated list of filters used to filter the response. Use wildcards to match any field or part of a field's name. To exclude fields, use `-`.
-  repeated string filter_path = 53;
+  repeated string filter_path = 51;
 
-  optional SearchRequest search_request = 54;
-}
-
-message SearchResponse {
-  oneof response {
-    SearchResponse search_response_200 = 1;
-    ErrorResponseBase error_response_base_400 = 2;
-    ErrorResponseBase error_response_base_404 = 3;
-  }
+  optional SearchRequest search_request = 52;
 }
