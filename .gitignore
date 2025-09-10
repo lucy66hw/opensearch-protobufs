@@ -14,7 +14,7 @@ node_modules
 _site/
 
 # build output
-build/
+# build/
 
 # coverage output
 /coverage/
