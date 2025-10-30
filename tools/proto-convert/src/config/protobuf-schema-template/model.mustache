@@ -29,7 +29,8 @@ import "{{{import}}}.proto";
 {{/-first}}
 {{/oneOf}}
 {{^oneOf}}
-  {{#vars}}
+{{#vars}}
+{{^vendorExtensions.x-oneof}}
   {{#description}}
   // {{{.}}}
   {{/description}}
@@ -47,8 +48,20 @@ import "{{{import}}}.proto";
 
   {{enumName}} {{name}} = {{vendorExtensions.x-protobuf-index}};
   {{/isEnum}}
-
+{{/vendorExtensions.x-oneof}}
+{{/vars}}
+{{#vendorExtensions.x-oneof-constraint}}
+  oneof {{classVarName}} {
+  {{#vars}}
+    {{#vendorExtensions.x-oneof}}
+    {{#description}}
+    // {{{.}}}
+    {{/description}}
+    {{#vendorExtensions.x-protobuf-type}}{{{.}}} {{/vendorExtensions.x-protobuf-type}}{{{vendorExtensions.x-protobuf-data-type}}} {{{name}}} = {{vendorExtensions.x-protobuf-index}}{{#vendorExtensions.x-protobuf-packed}} [packed=true]{{/vendorExtensions.x-protobuf-packed}}{{#vendorExtensions.x-protobuf-json-name}} [json_name="{{vendorExtensions.x-protobuf-json-name}}"]{{/vendorExtensions.x-protobuf-json-name}};
+    {{/vendorExtensions.x-oneof}}
   {{/vars}}
+  }
+{{/vendorExtensions.x-oneof-constraint}}
 {{/oneOf}}
 }
 {{/isEnum}}

@@ -33,6 +33,10 @@ export class SchemaModifier {
                 this.handleOneOfConst(schema, schemaName)
                 this.collapseOrMergeOneOfArray(schema)
                 this.collapseOneOfObjectPropContainsTitleSchema(schema)
+                // Only mark x-oneof-constraint for top-level schemas, not nested in allOf/anyOf/oneOf
+                if (schemaName && !['allOf', 'anyOf', 'oneOf'].includes(schemaName)) {
+                    this.markTopLevelOneOfConstraint(schema);
+                }
             },
         });
         const visit = new Set();
@@ -437,4 +441,30 @@ export class SchemaModifier {
 
         this.logger.info(`Converted additionalProperties to named property '${propertyName}' with type: object`);
     }
+
+    markTopLevelOneOfConstraint(schema: OpenAPIV3.SchemaObject): void {
+        if (schema.minProperties === 1 && schema.maxProperties === 1) {
+            (schema as any)['x-oneof-constraint'] = true;
+            this.logger.info(`Marked schema with x-oneof-constraint`);
+            return;
+        }
+
+        const composedKeys = ['allOf', 'anyOf', 'oneOf'] as const;
+        for (const key of composedKeys) {
+            const items = schema[key];
+            if (Array.isArray(items)) {
+                for (const item of items) {
+                    if (item && typeof item === 'object' && !('$ref' in item)) {
+                        const itemSchema = item as any;
+                        if (itemSchema.minProperties === 1 && itemSchema.maxProperties === 1) {
+                            (schema as any)['x-oneof-constraint'] = true;
+                            this.logger.info(`Marked schema with x-oneof-constraint (found in nested ${key})`);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }
