@@ -75,9 +75,9 @@ jobs:
       #      - name: Post Process Protobuf
       #        run: npm run postprocessing
 
-      - name: Reformat proto files
-        run: |
-          buf format -w protos/generated
+      # - name: Reformat proto files
+      #   run: |
+      #     buf format -w protos/generated
 
       - name: Configure Git User
         run: |
