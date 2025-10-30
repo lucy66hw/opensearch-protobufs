@@ -33,10 +33,8 @@ export class SchemaModifier {
                 this.handleOneOfConst(schema, schemaName)
                 this.collapseOrMergeOneOfArray(schema)
                 this.collapseOneOfObjectPropContainsTitleSchema(schema)
-                // Only mark x-oneof-constraint for top-level schemas, not nested in allOf/anyOf/oneOf
-                if (schemaName && !['allOf', 'anyOf', 'oneOf'].includes(schemaName)) {
-                    this.markTopLevelOneOfConstraint(schema);
-                }
+                // Mark oneOf extensions (x-oneof on properties, x-oneof-constraint on schema)
+                this.markOneOfExtensions(schema, schemaName);
             },
         });
         const visit = new Set();
@@ -392,10 +390,13 @@ export class SchemaModifier {
 
         const additionalProps = schema.additionalProperties as any;
 
+        // Skip if nested inside a property - it already has context from parent
         if (isNestedProperty) {
             return;
         }
 
+        // Only convert if it has a title
+        // Without title, it's a true map that should remain as additionalProperties
         if (!additionalProps.title || typeof additionalProps.title !== 'string') {
             return;
         }
@@ -411,12 +412,16 @@ export class SchemaModifier {
             return;
         }
 
+        // Remove 'title' from additionalProps before wrapping
         const innerAdditionalProps: any = {};
         for (const key in additionalProps) {
             if (key !== 'title') {
                 innerAdditionalProps[key] = additionalProps[key];
             }
         }
+
+        // Check if innerAdditionalProps has any actual schema definition
+        // (type, $ref, properties, enum, items, allOf, anyOf, oneOf)
         const hasSchemaDefinition = Boolean(
             innerAdditionalProps.type ||
             innerAdditionalProps.$ref ||
@@ -428,6 +433,7 @@ export class SchemaModifier {
             innerAdditionalProps.oneOf
         );
 
+        // Create the new property as an object with additionalProperties
         schema.properties[propertyName] = {
             type: 'object',
             additionalProperties: hasSchemaDefinition ? innerAdditionalProps : true
@@ -442,13 +448,42 @@ export class SchemaModifier {
         this.logger.info(`Converted additionalProperties to named property '${propertyName}' with type: object`);
     }
 
-    markTopLevelOneOfConstraint(schema: OpenAPIV3.SchemaObject): void {
-        if (schema.minProperties === 1 && schema.maxProperties === 1) {
-            (schema as any)['x-oneof-constraint'] = true;
-            this.logger.info(`Marked schema with x-oneof-constraint`);
+    /**
+     * Marks schemas and properties with oneOf extensions.
+     * Adds x-oneof to properties when schema has minProperties=1 and maxProperties=1.
+     * Adds x-oneof-constraint to top-level schemas that contain such patterns.
+     **/
+    markOneOfExtensions(schema: OpenAPIV3.SchemaObject, schemaName?: string): void {
+        // Check if this schema or nested items have the oneOf pattern
+        const hasDirectPattern = schema.minProperties === 1 && schema.maxProperties === 1;
+        const hasNestedPattern = this.hasNestedOneOfPattern(schema);
+        
+        if (!hasDirectPattern && !hasNestedPattern) {
             return;
         }
 
+        // Add x-oneof to properties of this schema if it has the pattern
+        if (hasDirectPattern && schema.properties) {
+            for (const propName in schema.properties) {
+                const prop = schema.properties[propName] as any;
+                if (prop && typeof prop === 'object') {
+                    prop['x-oneof'] = true;
+                }
+            }
+            this.logger.info(`Added x-oneof to properties with minProperties=1 and maxProperties=1`);
+        }
+
+        // Add x-oneof-constraint to top-level schemas (not nested in allOf/anyOf/oneOf)
+        if (schemaName && !['allOf', 'anyOf', 'oneOf'].includes(schemaName)) {
+            (schema as any)['x-oneof-constraint'] = true;
+            this.logger.info(`Marked schema with x-oneof-constraint`);
+        }
+    }
+
+    /**
+     * Checks if schema has nested items (in allOf/anyOf/oneOf) with oneOf pattern.
+     **/
+    private hasNestedOneOfPattern(schema: OpenAPIV3.SchemaObject): boolean {
         const composedKeys = ['allOf', 'anyOf', 'oneOf'] as const;
         for (const key of composedKeys) {
             const items = schema[key];
@@ -457,14 +492,12 @@ export class SchemaModifier {
                     if (item && typeof item === 'object' && !('$ref' in item)) {
                         const itemSchema = item as any;
                         if (itemSchema.minProperties === 1 && itemSchema.maxProperties === 1) {
-                            (schema as any)['x-oneof-constraint'] = true;
-                            this.logger.info(`Marked schema with x-oneof-constraint (found in nested ${key})`);
-                            return;
+                            return true;
                         }
                     }
                 }
             }
         }
+        return false;
     }
-
 }
