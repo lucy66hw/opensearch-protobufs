@@ -29,8 +29,8 @@ import "{{{import}}}.proto";
 {{/-first}}
 {{/oneOf}}
 {{^oneOf}}
-{{#vars}}
-{{^vendorExtensions.x-oneof}}
+  {{#vars}}
+  {{^vendorExtensions.x-oneof}}
   {{#description}}
   // {{{.}}}
   {{/description}}
@@ -48,7 +48,6 @@ import "{{{import}}}.proto";
 
   {{enumName}} {{name}} = {{vendorExtensions.x-protobuf-index}};
   {{/isEnum}}
-
 {{/vendorExtensions.x-oneof}}
 {{/vars}}
 {{#vendorExtensions.x-oneof-constraint}}
