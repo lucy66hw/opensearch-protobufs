@@ -2683,6 +2683,21 @@ message GlobalAggregation {
   // Sub-aggregations for this bucket aggregation
   map<string, AggregationContainer> aggs = 4;
 }
+message GlobalParams {
+  // Whether to pretty-format the returned JSON response.
+  optional bool pretty = 1;
+
+  // Whether to return human-readable values for statistics.
+  optional bool human = 2;
+
+  // Whether to include the stack trace of returned errors.
+  optional bool error_trace = 3;
+
+  // The URL-encoded request definition. Useful for libraries that do not accept a request body for non-POST requests.
+  optional string source = 4;
+
+  repeated string filter_path = 5;
+}
 message GoogleNormalizedDistanceHeuristic {
   // Set to `false` if you defined a custom background filter that represents a different set of documents that you want to compare to.
   optional bool background_is_superset = 1;
@@ -3114,7 +3129,7 @@ message HitsMetadataJsonValue {
   optional HitsMetadataMaxScore max_score = 3;
 }
 message HitsMetadataJsonValueAllOfHits {
-  optional ObjectMap source = 1 [json_name = "_source"];
+  optional ObjectMap source = 1;
 }
 message HitsMetadataMaxScore {
   oneof hits_metadata_max_score {
@@ -3221,6 +3236,8 @@ message HybridQuery {
   repeated QueryContainer queries = 3;
 
   optional int32 pagination_depth = 4;
+
+  optional QueryContainer filter = 5;
 }
 message IdsQuery {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
