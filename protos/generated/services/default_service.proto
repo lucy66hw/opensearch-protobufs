@@ -48,11 +48,6 @@ message BulkRequest {
   optional GlobalParams global_params = 13;
 }
 
-message BulkResponse {
-  oneof response {
-    BulkResponse bulk_response_200 = 1;
-  }
-}
 message SearchRequest {
   // A comma-separated list of data streams, indexes, and aliases to search. Supports wildcards (`*`). To search all data streams and indexes, omit this parameter or use `*` or `_all`.
   repeated string index = 1;
@@ -154,12 +149,4 @@ message SearchRequest {
   optional GlobalParams global_params = 33;
 
   optional SearchRequestBody search_request_body = 34;
-}
-
-message SearchResponse {
-  oneof response {
-    SearchResponse search_response_200 = 1;
-    ErrorResponseBase error_response_base_400 = 2;
-    ErrorResponseBase error_response_base_404 = 3;
-  }
 }
