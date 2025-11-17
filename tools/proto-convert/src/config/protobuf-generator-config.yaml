@@ -9,6 +9,7 @@ additionalProperties:
   numberedFieldNumberList: true
   startEnumsWithUnspecified: true
   aggregateModelsName: aggregated_models
+  supportMultipleResponses: false
 inlineSchemaOptions:
   RESOLVE_INLINE_ENUMS: true
   SKIP_SCHEMA_REUSE: true
