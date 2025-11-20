@@ -2352,6 +2352,11 @@ message FieldSort {
   optional FieldSortNumericType numeric_type = 6;
 
 }
+message FieldSortMap {
+
+  map<string, FieldSort> field_sort_map = 1;
+
+}
 enum FieldSortNumericType {
 
   FIELD_SORT_NUMERIC_TYPE_UNSPECIFIED = 0;
@@ -3090,7 +3095,6 @@ message GlobalParams {
   // Whether to include the stack trace of returned errors.
   optional bool error_trace = 2;
 
-  // A comma-separated list of filters used to filter the response. Use wildcards to match any field or part of a field's name. To exclude fields, use `-`.
   repeated string filter_path = 3;
 
 }
@@ -3107,7 +3111,7 @@ message HasChildQuery {
 
   optional string x_name = 2;
 
-  // Indicates whether to ignore an unmapped `type` and not return any documents instead of an error.
+  // Set to `true` to ignore an unmapped field and not match any documents for this query. Set to `false` to throw an exception if the field is not mapped.
   optional bool ignore_unmapped = 3;
 
   optional InnerHits inner_hits = 4;
@@ -3133,7 +3137,7 @@ message HasParentQuery {
 
   optional string x_name = 2;
 
-  // Indicates whether to ignore an unmapped `parent_type` and not return any documents instead of an error. You can use this parameter to query multiple indexes that may not contain the `parent_type`.
+  // Set to `true` to ignore an unmapped field and not match any documents for this query. Set to `false` to throw an exception if the field is not mapped.
   optional bool ignore_unmapped = 3;
 
   optional InnerHits inner_hits = 4;
@@ -4049,6 +4053,11 @@ message KeyedPercentilesValue {
 
   }
 }
+message KeyedPercentilesValueMap {
+
+  map<string, KeyedPercentilesValue> keyed_percentiles_value_map = 1;
+
+}
 message KnnQuery {
 
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
@@ -4677,7 +4686,7 @@ message MoreLikeThisQuery {
   // The routing value for the document.
   optional string routing = 17;
 
-  optional StopWords stop_words = 18;
+  repeated string stop_words = 18;
 
   // Used in combination with `like` to exclude documents that match a set of terms.
   repeated Like unlike = 19;
@@ -5204,7 +5213,7 @@ message NestedQuery {
 
   optional string x_name = 2;
 
-  // Indicates whether to ignore an unmapped path and not return any documents instead of an error.
+  // Set to `true` to ignore an unmapped field and not match any documents for this query. Set to `false` to throw an exception if the field is not mapped.
   optional bool ignore_unmapped = 3;
 
   optional InnerHits inner_hits = 4;
@@ -5228,7 +5237,7 @@ message NestedSortValue {
   // How to sort hierarchical nested objects.
   optional NestedSortValue nested = 3;
 
-  // The path to the nested objects.
+  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
   string path = 4;
 
 }
@@ -5436,7 +5445,7 @@ message ParentIdQuery {
   // The unique identifier for a resource.
   optional string id = 3;
 
-  // Indicates whether to ignore an unmapped `type` and not return any documents instead of an error.
+  // Set to `true` to ignore an unmapped field and not match any documents for this query. Set to `false` to throw an exception if the field is not mapped.
   optional bool ignore_unmapped = 4;
 
   // The name of a relation in a join field.
@@ -5474,7 +5483,7 @@ message Percentiles {
 
   oneof percentiles {
 
-    map<string, KeyedPercentilesValue> keyed = 1;
+    KeyedPercentilesValueMap keyed = 1;
 
     ArrayPercentilesItemArray array_percentiles_item_array = 2;
 
@@ -7199,7 +7208,7 @@ message SingleMetricAggregateBaseAllOfValue {
 }
 message SlicedScroll {
 
-  // The field to slice on.
+  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
   optional string field = 1;
 
   // The ID of the slice.
@@ -7225,9 +7234,9 @@ message SortCombinations {
     // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
     string field = 1;
 
-    map<string, SortOrder> field_with_direction = 2;
+    StringMap field_with_direction = 2;
 
-    map<string, FieldSort> field_with_order = 3;
+    FieldSortMap field_with_order = 3;
 
     SortOptions options = 4;
 
@@ -7275,8 +7284,7 @@ message SourceConfigParam {
 
     bool fetch = 1;
 
-    // A comma-separated list or a wildcard expression specifying the fields to include in the statistics. Used as the default list unless a specific field list is provided in the `completion_fields` or `fielddata_fields` parameters.
-    repeatedstring fields = 2;
+    StringArray fields = 2;
 
   }
 }
@@ -7663,9 +7671,6 @@ message StatsBucketAggregation {
   optional string format = 4;
 
   optional GapPolicy gap_policy = 5;
-
-}
-message StopWords {
 
 }
 message StoredScriptId {
