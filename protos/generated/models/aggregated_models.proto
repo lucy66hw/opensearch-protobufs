@@ -1211,7 +1211,7 @@ message CompositeAggregation {
   optional int32 size = 6;
 
   // The value sources used to build composite buckets. Keys are returned in the order of the `sources` definition.
-  repeated CompositeAggregationSourceMap sources = 7;
+  map<string, CompositeAggregationSource> sources = 7;
 
 }
 message CompositeAggregationSource {
@@ -1223,11 +1223,6 @@ message CompositeAggregationSource {
   optional CompositeDateHistogramAggregationSource date_histogram = 3;
 
   optional CompositeGeoTileGridAggregationSource geotile_grid = 4;
-
-}
-message CompositeAggregationSourceMap {
-
-  map<string, CompositeAggregationSource> composite_aggregation_source_map = 1;
 
 }
 message CompositeBucket {
@@ -2523,11 +2518,6 @@ message FiltersAggregation {
 message FiltersBucket {
 
   int64 doc_count = 1;
-
-}
-message FloatMap {
-
-  map<string, float> float_map = 1;
 
 }
 message FormatMetricAggregationBase {
@@ -6602,7 +6592,7 @@ message SearchRequestBody {
   optional TrackHits track_total_hits = 8;
 
   // Boosts the `_score` of documents from specified indexes.
-  repeated FloatMap indices_boost = 9;
+  map<string, float> indices_boost = 9;
 
   // Array of wildcard (`*`) patterns. The request returns doc values for field names matching these patterns in the `hits.fields` property of the response.
   repeated FieldAndFormat docvalue_fields = 10;
@@ -8150,7 +8140,7 @@ message TermsAggregation {
   // Coerced unmapped fields into the specified type.
   optional string value_type = 14;
 
-  repeated SortOrderMap order = 15;
+  map<string, SortOrder> order = 15;
 
   optional Script script = 16;
 
