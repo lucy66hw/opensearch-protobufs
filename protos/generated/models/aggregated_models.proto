@@ -7259,11 +7259,6 @@ enum SortOrder {
   SORT_ORDER_DESC = 2;
 
 }
-message SortOrderMap {
-
-  map<string, SortOrder> sort_order_map = 1;
-
-}
 message SourceConfig {
 
   oneof source_config {
@@ -8145,7 +8140,7 @@ message TermsAggregation {
   // Coerced unmapped fields into the specified type.
   optional string value_type = 14;
 
-  repeated SortOrderMap order = 15;
+  repeated StringMap order = 15;
 
   optional Script script = 16;
 
