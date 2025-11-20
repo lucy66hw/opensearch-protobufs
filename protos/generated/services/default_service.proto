@@ -119,7 +119,7 @@ message SearchRequest {
   optional bool request_cache = 22;
 
   // Indicates whether `hits.total` should be rendered as an integer or an object in the rest search response.
-  optional bool rest_total_hits_as_int = 23;
+  optional bool total_hits_as_int = 23;
 
   // A custom value used to route operations to a specific shard.
   repeated string routing = 24;
