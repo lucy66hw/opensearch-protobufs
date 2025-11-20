@@ -8437,15 +8437,18 @@ message UpdateAction {
   // When `true`, uses the contents of `doc` as the value of `upsert`.
   optional bool doc_as_upsert = 3;
 
-  optional Script script = 4;
+  // The sequence number of the document.
+  optional int64 if_seq_no = 4;
+
+  optional Script script = 5;
 
   // When `true`, executes the script whether or not the document exists.
-  optional bool scripted_upsert = 5;
+  optional bool scripted_upsert = 6;
 
   // If the document does not already exist, the contents of `upsert` are inserted as a new document. If the document exists, the `script` is executed.
-  optional bytes upsert = 6;
+  optional bytes upsert = 7;
 
-  optional SourceConfig x_source = 7;
+  optional SourceConfig x_source = 8;
 
 }
 message UpdateOperation {
