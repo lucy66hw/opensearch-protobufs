@@ -23,15 +23,17 @@ export class VersionProcessor {
 
 
   process(currentVersion: string): OpenAPIV3.Document {
-    this._target_version = currentVersion;
-    this._logger.info(`Processing version constraints for OpenSearch ${currentVersion} ...`);
+    const coerced = semver.coerce(currentVersion);
+    this._target_version = coerced?.toString() || currentVersion;
+    this._logger.info(`Processing version constraints for OpenSearch ${this._target_version} ...`);
+
     deleteMatchingKeys(this._spec, (item: any) => {
       if (_.isObject(item) && this.#exclude_per_semver(item)) {
         return true;
       }
       return false;
     });
-    this._logger.info('Version processing complete');
+
     return this._spec;
   }
 
@@ -42,19 +44,23 @@ export class VersionProcessor {
     const x_version_deprecated = semver.coerce(obj['x-version-deprecated'] as string)
     const x_version_removed = semver.coerce(obj['x-version-removed'] as string)
 
-    // If field was added in a future version, exclude it
-    if (x_version_added !== null && x_version_added !== undefined && !semver.satisfies(this._target_version, `>=${x_version_added.toString()}`)) {
-      return true
+    if (x_version_added !== null) {
+      if (semver.gt(x_version_added, this._target_version)) {
+          return true
+      }
     }
 
-    // If field was deprecated in current version or earlier, exclude it
-    if (x_version_deprecated !== null && x_version_deprecated !== undefined && !semver.satisfies(this._target_version, `<${x_version_deprecated.toString()}`)) {
-      return true
+
+    if (x_version_deprecated !== null) {
+      if (semver.lte(x_version_deprecated, this._target_version)) {
+          return true
+      }
     }
 
-    // If field was removed in current version or earlier, exclude it
-    if (x_version_removed !== null && x_version_removed !== undefined && !semver.satisfies(this._target_version, `<${x_version_removed.toString()}`)) {
-      return true
+    if (x_version_removed !== null) {
+      if (semver.lte(x_version_removed, this._target_version)) {
+          return true
+      }
     }
 
     return false
