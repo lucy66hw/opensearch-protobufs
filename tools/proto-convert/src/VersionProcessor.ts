@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import * as semver from 'semver';
 import Logger from './utils/logger';
-import { deleteMatchingKeys } from './utils/helper';
+import { deleteMatchingKeys, remove_unused } from './utils/helper';
 import type { OpenAPIV3 } from 'openapi-types';
 
 /**
@@ -27,13 +27,10 @@ export class VersionProcessor {
     this._target_version = coerced?.toString() || currentVersion;
     this._logger.info(`Processing version constraints for OpenSearch ${this._target_version} ...`);
 
-    deleteMatchingKeys(this._spec, (item: any) => {
-      if (_.isObject(item) && this.#exclude_per_semver(item)) {
-        return true;
-      }
-      return false;
-    });
+    deleteMatchingKeys(this._spec, this.#exclude_per_semver.bind(this));
+    remove_unused(this._spec);
 
+    this._logger.info('Version processing complete');
     return this._spec;
   }
 
