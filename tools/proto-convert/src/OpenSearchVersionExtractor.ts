@@ -10,7 +10,7 @@ import type { OpenAPIV3 } from 'openapi-types';
  * - x-version-deprecated: Removes fields deprecated in current version or earlier
  * - x-version-removed: Removes fields removed before current version
  */
-export class VersionProcessor {
+export class OpenSearchVersionExtractor {
   private _logger: Logger;
   private _spec: OpenAPIV3.Document;
   private _target_version: string;
@@ -54,11 +54,12 @@ export class VersionProcessor {
       }
     }
 
-    if (x_version_removed !== null) {
-      if (semver.lte(x_version_removed, this._target_version)) {
-          return true
-      }
-    }
+    // TODO: Uncomment this when figure out https://github.com/opensearch-project/opensearch-api-specification/blob/61777cdbe5bc32204640e6e236daf7cf71aa871d/spec/schemas/_common.yaml#L12
+    // if (x_version_removed !== null) {
+    //   if (semver.lte(x_version_removed, this._target_version)) {
+    //       return true
+    //   }
+    // }
 
     return false
   }

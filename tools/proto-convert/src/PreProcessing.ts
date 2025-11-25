@@ -7,7 +7,7 @@ import * as path from 'path';
 import {SchemaModifier} from "./SchemaModifier";
 import {VendorExtensionProcessor} from "./VendorExtensionProcessor";
 import {GlobalParameterConsolidator} from "./GlobalParamWrapper";
-import {VersionProcessor} from "./VersionProcessor";
+import {OpenSearchVersionExtractor} from "./OpenSearchVersionExtractor";
 import type {OpenAPIV3} from "openapi-types";
 
 let config_filtered_path: string[] | undefined;
@@ -52,7 +52,7 @@ try {
   logger.info(`PreProcessing ${opts.filtered_path.join(', ')} into ${opts.output} ...`)
   const original_spec = read_yaml(opts.input)
   const filtered_spec = new Filter().filter_spec(original_spec, opts.filtered_path);
-  const version_processed_spec = new VersionProcessor(filtered_spec, logger).process(opts.opensearchVersion);
+  const version_processed_spec = new OpenSearchVersionExtractor(filtered_spec, logger).process(opts.opensearchVersion);
   const sanitized_spec = new Sanitizer().sanitize(version_processed_spec);
   const consolidated_spec = new GlobalParameterConsolidator(sanitized_spec).consolidate();
   const vendor_processed_spec = new VendorExtensionProcessor(consolidated_spec, logger).process();
