@@ -30,6 +30,7 @@ import "{{{import}}}.proto";
 {{/oneOf}}
 {{^oneOf}}
   {{#vars}}
+  {{^vendorExtensions.x-protobuf-oneof-property}}
   {{#description}}
   // {{{.}}}
   {{/description}}
@@ -47,8 +48,34 @@ import "{{{import}}}.proto";
 
   {{enumName}} {{name}} = {{vendorExtensions.x-protobuf-index}};
   {{/isEnum}}
-
+  {{/vendorExtensions.x-protobuf-oneof-property}}
   {{/vars}}
+  {{#vendorExtensions.x-protobuf-minmax-schema}}
+  oneof min_max_properties_choice {
+  {{#vars}}
+
+  {{#vendorExtensions.x-protobuf-oneof-property}}
+    {{#description}}
+    // {{{.}}}
+    {{/description}}
+    {{^isEnum}}
+    {{#vendorExtensions.x-protobuf-type}}{{{.}}} {{/vendorExtensions.x-protobuf-type}}{{{vendorExtensions.x-protobuf-data-type}}} {{{name}}} = {{vendorExtensions.x-protobuf-index}}{{#vendorExtensions.x-protobuf-packed}} [packed=true]{{/vendorExtensions.x-protobuf-packed}};
+    {{/isEnum}}
+    {{#isEnum}}
+    enum {{enumName}} {
+      {{#allowableValues}}
+      {{#enumVars}}
+      {{{name}}} = {{{protobuf-enum-index}}};
+      {{/enumVars}}
+      {{/allowableValues}}
+    }
+
+    {{enumName}} {{name}} = {{vendorExtensions.x-protobuf-index}};
+    {{/isEnum}}
+  {{/vendorExtensions.x-protobuf-oneof-property}}
+  {{/vars}}
+  }
+  {{/vendorExtensions.x-protobuf-minmax-schema}}
 {{/oneOf}}
 }
 {{/isEnum}}
