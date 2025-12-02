@@ -70,4 +70,4 @@ Thumbs.db
 protos/generated/.openapi-generator/
 protos/generated/.openapi-generator-ignore
 /cloned-repo
-opensearch-openapi.yaml
+#opensearch-openapi.yaml
