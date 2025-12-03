@@ -2639,6 +2639,54 @@ enum GeoValidationMethod {
   GEO_VALIDATION_METHOD_IGNORE_MALFORMED = 2;
   GEO_VALIDATION_METHOD_STRICT = 3;
 }
+message GetResult {
+  optional ObjectMap fields = 1;
+
+  bool found = 2;
+
+  // The type of document or resource.
+  optional string x_type = 3;
+
+  string x_index = 4;
+
+  // The unique identifier for a resource.
+  string x_id = 5;
+
+  optional int64 x_primary_term = 6;
+
+  optional string x_routing = 7;
+
+  // The sequence number of the document.
+  optional int64 x_seq_no = 8;
+
+  optional bytes x_source = 9;
+
+  optional int64 x_version = 10;
+}
+message GetResultBase {
+  optional ObjectMap fields = 1;
+
+  bool found = 2;
+
+  // The type of document or resource.
+  optional string x_type = 3;
+
+  string x_index = 4;
+
+  // The unique identifier for a resource.
+  string x_id = 5;
+
+  optional int64 x_primary_term = 6;
+
+  optional string x_routing = 7;
+
+  // The sequence number of the document.
+  optional int64 x_seq_no = 8;
+
+  optional bytes x_source = 9;
+
+  optional int64 x_version = 10;
+}
 message GlobalAggregate {
   // The custom metadata attached to a resource.
   optional ObjectMap meta = 1;
@@ -3267,6 +3315,30 @@ message InlineGetDictUserDefined {
   optional bytes x_source = 6;
 
   optional ObjectMap metadata_fields = 7;
+}
+message InlineObject {
+  optional ObjectMap fields = 1;
+
+  bool found = 2;
+
+  // The type of document or resource.
+  optional string x_type = 3;
+
+  string x_index = 4;
+
+  // The unique identifier for a resource.
+  string x_id = 5;
+
+  optional int64 x_primary_term = 6;
+
+  optional string x_routing = 7;
+
+  // The sequence number of the document.
+  optional int64 x_seq_no = 8;
+
+  optional bytes x_source = 9;
+
+  optional int64 x_version = 10;
 }
 message InlineScript {
   // Specifies any named parameters that are passed into the script as variables. Use parameters instead of hard-coded values to decrease compilation time.
@@ -5471,6 +5543,14 @@ message ResponseItem {
 
   optional int64 x_version = 12;
 }
+enum Result {
+  RESULT_UNSPECIFIED = 0;
+  RESULT_CREATED = 1;
+  RESULT_DELETED = 2;
+  RESULT_NOOP = 3;
+  RESULT_NOT_FOUND = 4;
+  RESULT_UPDATED = 5;
+}
 message ReverseNestedAggregate {
   // The custom metadata attached to a resource.
   optional ObjectMap meta = 1;
@@ -7424,6 +7504,29 @@ message WriteOperation {
 
   // When `true`, require that all actions target an index alias rather than an index. Default is `false`.
   optional bool require_alias = 5;
+}
+message WriteResponseBase {
+  Result result = 1;
+
+  optional bool forced_refresh = 2;
+
+  // The type of document or resource.
+  optional string x_type = 3;
+
+  // The unique identifier for a resource.
+  string x_id = 4;
+
+  string x_index = 5;
+
+  // The primary term of the document.
+  int64 x_primary_term = 6;
+
+  // The sequence number of the document.
+  int64 x_seq_no = 7;
+
+  ShardStatistics x_shards = 8;
+
+  int64 x_version = 9;
 }
 message XyShape {
   optional string type = 1;

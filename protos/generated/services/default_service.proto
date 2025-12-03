@@ -48,6 +48,175 @@ message BulkRequest {
   optional GlobalParams global_params = 13;
 }
 
+message DeleteRequest {
+  // The unique identifier for the document.
+  string id = 1;
+
+  // Name of the target index.
+  string index = 2;
+
+  // Only perform the operation if the document has this primary term.
+  optional int64 if_primary_term = 3;
+
+  // Only perform the operation if the document has this sequence number.
+  optional int64 if_seq_no = 4;
+
+  // If `true`, OpenSearch refreshes the affected shards to make this operation visible to search, if `wait_for` then wait for a refresh to make this operation visible to search, if `false` do nothing with refreshes. Valid values: `true`, `false`, `wait_for`.
+  optional Refresh refresh = 5;
+
+  // A custom value used to route operations to a specific shard.
+  repeated string routing = 6;
+
+  // Period to wait for active shards.
+  optional string timeout = 7;
+
+  // Explicit version number for concurrency control. The specified version must match the current version of the document for the request to succeed.
+  optional int64 version = 8;
+
+  // The specific version type: `external`, `external_gte`.
+  optional VersionType version_type = 9;
+
+  // The number of shard copies that must be active before proceeding with the operation. Set to `all` or any positive integer up to the total number of shards in the index (`number_of_replicas+1`).
+  optional WaitForActiveShards wait_for_active_shards = 10;
+
+  // Global query parameters
+  optional GlobalParams global_params = 11;
+}
+
+message ExistsRequest {
+  // Identifier of the document.
+  string id = 1;
+
+  // A comma-separated list of data streams, indexes, and aliases. Supports wildcards (`*`).
+  string index = 2;
+
+  // `true` or `false` to return the `_source` field or not, or a list of fields to return.
+  optional SourceConfigParam x_source = 3;
+
+  // A comma-separated list of source fields to exclude in the response.
+  repeated string x_source_excludes = 4;
+
+  // A comma-separated list of source fields to include in the response.
+  repeated string x_source_includes = 5;
+
+  // Specifies the node or shard the operation should be performed on. Random by default.
+  optional string preference = 6;
+
+  // If `true`, the request is real time as opposed to near real time.
+  optional bool realtime = 7;
+
+  // If `true`, OpenSearch refreshes all shards involved in the delete by query after the request completes.
+  optional Refresh refresh = 8;
+
+  // Target the specified primary shard.
+  repeated string routing = 9;
+
+  // List of stored fields to return as part of a hit. If no fields are specified, no stored fields are included in the response. If this field is specified, the `_source` parameter defaults to false.
+  repeated string stored_fields = 10;
+
+  // Explicit version number for concurrency control. The specified version must match the current version of the document for the request to succeed.
+  optional int64 version = 11;
+
+  // The specific version type: `external`, `external_gte`.
+  optional VersionType version_type = 12;
+
+  // Whether to return human-readable values for statistics.
+  optional bool human = 13;
+
+  // Whether to include the stack trace of returned errors.
+  optional bool error_trace = 14;
+
+  // A comma-separated list of filters used to filter the response. Use wildcards to match any field or part of a field's name. To exclude fields, use `-`.
+  repeated string filter_path = 15;
+}
+
+message GetRequest {
+  // The unique identifier of the document.
+  string id = 1;
+
+  // The name of the index containing the document.
+  string index = 2;
+
+  // Set to `true` or `false` to return the `_source` field or not, or a list of fields to return.
+  optional SourceConfigParam x_source = 3;
+
+  // A comma-separated list of source fields to exclude in the response.
+  repeated string x_source_excludes = 4;
+
+  // A comma-separated list of source fields to include in the response.
+  repeated string x_source_includes = 5;
+
+  // Specifies the node or shard the operation should be performed on. Random by default.
+  optional string preference = 6;
+
+  // If `true`, the request is real time as opposed to near real time.
+  optional bool realtime = 7;
+
+  // If `true`, OpenSearch refreshes the affected shards to make this operation visible to search. If `false`, do nothing with refreshes.
+  optional Refresh refresh = 8;
+
+  // Target the specified primary shard.
+  repeated string routing = 9;
+
+  // List of stored fields to return as part of a hit. If no fields are specified, no stored fields are included in the response. If this field is specified, the `_source` parameter defaults to false.
+  repeated string stored_fields = 10;
+
+  // Explicit version number for concurrency control. The specified version must match the current version of the document for the request to succeed.
+  optional int64 version = 11;
+
+  // The specific version type: `internal`, `external`, `external_gte`.
+  optional VersionType version_type = 12;
+
+  // Global query parameters
+  optional GlobalParams global_params = 13;
+}
+
+message IndexRequest {
+  // The unique identifier for the document.
+  string id = 1;
+
+  // Name of the data stream or index to target.
+  string index = 2;
+
+  ObjectMap body = 3;
+
+  // Only perform the operation if the document has this primary term.
+  optional int64 if_primary_term = 4;
+
+  // Only perform the operation if the document has this sequence number.
+  optional int64 if_seq_no = 5;
+
+  // Set to create to only index the document if it does not already exist (put if absent). If a document with the specified `_id` already exists, the indexing operation will fail. Same as using the `<index>/_create` endpoint. Valid values: `index`, `create`. If document id is specified, it defaults to `index`. Otherwise, it defaults to `create`.
+  optional OpType op_type = 6;
+
+  // ID of the pipeline to use to preprocess incoming documents. If the index has a default ingest pipeline specified, then setting the value to `_none` disables the default ingest pipeline for this request. If a final pipeline is configured it will always run, regardless of the value of this parameter.
+  optional string pipeline = 7;
+
+  // If `true`, OpenSearch refreshes the affected shards to make this operation visible to search, if `wait_for` then wait for a refresh to make this operation visible to search, if `false` do nothing with refreshes. Valid values: `true`, `false`, `wait_for`.
+  optional Refresh refresh = 8;
+
+  // If `true`, the destination must be an index alias.
+  optional bool require_alias = 9;
+
+  // A custom value used to route operations to a specific shard.
+  repeated string routing = 10;
+
+  // Period the request waits for the following operations: automatic index creation, dynamic mapping updates, waiting for active shards.
+  optional string timeout = 11;
+
+  // Explicit version number for concurrency control. The specified version must match the current version of the document for the request to succeed.
+  optional int64 version = 12;
+
+  // The specific version type: `external`, `external_gte`.
+  optional VersionType version_type = 13;
+
+  // The number of shard copies that must be active before proceeding with the operation. Set to all or any positive integer up to the total number of shards in the index (`number_of_replicas+1`).
+  optional WaitForActiveShards wait_for_active_shards = 14;
+
+  // Global query parameters
+  optional GlobalParams global_params = 15;
+}
+
 message SearchRequest {
   // Indicates which source fields are returned for matching documents. These fields are returned in the `hits._source` property of the search response. Valid values are: `true` to return the entire document source; `false` to not return the document source; `<string>` to return the source fields that are specified as a comma-separated list (supports wildcard (`*`) patterns).
   optional SourceConfigParam x_source = 1;
