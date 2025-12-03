@@ -3,4 +3,4 @@ paths:
   - /{index}/_bulk
   - /{index}/_search
   - /_search
-  - /{index}/_doc/{id}:
+  - /{index}/_doc/{id}
