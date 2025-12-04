@@ -2806,7 +2806,7 @@ message Highlight {
 
   optional HighlighterEncoder encoder = 23;
 
-  map<string, HighlightField> fields = 24;
+  HighlightFields fields = 24;
 }
 message HighlightBase {
   optional HighlighterType type = 1;
@@ -2922,6 +2922,19 @@ message HighlightField {
 
   // A comma-separated list or a wildcard expression specifying the fields to include in the statistics. Used as the default list unless a specific field list is provided in the `completion_fields` or `fielddata_fields` parameters.
   repeated string matched_fields = 23;
+}
+message HighlightFieldArray {
+  repeated HighlightField highlight_field_array = 1;
+}
+message HighlightFieldMap {
+  map<string, HighlightField> highlight_field_map = 1;
+}
+message HighlightFields {
+  oneof highlight_fields {
+    HighlightFieldMap highlight_field_map = 1;
+
+    HighlightFieldArray highlight_field_array = 2;
+  }
 }
 enum HighlighterEncoder {
   HIGHLIGHTER_ENCODER_UNSPECIFIED = 0;
