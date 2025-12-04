@@ -32695,20 +32695,20 @@ components:
                 description: |-
                   How to handle data streams or indexes that are missing or closed. 
                   When `false`, the request returns an error for any data stream or index that is missing or closed. 
-                  When `true`, the request ignores data streams and indexes in indexes that are missing or closed.
+                  When `true`, the request ignores data streams and indexes in indexes that are missing or closed. 
               include_aliases:
                 type: boolean
                 default: true
                 description: |-
                   How to handle index aliases from the original snapshot. 
                   When `true`, index aliases from the original snapshot are restored. 
-                  When `false`, aliases along with associated indexes are not restored.
+                  When `false`, aliases along with associated indexes are not restored. 
               include_global_state:
                 type: boolean
                 default: false
                 description: |-
                   Whether to restore the current cluster state. When `false`, the cluster state is not restored. 
-                  When `true`, the current cluster state is restored.
+                  When `true`, the current cluster state is restored. 
               index_settings:
                 description: |-
                   A comma-delimited list of settings to add or change in all restored indexes. 
@@ -33469,7 +33469,7 @@ components:
                   state:
                     description: |-
                       Shows the internal representation of the structure, which can
-                      differ from the external representation.
+                      differ from the external representation.                  
       description: ''
     cluster.state___200:
       content:
@@ -51006,7 +51006,9 @@ components:
             encoder:
               $ref: '#/components/schemas/_core.search___HighlighterEncoder'
             fields:
-              $ref: '#/components/schemas/_core.search___HighlightFields'
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/_core.search___HighlightField'
           required:
             - fields
     _core.search___HighlightBase:
@@ -51132,14 +51134,6 @@ components:
           properties:
             matched_fields:
               $ref: '#/components/schemas/_common___Fields'
-    _core.search___HighlightFields:
-      oneOf:
-        - type: object
-          additionalProperties:
-            $ref: '#/components/schemas/_core.search___HighlightField'
-        - type: array
-          items:
-            $ref: '#/components/schemas/_core.search___HighlightField'
     _core.search___Hit:
       type: object
       properties:
