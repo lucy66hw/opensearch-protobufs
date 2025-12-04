@@ -329,9 +329,49 @@ def main():
 
     comparator.print_report()
 
+    # Compare default_service.proto with search.proto and document.proto
+    print("\n" + "="*80)
+    print("COMPARING DEFAULT_SERVICE.PROTO WITH SEARCH.PROTO AND DOCUMENT.PROTO")
+    print("="*80)
+
+    default_service_file = Path("/home/user/opensearch-protobufs/protos/generated/services/default_service.proto")
+    search_file = Path("/home/user/opensearch-protobufs/protos/schemas/search.proto")
+    document_file = Path("/home/user/opensearch-protobufs/protos/schemas/document.proto")
+
+    if default_service_file.exists():
+        print(f"\n📖 Parsing {default_service_file.name}...")
+        default_service_parser = ProtoParser(str(default_service_file))
+        print(f"   Found {len(default_service_parser.get_messages())} messages")
+
+        # Compare with search.proto
+        if search_file.exists():
+            print(f"📖 Parsing {search_file.name}...")
+            search_parser = ProtoParser(str(search_file))
+            print(f"   Found {len(search_parser.get_messages())} messages")
+
+            print(f"\n🔍 Comparing {default_service_file.name} vs {search_file.name}...")
+            service_search_comparator = ProtoComparator()
+            service_search_comparator.compare(default_service_parser, search_parser)
+            service_search_comparator.print_report()
+
+        # Compare with document.proto
+        if document_file.exists():
+            print(f"📖 Parsing {document_file.name}...")
+            document_parser = ProtoParser(str(document_file))
+            print(f"   Found {len(document_parser.get_messages())} messages")
+
+            print(f"\n🔍 Comparing {default_service_file.name} vs {document_file.name}...")
+            service_document_comparator = ProtoComparator()
+            service_document_comparator.compare(default_service_parser, document_parser)
+            service_document_comparator.print_report()
+    else:
+        print(f"⚠️  {default_service_file.name} not found")
+
     # Exit with error code if there are errors
     if comparator.errors or comparator.enum_errors:
         exit(1)
+
+
 
 
 if __name__ == "__main__":
