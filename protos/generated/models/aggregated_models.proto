@@ -50,21 +50,6 @@ message AdjacencyMatrixAggregate {
 
   MultiBucketAggregateBaseAdjacencyMatrixBucketAllOfBuckets buckets = 2;
 }
-message AdjacencyMatrixAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggregations = 3;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggs = 4;
-
-  // Filters used to create buckets. At least one filter is required.
-  map<string, QueryContainer> filters = 5;
-}
 message AdjacencyMatrixBucket {
   int64 doc_count = 1;
 
@@ -197,12 +182,6 @@ message AggregateBase {
   // The custom metadata attached to a resource.
   optional ObjectMap meta = 1;
 }
-message Aggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-}
 message AggregationBreakdown {
   int64 build_aggregation = 1;
 
@@ -227,142 +206,6 @@ message AggregationBreakdown {
   int64 reduce = 11;
 
   int64 reduce_count = 12;
-}
-message AggregationContainer {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  oneof aggregation_container {
-    AdjacencyMatrixAggregation adjacency_matrix = 2;
-
-    AutoDateHistogramAggregation auto_date_histogram = 3;
-
-    AverageAggregation avg = 4;
-
-    AverageBucketAggregation avg_bucket = 5;
-
-    BoxplotAggregation boxplot = 6;
-
-    BucketScriptAggregation bucket_script = 7;
-
-    BucketSelectorAggregation bucket_selector = 8;
-
-    BucketSortAggregation bucket_sort = 9;
-
-    CardinalityAggregation cardinality = 10;
-
-    ChildrenAggregation children = 11;
-
-    CompositeAggregation composite = 12;
-
-    CumulativeCardinalityAggregation cumulative_cardinality = 13;
-
-    CumulativeSumAggregation cumulative_sum = 14;
-
-    DateHistogramAggregation date_histogram = 15;
-
-    DateRangeAggregation date_range = 16;
-
-    DerivativeAggregation derivative = 17;
-
-    DiversifiedSamplerAggregation diversified_sampler = 18;
-
-    ExtendedStatsAggregation extended_stats = 19;
-
-    ExtendedStatsBucketAggregation extended_stats_bucket = 20;
-
-    QueryContainer filter = 21;
-
-    FiltersAggregation filters = 22;
-
-    GeoBoundsAggregation geo_bounds = 23;
-
-    GeoCentroidAggregation geo_centroid = 24;
-
-    GeoDistanceAggregation geo_distance = 25;
-
-    GeoHashGridAggregation geohash_grid = 26;
-
-    GeoTileGridAggregation geotile_grid = 27;
-
-    GlobalAggregation global = 28;
-
-    HistogramAggregation histogram = 29;
-
-    IpRangeAggregation ip_range = 30;
-
-    MatrixStatsAggregation matrix_stats = 31;
-
-    MaxAggregation max = 32;
-
-    MaxBucketAggregation max_bucket = 33;
-
-    MedianAbsoluteDeviationAggregation median_absolute_deviation = 34;
-
-    MinAggregation min = 35;
-
-    MinBucketAggregation min_bucket = 36;
-
-    MissingAggregation missing = 37;
-
-    MovingAverageAggregation moving_avg = 38;
-
-    MovingPercentilesAggregation moving_percentiles = 39;
-
-    MovingFunctionAggregation moving_fn = 40;
-
-    MultiTermsAggregation multi_terms = 41;
-
-    NestedAggregation nested = 42;
-
-    NormalizeAggregation normalize = 43;
-
-    ParentAggregation parent = 44;
-
-    PercentileRanksAggregation percentile_ranks = 45;
-
-    PercentilesAggregation percentiles = 46;
-
-    PercentilesBucketAggregation percentiles_bucket = 47;
-
-    RangeAggregation range = 48;
-
-    RareTermsAggregation rare_terms = 49;
-
-    RateAggregation rate = 50;
-
-    ReverseNestedAggregation reverse_nested = 51;
-
-    SamplerAggregation sampler = 52;
-
-    ScriptedMetricAggregation scripted_metric = 53;
-
-    SerialDifferencingAggregation serial_diff = 54;
-
-    SignificantTermsAggregation significant_terms = 55;
-
-    SignificantTextAggregation significant_text = 56;
-
-    StatsAggregation stats = 57;
-
-    StatsBucketAggregation stats_bucket = 58;
-
-    SumAggregation sum = 59;
-
-    SumBucketAggregation sum_bucket = 60;
-
-    TermsAggregation terms = 61;
-
-    TopHitsAggregation top_hits = 62;
-
-    TTestAggregation t_test = 63;
-
-    ValueCountAggregation value_count = 64;
-
-    WeightedAverageAggregation weighted_avg = 65;
-
-    VariableWidthHistogramAggregation variable_width_histogram = 66;
-  }
 }
 message AggregationProfile {
   AggregationBreakdown breakdown = 1;
@@ -445,32 +288,6 @@ message AggregationProfileDelegateDebugFilter {
 
   optional int32 segments_counted_in_constant_time = 4;
 }
-message AggregationRange {
-  optional AggregationRangeFrom from = 1;
-
-  // Custom key to return the range with.
-  optional string key = 2;
-
-  optional AggregationRangeTo to = 3;
-}
-message AggregationRangeFrom {
-  oneof aggregation_range_from {
-    double double = 1;
-
-    string string = 2;
-
-    NullValue null_value = 3;
-  }
-}
-message AggregationRangeTo {
-  oneof aggregation_range_to {
-    double double = 1;
-
-    string string = 2;
-
-    NullValue null_value = 3;
-  }
-}
 message ArrayPercentilesItem {
   string key = 1;
 
@@ -496,69 +313,6 @@ message AutoDateHistogramAggregate {
 
   // A date histogram interval, similar to `Duration`, with support for additional units: `w` (week), `M` (month), `q` (quarter), and `y` (year).
   string interval = 3;
-}
-message AutoDateHistogramAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggregations = 3;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggs = 4;
-
-  // The target number of buckets.
-  optional int32 buckets = 5;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 6;
-
-  // The date format used to format `key_as_string` in the response. If no `format` is specified, the first date format specified in the field mapping is used.
-  optional string format = 7;
-
-  optional MinimumInterval minimum_interval = 8;
-
-  optional string missing = 9;
-
-  // Time zone specified as a ISO 8601 UTC offset.
-  optional string offset = 10;
-
-  optional ObjectMap params = 11;
-
-  optional Script script = 12;
-
-  // The time zone identifier.
-  optional string time_zone = 13;
-}
-message AverageAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 3;
-
-  optional FieldValue missing = 4;
-
-  optional Script script = 5;
-
-  optional string format = 6;
-}
-message AverageBucketAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  optional BucketsPath buckets_path = 3;
-
-  // `DecimalFormat` pattern for the output value. If specified, the formatted value is returned in the aggregation's `value_as_string` property.
-  optional string format = 4;
-
-  optional GapPolicy gap_policy = 5;
 }
 message AvgAggregate {
   // The custom metadata attached to a resource.
@@ -642,34 +396,6 @@ message BoxPlotAggregate {
 
   optional string upper_as_string = 15;
 }
-message BoxplotAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 3;
-
-  optional FieldValue missing = 4;
-
-  optional Script script = 5;
-
-  // Limits the maximum number of nodes used by the underlying TDigest algorithm to `20 * compression`, enabling control of memory usage and approximation error.
-  optional double compression = 6;
-}
-message BucketAggregationBase {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggregations = 3;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggs = 4;
-}
 message BucketMetricValueAggregate {
   // The custom metadata attached to a resource.
   optional ObjectMap meta = 1;
@@ -680,80 +406,12 @@ message BucketMetricValueAggregate {
 
   repeated string keys = 4;
 }
-message BucketPathAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  optional BucketsPath buckets_path = 3;
-}
-message BucketScriptAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  optional BucketsPath buckets_path = 3;
-
-  // `DecimalFormat` pattern for the output value. If specified, the formatted value is returned in the aggregation's `value_as_string` property.
-  optional string format = 4;
-
-  optional GapPolicy gap_policy = 5;
-
-  optional Script script = 6;
-}
-message BucketSelectorAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  optional BucketsPath buckets_path = 3;
-
-  // `DecimalFormat` pattern for the output value. If specified, the formatted value is returned in the aggregation's `value_as_string` property.
-  optional string format = 4;
-
-  optional GapPolicy gap_policy = 5;
-
-  optional Script script = 6;
-}
-message BucketSortAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // Buckets in positions prior to `from` will be truncated.
-  optional int32 from = 3;
-
-  optional GapPolicy gap_policy = 4;
-
-  // The number of buckets to return. Defaults to all buckets of the parent aggregation.
-  optional int32 size = 5;
-
-  repeated SortCombinations sort = 6;
-}
 message Buckets {
   oneof buckets {
     NullMap keyed = 1;
 
     NullArray null_array = 2;
   }
-}
-message BucketsPath {
-  oneof buckets_path {
-    StringArray string_array = 1;
-
-    StringMap dict = 2;
-  }
-}
-message BucketsQueryContainer {
-  map<string, ObjectMap> null_map = 1;
-
-  repeated ObjectMap null_array = 2;
-
-  map<string, QueryContainer> keyed = 3;
 }
 enum BuiltinHighlighterType {
   BUILTIN_HIGHLIGHTER_TYPE_UNSPECIFIED = 0;
@@ -784,61 +442,11 @@ message BulkResponse {
 
   optional int64 ingest_took = 4;
 }
-message CalendarInterval {
-  oneof calendar_interval {
-    Second second = 1;
-
-    Minute minute = 2;
-
-    Hour hour = 3;
-
-    Day day = 4;
-
-    Week week = 5;
-
-    Month month = 6;
-
-    Quarter quarter = 7;
-
-    Year year = 8;
-  }
-}
 message CardinalityAggregate {
   // The custom metadata attached to a resource.
   optional ObjectMap meta = 1;
 
   int64 value = 2;
-}
-message CardinalityAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 3;
-
-  optional FieldValue missing = 4;
-
-  optional Script script = 5;
-
-  // A unique count below which counts are expected to be close to accurate. This allows to trade memory for accuracy.
-  optional int32 precision_threshold = 6;
-
-  optional CardinalityExecutionMode execution_hint = 7;
-}
-enum CardinalityExecutionMode {
-  CARDINALITY_EXECUTION_MODE_UNSPECIFIED = 0;
-  CARDINALITY_EXECUTION_MODE_DIRECT = 1;
-  CARDINALITY_EXECUTION_MODE_GLOBAL_ORDINALS = 2;
-  CARDINALITY_EXECUTION_MODE_SEGMENT_ORDINALS = 3;
-}
-message ChiSquareHeuristic {
-  // Set to `false` if you defined a custom background filter that represents a different set of documents that you want to compare to.
-  bool background_is_superset = 1;
-
-  // Set to `false` to filter out the terms that appear less often in the subset than in documents outside the subset.
-  bool include_negatives = 2;
 }
 enum ChildScoreMode {
   CHILD_SCORE_MODE_UNSPECIFIED = 0;
@@ -855,21 +463,6 @@ message ChildrenAggregate {
   int64 doc_count = 2;
 
   map<string, Aggregate> aggregations = 3;
-}
-message ChildrenAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggregations = 3;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggs = 4;
-
-  // The name of a relation in a join field.
-  optional string type = 5;
 }
 message ClusterStatistics {
   int32 skipped = 1;
@@ -970,20 +563,6 @@ message CompletionAllOfOptionsInner {
 
   optional bytes x_source = 10;
 }
-message CompletionContext {
-  optional double boost = 1;
-
-  Context context = 2;
-
-  repeated GeoHashPrecision neighbours = 3;
-
-  optional GeoHashPrecision precision = 4;
-
-  optional bool prefix = 5;
-}
-message CompletionContextArray {
-  repeated CompletionContext completion_context_array = 1;
-}
 message CompletionSuggest {
   int32 length = 1;
 
@@ -1037,21 +616,6 @@ message CompletionSuggestOption {
 
   optional bytes x_source = 10;
 }
-message CompletionSuggester {
-  optional string analyzer = 1;
-
-  string field = 2;
-
-  optional int32 size = 3;
-
-  map<string, CompletionContextArray> contexts = 4;
-
-  optional SuggestFuzziness fuzzy = 5;
-
-  optional string regex = 6;
-
-  optional bool skip_duplicates = 7;
-}
 message CompositeAggregate {
   // The custom metadata attached to a resource.
   optional ObjectMap meta = 1;
@@ -1060,129 +624,10 @@ message CompositeAggregate {
 
   map<string, FieldValue> after_key = 3;
 }
-message CompositeAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggregations = 3;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggs = 4;
-
-  map<string, FieldValue> after = 5;
-
-  // The number of composite buckets that should be returned.
-  optional int32 size = 6;
-
-  // The value sources used to build composite buckets. Keys are returned in the order of the `sources` definition.
-  map<string, CompositeAggregationSource> sources = 7;
-}
-message CompositeAggregationSource {
-  optional CompositeTermsAggregationSource terms = 1;
-
-  optional CompositeHistogramAggregationSource histogram = 2;
-
-  optional CompositeDateHistogramAggregationSource date_histogram = 3;
-
-  optional CompositeGeoTileGridAggregationSource geotile_grid = 4;
-}
 message CompositeBucket {
   int64 doc_count = 1;
 
   map<string, FieldValue> key = 2;
-}
-message CompositeDateHistogramAggregationSource {
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 1;
-
-  optional bool missing_bucket = 2;
-
-  optional MissingOrder missing_order = 3;
-
-  optional Script script = 4;
-
-  optional ValueType value_type = 5;
-
-  optional SortOrder order = 6;
-
-  optional string format = 7;
-
-  // A date histogram interval, similar to `Duration`, with support for additional units: `w` (week), `M` (month), `q` (quarter), and `y` (year).
-  optional string calendar_interval = 8;
-
-  // A date histogram interval, similar to `Duration`, with support for additional units: `w` (week), `M` (month), `q` (quarter), and `y` (year).
-  optional string fixed_interval = 9;
-
-  // A duration. Units can be `nanos`, `micros`, `ms` (milliseconds), `s` (seconds), `m` (minutes), `h` (hours) and `d` (days). Also accepts `0` without a unit and `-1` to indicate an unspecified value.
-  optional string offset = 10;
-
-  // The time zone identifier.
-  optional string time_zone = 11;
-}
-message CompositeGeoTileGridAggregationSource {
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 1;
-
-  optional bool missing_bucket = 2;
-
-  optional MissingOrder missing_order = 3;
-
-  optional Script script = 4;
-
-  optional ValueType value_type = 5;
-
-  optional SortOrder order = 6;
-
-  optional int32 precision = 7;
-
-  optional GeoBounds bounds = 8;
-}
-message CompositeHistogramAggregationSource {
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 1;
-
-  optional bool missing_bucket = 2;
-
-  optional MissingOrder missing_order = 3;
-
-  optional Script script = 4;
-
-  optional ValueType value_type = 5;
-
-  optional SortOrder order = 6;
-
-  double interval = 7;
-}
-message CompositeTermsAggregationSource {
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 1;
-
-  optional bool missing_bucket = 2;
-
-  optional MissingOrder missing_order = 3;
-
-  optional Script script = 4;
-
-  optional ValueType value_type = 5;
-
-  optional SortOrder order = 6;
-}
-message CompositeValuesSource {
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 1;
-
-  optional bool missing_bucket = 2;
-
-  optional MissingOrder missing_order = 3;
-
-  optional Script script = 4;
-
-  optional ValueType value_type = 5;
-
-  optional SortOrder order = 6;
 }
 message ConstantScoreQuery {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
@@ -1223,32 +668,6 @@ message CumulativeCardinalityAggregate {
 
   optional string value_as_string = 3;
 }
-message CumulativeCardinalityAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  optional BucketsPath buckets_path = 3;
-
-  // `DecimalFormat` pattern for the output value. If specified, the formatted value is returned in the aggregation's `value_as_string` property.
-  optional string format = 4;
-
-  optional GapPolicy gap_policy = 5;
-}
-message CumulativeSumAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  optional BucketsPath buckets_path = 3;
-
-  // `DecimalFormat` pattern for the output value. If specified, the formatted value is returned in the aggregation's `value_as_string` property.
-  optional string format = 4;
-
-  optional GapPolicy gap_policy = 5;
-}
 message DateDecayPlacement {
   optional double decay = 1;
 
@@ -1266,56 +685,6 @@ message DateHistogramAggregate {
 
   MultiBucketAggregateBaseDateHistogramBucketAllOfBuckets buckets = 2;
 }
-message DateHistogramAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggregations = 3;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggs = 4;
-
-  optional CalendarInterval calendar_interval = 5;
-
-  optional ExtendedBoundsFieldDateMath extended_bounds = 6;
-
-  optional ExtendedBoundsFieldDateMath hard_bounds = 7;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 8;
-
-  // A duration. Units can be `nanos`, `micros`, `ms` (milliseconds), `s` (seconds), `m` (minutes), `h` (hours) and `d` (days). Also accepts `0` without a unit and `-1` to indicate an unspecified value.
-  optional string fixed_interval = 9;
-
-  // The date format used to format `key_as_string` in the response. If no `format` is specified, the first date format specified in the field mapping is used.
-  optional string format = 10;
-
-  // A duration. Units can be `nanos`, `micros`, `ms` (milliseconds), `s` (seconds), `m` (minutes), `h` (hours) and `d` (days). Also accepts `0` without a unit and `-1` to indicate an unspecified value.
-  optional string interval = 11;
-
-  // Only returns buckets that have `min_doc_count` number of documents. By default, all buckets between the first bucket that matches documents and the last one are returned.
-  optional int32 min_doc_count = 12;
-
-  optional string missing = 13;
-
-  // A duration. Units can be `nanos`, `micros`, `ms` (milliseconds), `s` (seconds), `m` (minutes), `h` (hours) and `d` (days). Also accepts `0` without a unit and `-1` to indicate an unspecified value.
-  optional string offset = 14;
-
-  optional HistogramOrder order = 15;
-
-  optional ObjectMap params = 16;
-
-  optional Script script = 17;
-
-  // The time zone identifier.
-  optional string time_zone = 18;
-
-  // Set to `true` to associate a unique string key with each bucket and return the ranges as a hash rather than an array.
-  optional bool keyed = 19;
-}
 message DateHistogramBucket {
   int64 doc_count = 1;
 
@@ -1329,43 +698,6 @@ message DateRangeAggregate {
   optional ObjectMap meta = 1;
 
   MultiBucketAggregateBaseRangeBucketAllOfBuckets buckets = 2;
-}
-message DateRangeAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggregations = 3;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggs = 4;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 5;
-
-  // The date format used to format `from` and `to` in the response.
-  optional string format = 6;
-
-  optional FieldValue missing = 7;
-
-  // Array of date ranges.
-  repeated DateRangeExpression ranges = 8;
-
-  // The time zone identifier.
-  optional string time_zone = 9;
-
-  // Set to `true` to associate a unique string key with each bucket and returns the ranges as a hash rather than an array.
-  optional bool keyed = 10;
-}
-message DateRangeExpression {
-  optional FieldDateMath from = 1;
-
-  // Custom key to return the range with.
-  optional string key = 2;
-
-  optional FieldDateMath to = 3;
 }
 message DateRangeQuery {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
@@ -1423,11 +755,6 @@ message DateTime {
     int64 int64 = 2;
   }
 }
-enum Day {
-  DAY_UNSPECIFIED = 0;
-  DAY_DAY = 1;
-  DAY__1D = 2;
-}
 message DecayFunction {
   optional MultiValueMode multi_value_mode = 1;
 
@@ -1475,19 +802,6 @@ message DerivativeAggregate {
 
   optional string normalized_value_as_string = 5;
 }
-message DerivativeAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  optional BucketsPath buckets_path = 3;
-
-  // `DecimalFormat` pattern for the output value. If specified, the formatted value is returned in the aggregation's `value_as_string` property.
-  optional string format = 4;
-
-  optional GapPolicy gap_policy = 5;
-}
 message DerivedField {
   string name = 1;
 
@@ -1502,29 +816,6 @@ message DerivedField {
   optional bool ignore_malformed = 6;
 
   optional string format = 7;
-}
-message DirectGenerator {
-  string field = 1;
-
-  optional int32 max_edits = 2;
-
-  optional float max_inspections = 3;
-
-  optional float max_term_freq = 4;
-
-  optional float min_doc_freq = 5;
-
-  optional int32 min_word_length = 6;
-
-  optional string post_filter = 7;
-
-  optional string pre_filter = 8;
-
-  optional int32 prefix_length = 9;
-
-  optional int32 size = 10;
-
-  optional SuggestMode suggest_mode = 11;
 }
 message DisMaxQuery {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
@@ -1584,31 +875,6 @@ enum DistanceUnit {
   DISTANCE_UNIT_NMI = 8;
   DISTANCE_UNIT_YD = 9;
 }
-message DiversifiedSamplerAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggregations = 3;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggs = 4;
-
-  optional SamplerAggregationExecutionHint execution_hint = 5;
-
-  // Limits how many documents are permitted per choice of de-duplicating value.
-  optional int32 max_docs_per_value = 6;
-
-  optional Script script = 7;
-
-  // Limits how many top-scoring documents are collected in the sample processed on each shard.
-  optional int32 shard_size = 8;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 9;
-}
 message DoubleArray {
   // The location specified as an array of `[longitude, latitude]`.
   repeated double double_array = 1;
@@ -1658,36 +924,6 @@ message ErrorResponseBase {
   // The HTTP status code.
   int32 status = 2;
 }
-message EwmaModelSettings {
-  optional float alpha = 1;
-}
-message EwmaMovingAverageAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  optional BucketsPath buckets_path = 3;
-
-  // `DecimalFormat` pattern for the output value. If specified, the formatted value is returned in the aggregation's `value_as_string` property.
-  optional string format = 4;
-
-  optional GapPolicy gap_policy = 5;
-
-  optional bool minimize = 6;
-
-  optional int32 predict = 7;
-
-  optional int32 window = 8;
-
-  EwmaMovingAverageAggregationAllOfModel model = 9;
-
-  EwmaModelSettings settings = 10;
-}
-enum EwmaMovingAverageAggregationAllOfModel {
-  EWMA_MOVING_AVERAGE_AGGREGATION_ALL_OF_MODEL_UNSPECIFIED = 0;
-  EWMA_MOVING_AVERAGE_AGGREGATION_ALL_OF_MODEL_EWMA = 1;
-}
 message ExistsQuery {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
@@ -1711,21 +947,6 @@ message Explanation {
   repeated Explanation details = 2;
 
   float value = 3;
-}
-message ExtendedBounds {
-  ObjectMap max = 1;
-
-  ObjectMap min = 2;
-}
-message ExtendedBoundsDouble {
-  double max = 1;
-
-  double min = 2;
-}
-message ExtendedBoundsFieldDateMath {
-  FieldDateMath max = 1;
-
-  FieldDateMath min = 2;
 }
 message ExtendedStatsAggregate {
   // The custom metadata attached to a resource.
@@ -1876,24 +1097,6 @@ message ExtendedStatsAggregateBaseAllOfVarianceSampling {
     NullValue null_value = 2;
   }
 }
-message ExtendedStatsAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 3;
-
-  optional FieldValue missing = 4;
-
-  optional Script script = 5;
-
-  optional string format = 6;
-
-  // The number of standard deviations above/below the mean to display.
-  optional double sigma = 7;
-}
 message ExtendedStatsBucketAggregate {
   // The custom metadata attached to a resource.
   optional ObjectMap meta = 1;
@@ -1943,22 +1146,6 @@ message ExtendedStatsBucketAggregate {
   optional string std_deviation_as_string = 23;
 
   optional StandardDeviationBoundsAsString std_deviation_bounds_as_string = 24;
-}
-message ExtendedStatsBucketAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  optional BucketsPath buckets_path = 3;
-
-  // `DecimalFormat` pattern for the output value. If specified, the formatted value is returned in the aggregation's `value_as_string` property.
-  optional string format = 4;
-
-  optional GapPolicy gap_policy = 5;
-
-  // The number of standard deviations above/below the mean to display.
-  optional double sigma = 6;
 }
 message FetchProfile {
   string type = 1;
@@ -2013,13 +1200,6 @@ message FieldCollapse {
   // The number of concurrent requests that are allowed to be retrieved by the `inner_hits` parameter per group.
   optional int32 max_concurrent_group_searches = 3;
 }
-message FieldDateMath {
-  oneof field_date_math {
-    string expr = 1;
-
-    double value = 2;
-  }
-}
 message FieldLookup {
   // The unique identifier for a resource.
   string id = 1;
@@ -2060,21 +1240,6 @@ enum FieldSortNumericType {
   FIELD_SORT_NUMERIC_TYPE_DATE_NANOS = 2;
   FIELD_SORT_NUMERIC_TYPE_DOUBLE = 3;
   FIELD_SORT_NUMERIC_TYPE_LONG = 4;
-}
-message FieldSuggester {
-  optional string prefix = 1;
-
-  optional string regex = 2;
-
-  optional string text = 3;
-
-  oneof field_suggester {
-    CompletionSuggester completion = 4;
-
-    PhraseSuggester phrase = 5;
-
-    TermSuggester term = 6;
-  }
 }
 enum FieldType {
   FIELD_TYPE_UNSPECIFIED = 0;
@@ -2177,61 +1342,8 @@ message FiltersAggregate {
 
   MultiBucketAggregateBaseFiltersBucketAllOfBuckets buckets = 2;
 }
-message FiltersAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggregations = 3;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggs = 4;
-
-  optional BucketsQueryContainer filters = 5;
-
-  // Set to `true` to add a bucket to the response which will contain all documents that do not match any of the given filters.
-  optional bool other_bucket = 6;
-
-  // The key with which the other bucket is returned.
-  optional string other_bucket_key = 7;
-
-  // By default, the named filters aggregation returns the buckets as an object. Set to `false` to return the buckets as an array of objects.
-  optional bool keyed = 8;
-}
 message FiltersBucket {
   int64 doc_count = 1;
-}
-message FormatMetricAggregationBase {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 3;
-
-  optional FieldValue missing = 4;
-
-  optional Script script = 5;
-
-  optional string format = 6;
-}
-message FormattableMetricAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 3;
-
-  optional FieldValue missing = 4;
-
-  optional Script script = 5;
-
-  optional string format = 6;
 }
 enum FunctionBoostMode {
   FUNCTION_BOOST_MODE_UNSPECIFIED = 0;
@@ -2324,12 +1436,6 @@ message FuzzyQuery {
 
   string field = 9;
 }
-enum GapPolicy {
-  GAP_POLICY_UNSPECIFIED = 0;
-  GAP_POLICY_INSERT_ZEROS = 1;
-  GAP_POLICY_KEEP_VALUES = 2;
-  GAP_POLICY_SKIP = 3;
-}
 message GeoBoundingBoxQuery {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
@@ -2366,22 +1472,6 @@ message GeoBoundsAggregate {
 
   optional GeoBounds bounds = 2;
 }
-message GeoBoundsAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 3;
-
-  optional FieldValue missing = 4;
-
-  optional Script script = 5;
-
-  // Specifies whether the bounding box should be allowed to overlap the international date line.
-  optional bool wrap_longitude = 6;
-}
 message GeoCentroidAggregate {
   // The custom metadata attached to a resource.
   optional ObjectMap meta = 1;
@@ -2389,23 +1479,6 @@ message GeoCentroidAggregate {
   int64 count = 2;
 
   optional GeoLocation location = 3;
-}
-message GeoCentroidAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 3;
-
-  optional FieldValue missing = 4;
-
-  optional Script script = 5;
-
-  optional int64 count = 6;
-
-  optional GeoLocation location = 7;
 }
 message GeoDecayPlacement {
   optional double decay = 1;
@@ -2421,30 +1494,6 @@ message GeoDistanceAggregate {
   optional ObjectMap meta = 1;
 
   MultiBucketAggregateBaseRangeBucketAllOfBuckets buckets = 2;
-}
-message GeoDistanceAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggregations = 3;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggs = 4;
-
-  optional GeoDistanceType distance_type = 5;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 6;
-
-  optional GeoLocation origin = 7;
-
-  // An array of ranges used to bucket documents.
-  repeated AggregationRange ranges = 8;
-
-  optional DistanceUnit unit = 9;
 }
 message GeoDistanceQuery {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
@@ -2504,31 +1553,6 @@ message GeoHashGridAggregate {
 
   MultiBucketAggregateBaseGeoHashGridBucketAllOfBuckets buckets = 2;
 }
-message GeoHashGridAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggregations = 3;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggs = 4;
-
-  optional GeoBounds bounds = 5;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 6;
-
-  optional GeoHashPrecision precision = 7;
-
-  // Allows for more accurate counting of the top cells returned in the final result the aggregation. Defaults to returning `max(10,(size x number-of-shards))` buckets from each shard.
-  optional int32 shard_size = 8;
-
-  // The maximum number of geohash buckets to return.
-  optional int32 size = 9;
-}
 message GeoHashGridBucket {
   int64 doc_count = 1;
 
@@ -2538,15 +1562,6 @@ message GeoHashGridBucket {
 message GeoHashLocation {
   // The geohash string representation of a geographical location.
   string geohash = 1;
-}
-message GeoHashPrecision {
-  oneof geo_hash_precision {
-    // The geohash precision as a geohash length.
-    int32 geohash_length = 1;
-
-    // The geohash precision as a distance measure.
-    string distance = 2;
-  }
 }
 message GeoLocation {
   oneof geo_location {
@@ -2618,32 +1633,6 @@ message GeoTileGridAggregate {
 
   MultiBucketAggregateBaseGeoTileGridBucketAllOfBuckets buckets = 2;
 }
-message GeoTileGridAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggregations = 3;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggs = 4;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 5;
-
-  // The precision level for geo tile calculations.
-  optional GeneralNumber precision = 6;
-
-  // Allows for more accurate counting of the top cells returned in the final result the aggregation. Defaults to returning `max(10,(size x number-of-shards))` buckets from each shard.
-  optional int32 shard_size = 7;
-
-  // The maximum number of buckets to return.
-  optional int32 size = 8;
-
-  optional GeoBounds bounds = 9;
-}
 message GeoTileGridBucket {
   int64 doc_count = 1;
 
@@ -2664,18 +1653,6 @@ message GlobalAggregate {
 
   map<string, Aggregate> aggregations = 3;
 }
-message GlobalAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggregations = 3;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggs = 4;
-}
 message GlobalParams {
   // Whether to return human-readable values for statistics.
   optional bool human = 1;
@@ -2684,10 +1661,6 @@ message GlobalParams {
   optional bool error_trace = 2;
 
   repeated string filter_path = 3;
-}
-message GoogleNormalizedDistanceHeuristic {
-  // Set to `false` if you defined a custom background filter that represents a different set of documents that you want to compare to.
-  optional bool background_is_superset = 1;
 }
 message HasChildQuery {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
@@ -2731,10 +1704,6 @@ message HasParentQuery {
 
   // Indicates whether the relevance score of a matching parent document is aggregated into its child documents.
   optional bool score = 7;
-}
-message HdrMethod {
-  // Specifies the resolution of values for the histogram in number of significant digits.
-  optional int32 number_of_significant_value_digits = 1;
 }
 message HdrPercentileRanksAggregate {
   // The custom metadata attached to a resource.
@@ -2939,7 +1908,8 @@ enum HighlighterOrder {
 }
 enum HighlighterTagsSchema {
   HIGHLIGHTER_TAGS_SCHEMA_UNSPECIFIED = 0;
-  HIGHLIGHTER_TAGS_SCHEMA_STYLED = 1;
+  HIGHLIGHTER_TAGS_SCHEMA_DEFAULT = 1;
+  HIGHLIGHTER_TAGS_SCHEMA_STYLED = 2;
 }
 message HighlighterType {
   oneof highlighter_type {
@@ -2954,57 +1924,12 @@ message HistogramAggregate {
 
   MultiBucketAggregateBaseHistogramBucketAllOfBuckets buckets = 2;
 }
-message HistogramAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggregations = 3;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggs = 4;
-
-  optional ExtendedBoundsDouble extended_bounds = 5;
-
-  optional ExtendedBoundsDouble hard_bounds = 6;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 7;
-
-  // The interval for the buckets. Must be a positive decimal.
-  optional double interval = 8;
-
-  // Only returns buckets that have `min_doc_count` number of documents. By default, the response will fill gaps in the histogram with empty buckets.
-  optional int32 min_doc_count = 9;
-
-  // The value to apply to documents that do not have a value. By default, documents without a value are ignored.
-  optional double missing = 10;
-
-  // By default, the bucket keys start with 0 and then continue in even spaced steps of `interval`. The bucket boundaries can be shifted by using the `offset` option.
-  optional double offset = 11;
-
-  optional HistogramOrder order = 12;
-
-  optional Script script = 13;
-
-  optional string format = 14;
-
-  // If `true`, returns buckets as a hash instead of an array, keyed by the bucket keys.
-  optional bool keyed = 15;
-}
 message HistogramBucket {
   int64 doc_count = 1;
 
   double key = 2;
 
   optional string key_as_string = 3;
-}
-message HistogramOrder {
-  optional SortOrder x_count = 1;
-
-  optional SortOrder x_key = 2;
 }
 message Hit {
   optional ObjectMap fields = 1;
@@ -3135,88 +2060,6 @@ message HitsMetadataTotal {
 
     int64 int64 = 2;
   }
-}
-message HoltLinearModelSettings {
-  optional float alpha = 1;
-
-  optional float beta = 2;
-}
-message HoltMovingAverageAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  optional BucketsPath buckets_path = 3;
-
-  // `DecimalFormat` pattern for the output value. If specified, the formatted value is returned in the aggregation's `value_as_string` property.
-  optional string format = 4;
-
-  optional GapPolicy gap_policy = 5;
-
-  optional bool minimize = 6;
-
-  optional int32 predict = 7;
-
-  optional int32 window = 8;
-
-  HoltMovingAverageAggregationAllOfModel model = 9;
-
-  HoltLinearModelSettings settings = 10;
-}
-enum HoltMovingAverageAggregationAllOfModel {
-  HOLT_MOVING_AVERAGE_AGGREGATION_ALL_OF_MODEL_UNSPECIFIED = 0;
-  HOLT_MOVING_AVERAGE_AGGREGATION_ALL_OF_MODEL_HOLT = 1;
-}
-message HoltWintersModelSettings {
-  optional float alpha = 1;
-
-  optional float beta = 2;
-
-  optional float gamma = 3;
-
-  optional bool pad = 4;
-
-  optional int32 period = 5;
-
-  optional HoltWintersType type = 6;
-}
-message HoltWintersMovingAverageAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  optional BucketsPath buckets_path = 3;
-
-  // `DecimalFormat` pattern for the output value. If specified, the formatted value is returned in the aggregation's `value_as_string` property.
-  optional string format = 4;
-
-  optional GapPolicy gap_policy = 5;
-
-  optional bool minimize = 6;
-
-  optional int32 predict = 7;
-
-  optional int32 window = 8;
-
-  HoltWintersMovingAverageAggregationAllOfModel model = 9;
-
-  HoltWintersModelSettings settings = 10;
-}
-enum HoltWintersMovingAverageAggregationAllOfModel {
-  HOLT_WINTERS_MOVING_AVERAGE_AGGREGATION_ALL_OF_MODEL_UNSPECIFIED = 0;
-  HOLT_WINTERS_MOVING_AVERAGE_AGGREGATION_ALL_OF_MODEL_HOLT_WINTERS = 1;
-}
-enum HoltWintersType {
-  HOLT_WINTERS_TYPE_UNSPECIFIED = 0;
-  HOLT_WINTERS_TYPE_ADD = 1;
-  HOLT_WINTERS_TYPE_MULT = 2;
-}
-enum Hour {
-  HOUR_UNSPECIFIED = 0;
-  HOUR_HOUR = 1;
-  HOUR__1H = 2;
 }
 message HybridQuery {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
@@ -3474,34 +2317,6 @@ message IpRangeAggregate {
 
   MultiBucketAggregateBaseIpRangeBucketAllOfBuckets buckets = 2;
 }
-message IpRangeAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggregations = 3;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggs = 4;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 5;
-
-  // Array of IP ranges.
-  repeated IpRangeAggregationRange ranges = 6;
-}
-message IpRangeAggregationRange {
-  // Start of the range.
-  optional string from = 1;
-
-  // IP range defined as a CIDR mask.
-  optional string mask = 2;
-
-  // End of the range.
-  optional string to = 3;
-}
 message IpRangeBucket {
   int64 doc_count = 1;
 
@@ -3569,9 +2384,6 @@ message KnnQueryRescore {
     RescoreContext context = 2;
   }
 }
-message LaplaceSmoothingModel {
-  double alpha = 1;
-}
 message LatLonGeoLocation {
   // The latitude coordinate.
   double lat = 1;
@@ -3607,41 +2419,6 @@ message LikeDocument {
 
   // The type of document or resource.
   optional string x_type = 9;
-}
-message LinearInterpolationSmoothingModel {
-  double bigram_lambda = 1;
-
-  double trigram_lambda = 2;
-
-  double unigram_lambda = 3;
-}
-message LinearMovingAverageAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  optional BucketsPath buckets_path = 3;
-
-  // `DecimalFormat` pattern for the output value. If specified, the formatted value is returned in the aggregation's `value_as_string` property.
-  optional string format = 4;
-
-  optional GapPolicy gap_policy = 5;
-
-  optional bool minimize = 6;
-
-  optional int32 predict = 7;
-
-  optional int32 window = 8;
-
-  LinearMovingAverageAggregationAllOfModel model = 9;
-
-  // An empty object with no properties.
-  ObjectMap settings = 10;
-}
-enum LinearMovingAverageAggregationAllOfModel {
-  LINEAR_MOVING_AVERAGE_AGGREGATION_ALL_OF_MODEL_UNSPECIFIED = 0;
-  LINEAR_MOVING_AVERAGE_AGGREGATION_ALL_OF_MODEL_LINEAR = 1;
 }
 message LongRareTermsAggregate {
   // The custom metadata attached to a resource.
@@ -3805,18 +2582,6 @@ message MatchQuery {
 
   string field = 15;
 }
-message MatrixAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // A comma-separated list or a wildcard expression specifying the fields to include in the statistics. Used as the default list unless a specific field list is provided in the `completion_fields` or `fielddata_fields` parameters.
-  repeated string fields = 3;
-
-  // The value to apply to documents that do not have a value. By default, documents without a value are ignored.
-  map<string, double> missing = 4;
-}
 message MatrixStatsAggregate {
   // The custom metadata attached to a resource.
   optional ObjectMap meta = 1;
@@ -3824,20 +2589,6 @@ message MatrixStatsAggregate {
   int64 doc_count = 2;
 
   repeated MatrixStatsFields fields = 3;
-}
-message MatrixStatsAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // A comma-separated list or a wildcard expression specifying the fields to include in the statistics. Used as the default list unless a specific field list is provided in the `completion_fields` or `fielddata_fields` parameters.
-  repeated string fields = 3;
-
-  // The value to apply to documents that do not have a value. By default, documents without a value are ignored.
-  map<string, double> missing = 4;
-
-  optional SortMode mode = 5;
 }
 message MatrixStatsFields {
   // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
@@ -3865,34 +2616,6 @@ message MaxAggregate {
 
   optional string value_as_string = 3;
 }
-message MaxAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 3;
-
-  optional FieldValue missing = 4;
-
-  optional Script script = 5;
-
-  optional string format = 6;
-}
-message MaxBucketAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  optional BucketsPath buckets_path = 3;
-
-  // `DecimalFormat` pattern for the output value. If specified, the formatted value is returned in the aggregation's `value_as_string` property.
-  optional string format = 4;
-
-  optional GapPolicy gap_policy = 5;
-}
 message MedianAbsoluteDeviationAggregate {
   // The custom metadata attached to a resource.
   optional ObjectMap meta = 1;
@@ -3900,37 +2623,6 @@ message MedianAbsoluteDeviationAggregate {
   SingleMetricAggregateBaseAllOfValue value = 2;
 
   optional string value_as_string = 3;
-}
-message MedianAbsoluteDeviationAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 3;
-
-  optional FieldValue missing = 4;
-
-  optional Script script = 5;
-
-  optional string format = 6;
-
-  // Limits the maximum number of nodes used by the underlying TDigest algorithm to `20 * compression`, enabling control of memory usage and approximation error.
-  optional double compression = 7;
-}
-message MetricAggregationBase {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 3;
-
-  optional FieldValue missing = 4;
-
-  optional Script script = 5;
 }
 message MinAggregate {
   // The custom metadata attached to a resource.
@@ -3940,54 +2632,12 @@ message MinAggregate {
 
   optional string value_as_string = 3;
 }
-message MinAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 3;
-
-  optional FieldValue missing = 4;
-
-  optional Script script = 5;
-
-  optional string format = 6;
-}
-message MinBucketAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  optional BucketsPath buckets_path = 3;
-
-  // `DecimalFormat` pattern for the output value. If specified, the formatted value is returned in the aggregation's `value_as_string` property.
-  optional string format = 4;
-
-  optional GapPolicy gap_policy = 5;
-}
-enum MinimumInterval {
-  MINIMUM_INTERVAL_UNSPECIFIED = 0;
-  MINIMUM_INTERVAL_DAY = 1;
-  MINIMUM_INTERVAL_HOUR = 2;
-  MINIMUM_INTERVAL_MINUTE = 3;
-  MINIMUM_INTERVAL_MONTH = 4;
-  MINIMUM_INTERVAL_SECOND = 5;
-  MINIMUM_INTERVAL_YEAR = 6;
-}
 message MinimumShouldMatch {
   oneof minimum_should_match {
     int32 int32 = 1;
 
     string string = 2;
   }
-}
-enum Minute {
-  MINUTE_UNSPECIFIED = 0;
-  MINUTE_MINUTE = 1;
-  MINUTE__1M = 2;
 }
 message MissingAggregate {
   // The custom metadata attached to a resource.
@@ -3996,34 +2646,6 @@ message MissingAggregate {
   int64 doc_count = 2;
 
   map<string, Aggregate> aggregations = 3;
-}
-message MissingAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggregations = 3;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggs = 4;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 5;
-
-  optional FieldValue missing = 6;
-}
-enum MissingOrder {
-  MISSING_ORDER_UNSPECIFIED = 0;
-  MISSING_ORDER_DEFAULT = 1;
-  MISSING_ORDER_FIRST = 2;
-  MISSING_ORDER_LAST = 3;
-}
-enum Month {
-  MONTH_UNSPECIFIED = 0;
-  MONTH_MONTH = 1;
-  MONTH__1M = 2;
 }
 message MoreLikeThisQuery {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
@@ -4083,81 +2705,6 @@ message MoreLikeThisQuery {
   optional int64 version = 20;
 
   optional VersionType version_type = 21;
-}
-message MovingAverageAggregation {
-  oneof moving_average_aggregation {
-    LinearMovingAverageAggregation linear_moving_average_aggregation = 1;
-
-    SimpleMovingAverageAggregation simple_moving_average_aggregation = 2;
-
-    EwmaMovingAverageAggregation ewma_moving_average_aggregation = 3;
-
-    HoltMovingAverageAggregation holt_moving_average_aggregation = 4;
-
-    HoltWintersMovingAverageAggregation holt_winters_moving_average_aggregation = 5;
-  }
-}
-message MovingAverageAggregationBase {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  optional BucketsPath buckets_path = 3;
-
-  // `DecimalFormat` pattern for the output value. If specified, the formatted value is returned in the aggregation's `value_as_string` property.
-  optional string format = 4;
-
-  optional GapPolicy gap_policy = 5;
-
-  optional bool minimize = 6;
-
-  optional int32 predict = 7;
-
-  optional int32 window = 8;
-}
-message MovingFunctionAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  optional BucketsPath buckets_path = 3;
-
-  // `DecimalFormat` pattern for the output value. If specified, the formatted value is returned in the aggregation's `value_as_string` property.
-  optional string format = 4;
-
-  optional GapPolicy gap_policy = 5;
-
-  // The script that should be executed on each window of data.
-  optional string script = 6;
-
-  // By default, the window consists of the last n values excluding the current bucket. Increasing `shift` by 1, moves the starting window position by 1 to the right.
-  optional int32 shift = 7;
-
-  // The size of window to \"slide\" across the histogram.
-  optional int32 window = 8;
-}
-message MovingPercentilesAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  optional BucketsPath buckets_path = 3;
-
-  // `DecimalFormat` pattern for the output value. If specified, the formatted value is returned in the aggregation's `value_as_string` property.
-  optional string format = 4;
-
-  optional GapPolicy gap_policy = 5;
-
-  // The size of window to \"slide\" across the histogram.
-  optional int32 window = 6;
-
-  // By default, the window consists of the last n values excluding the current bucket. Increasing `shift` by 1, moves the starting window position by 1 to the right.
-  optional int32 shift = 7;
-
-  optional bool keyed = 8;
 }
 message MultiBucketAggregateBase {
   // The custom metadata attached to a resource.
@@ -4392,12 +2939,6 @@ message MultiMatchQuery {
 
   optional ZeroTermsQuery zero_terms_query = 18;
 }
-message MultiTermLookup {
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  string field = 1;
-
-  optional FieldValue missing = 2;
-}
 message MultiTermsAggregate {
   // The custom metadata attached to a resource.
   optional ObjectMap meta = 1;
@@ -4407,40 +2948,6 @@ message MultiTermsAggregate {
   optional int64 doc_count_error_upper_bound = 3;
 
   optional int64 sum_other_doc_count = 4;
-}
-message MultiTermsAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggregations = 3;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggs = 4;
-
-  optional TermsAggregationCollectMode collect_mode = 5;
-
-  optional HistogramOrder order = 6;
-
-  // The minimum number of documents in a bucket for it to be returned.
-  optional int32 min_doc_count = 7;
-
-  // The minimum number of documents in a bucket on each shard for it to be returned.
-  optional int32 shard_min_doc_count = 8;
-
-  // The number of candidate terms produced by each shard. By default, `shard_size` will be automatically estimated based on the number of shards and the `size` parameter.
-  optional int32 shard_size = 9;
-
-  // Calculates the doc count error on per term basis.
-  optional bool show_term_doc_count_error = 10;
-
-  // The number of term buckets should be returned out of the overall terms list.
-  optional int32 size = 11;
-
-  // The field from which to generate sets of terms.
-  repeated MultiTermLookup terms = 12;
 }
 message MultiTermsBucket {
   int64 doc_count = 1;
@@ -4458,13 +2965,6 @@ enum MultiValueMode {
   MULTI_VALUE_MODE_MIN = 3;
   MULTI_VALUE_MODE_SUM = 4;
 }
-message MutualInformationHeuristic {
-  // Set to `false` if you defined a custom background filter that represents a different set of documents that you want to compare to.
-  optional bool background_is_superset = 1;
-
-  // Set to `false` to filter out the terms that appear less often in the subset than in documents outside the subset.
-  optional bool include_negatives = 2;
-}
 message NestedAggregate {
   // The custom metadata attached to a resource.
   optional ObjectMap meta = 1;
@@ -4472,21 +2972,6 @@ message NestedAggregate {
   int64 doc_count = 2;
 
   map<string, Aggregate> aggregations = 3;
-}
-message NestedAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggregations = 3;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggs = 4;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string path = 5;
 }
 message NestedIdentity {
   // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
@@ -4526,52 +3011,6 @@ message NestedSortValue {
 
   // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
   string path = 4;
-}
-message NeuralQuery {
-  // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
-  optional float boost = 1;
-
-  optional string x_name = 2;
-
-  optional string query_text = 3;
-
-  optional string query_image = 4;
-
-  optional string model_id = 5;
-
-  optional int32 k = 6;
-
-  optional float min_score = 7;
-
-  optional float max_distance = 8;
-
-  optional QueryContainer filter = 9;
-
-  string field = 10;
-}
-message NormalizeAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  optional BucketsPath buckets_path = 3;
-
-  // `DecimalFormat` pattern for the output value. If specified, the formatted value is returned in the aggregation's `value_as_string` property.
-  optional string format = 4;
-
-  optional GapPolicy gap_policy = 5;
-
-  optional NormalizeMethod method = 6;
-}
-enum NormalizeMethod {
-  NORMALIZE_METHOD_UNSPECIFIED = 0;
-  NORMALIZE_METHOD_MEAN = 1;
-  NORMALIZE_METHOD_PERCENT_OF_SUM = 2;
-  NORMALIZE_METHOD_RESCALE_0_1 = 3;
-  NORMALIZE_METHOD_RESCALE_0_100 = 4;
-  NORMALIZE_METHOD_SOFTMAX = 5;
-  NORMALIZE_METHOD_Z_SCORE = 6;
 }
 message NullArray {
   repeated ObjectMap null_array = 1;
@@ -4676,21 +3115,6 @@ message ParentAggregate {
 
   map<string, Aggregate> aggregations = 3;
 }
-message ParentAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggregations = 3;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggs = 4;
-
-  // The name of a relation in a join field.
-  optional string type = 5;
-}
 message ParentIdQuery {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
@@ -4706,31 +3130,6 @@ message ParentIdQuery {
   // The name of a relation in a join field.
   optional string type = 5;
 }
-message PercentileRanksAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 3;
-
-  optional FieldValue missing = 4;
-
-  optional Script script = 5;
-
-  optional string format = 6;
-
-  // By default, the aggregation associates a unique string key with each bucket and returns the ranges as a hash rather than an array. Set to `false` to disable this behavior.
-  optional bool keyed = 7;
-
-  // An array of values for which to calculate the percentile ranks.
-  repeated double values = 8;
-
-  optional HdrMethod hdr = 9;
-
-  optional TDigest tdigest = 10;
-}
 message Percentiles {
   oneof percentiles {
     KeyedPercentilesValueMap keyed = 1;
@@ -4744,82 +3143,11 @@ message PercentilesAggregateBase {
 
   Percentiles values = 2;
 }
-message PercentilesAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 3;
-
-  optional FieldValue missing = 4;
-
-  optional Script script = 5;
-
-  optional string format = 6;
-
-  // By default, the aggregation associates a unique string key with each bucket and returns the ranges as a hash rather than an array. Set to `false` to disable this behavior.
-  optional bool keyed = 7;
-
-  // The percentiles to calculate.
-  repeated double percents = 8;
-
-  optional HdrMethod hdr = 9;
-
-  optional TDigest tdigest = 10;
-}
 message PercentilesBucketAggregate {
   // The custom metadata attached to a resource.
   optional ObjectMap meta = 1;
 
   Percentiles values = 2;
-}
-message PercentilesBucketAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  optional BucketsPath buckets_path = 3;
-
-  // `DecimalFormat` pattern for the output value. If specified, the formatted value is returned in the aggregation's `value_as_string` property.
-  optional string format = 4;
-
-  optional GapPolicy gap_policy = 5;
-
-  // The list of percentiles to calculate.
-  repeated double percents = 6;
-}
-message PercolateQuery {
-  // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
-  optional float boost = 1;
-
-  optional string x_name = 2;
-
-  optional ObjectMap document = 3;
-
-  // An array of sources of the documents being percolated.
-  repeated ObjectMap documents = 4;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  string field = 5;
-
-  // The unique identifier for a resource.
-  optional string id = 6;
-
-  optional string index = 7;
-
-  // The suffix used for the `_percolator_document_slot` field when multiple `percolate` queries are specified.
-  optional string name = 8;
-
-  // Preference used to fetch document to percolate.
-  optional string preference = 9;
-
-  // The routing value for the document.
-  optional string routing = 10;
-
-  optional int64 version = 11;
 }
 message PhaseTook {
   // The time taken for the distributed frequency search `pre-query` phase.
@@ -4849,23 +3177,6 @@ message PhraseSuggest {
 
   repeated PhraseSuggestOption options = 4;
 }
-message PhraseSuggestCollate {
-  optional ObjectMap params = 1;
-
-  optional bool prune = 2;
-
-  PhraseSuggestCollateQuery query = 3;
-}
-message PhraseSuggestCollateQuery {
-  optional string id = 1;
-
-  optional string source = 2;
-}
-message PhraseSuggestHighlight {
-  string post_tag = 1;
-
-  string pre_tag = 2;
-}
 message PhraseSuggestOption {
   string text = 1;
 
@@ -4874,52 +3185,6 @@ message PhraseSuggestOption {
   optional string highlighted = 3;
 
   optional bool collate_match = 4;
-}
-message PhraseSuggester {
-  optional string analyzer = 1;
-
-  string field = 2;
-
-  optional int32 size = 3;
-
-  optional PhraseSuggestCollate collate = 4;
-
-  optional double confidence = 5;
-
-  repeated DirectGenerator direct_generator = 6;
-
-  optional bool force_unigrams = 7;
-
-  optional int32 gram_size = 8;
-
-  optional PhraseSuggestHighlight highlight = 9;
-
-  optional double max_errors = 10;
-
-  optional double real_word_error_likelihood = 11;
-
-  optional string separator = 12;
-
-  optional int32 shard_size = 13;
-
-  optional SmoothingModel smoothing = 14;
-
-  optional string text = 15;
-
-  optional int32 token_limit = 16;
-}
-message PipelineAggregationBase {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  optional BucketsPath buckets_path = 3;
-
-  // `DecimalFormat` pattern for the output value. If specified, the formatted value is returned in the aggregation's `value_as_string` property.
-  optional string format = 4;
-
-  optional GapPolicy gap_policy = 5;
 }
 message PointInTimeReference {
   // The unique identifier for a resource.
@@ -4961,11 +3226,6 @@ message ProcessorExecutionDetail {
 }
 message Profile {
   repeated ShardProfile shards = 1;
-}
-enum Quarter {
-  QUARTER_UNSPECIFIED = 0;
-  QUARTER_QUARTER = 1;
-  QUARTER__1Q = 2;
 }
 message QueryBase {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
@@ -5076,70 +3336,64 @@ message QueryContainer {
 
     NestedQuery nested = 29;
 
-    NeuralQuery neural = 30;
-
-    ParentIdQuery parent_id = 31;
-
-    PercolateQuery percolate = 32;
+    ParentIdQuery parent_id = 30;
 
     // Returns documents that contain a specific prefix in a provided field.
-    PrefixQuery prefix = 33;
+    PrefixQuery prefix = 31;
 
-    QueryStringQuery query_string = 34;
+    QueryStringQuery query_string = 32;
 
     // Returns documents that contain terms within a provided range.
-    RangeQuery range = 35;
+    RangeQuery range = 33;
 
-    RankFeatureQuery rank_feature = 36;
+    RankFeatureQuery rank_feature = 34;
 
     // Returns documents that contain terms matching a regular expression.
-    RegexpQuery regexp = 37;
+    RegexpQuery regexp = 35;
 
-    ScriptQuery script = 38;
+    ScriptQuery script = 36;
 
-    ScriptScoreQuery script_score = 39;
+    SimpleQueryStringQuery simple_query_string = 37;
 
-    SimpleQueryStringQuery simple_query_string = 40;
+    SpanContainingQuery span_containing = 38;
 
-    SpanContainingQuery span_containing = 41;
+    SpanFieldMaskingQuery field_masking_span = 39;
 
-    SpanFieldMaskingQuery field_masking_span = 42;
+    SpanFirstQuery span_first = 40;
 
-    SpanFirstQuery span_first = 43;
+    SpanMultiTermQuery span_multi = 41;
 
-    SpanMultiTermQuery span_multi = 44;
+    SpanNearQuery span_near = 42;
 
-    SpanNearQuery span_near = 45;
+    SpanNotQuery span_not = 43;
 
-    SpanNotQuery span_not = 46;
-
-    SpanOrQuery span_or = 47;
+    SpanOrQuery span_or = 44;
 
     // Matches spans containing a term.
-    SpanTermQuery span_term = 48;
+    SpanTermQuery span_term = 45;
 
-    SpanWithinQuery span_within = 49;
+    SpanWithinQuery span_within = 46;
 
     // Return documents using a template query contains placeholders that are resolved by search request processors during query execution.
-    ObjectMap template = 50;
+    ObjectMap template = 47;
 
     // Returns documents that contain an exact term in a provided field. To return a document, the query term must exactly match the queried field's value, including white space and capitalization.
-    TermQuery term = 51;
+    TermQuery term = 48;
 
     // Returns documents that contain one or more exact terms in a provided field.
-    TermsQuery terms = 52;
+    TermsQuery terms = 49;
 
     // Returns documents that contain a minimum number of exact terms in a provided field. To return a document, a required number of terms must exactly match the field values, including white space and capitalization.
-    TermsSetQuery terms_set = 53;
+    TermsSetQuery terms_set = 50;
 
-    TypeQuery type = 54;
+    TypeQuery type = 51;
 
     // Returns documents that contain terms matching a wildcard pattern.
-    WildcardQuery wildcard = 55;
+    WildcardQuery wildcard = 52;
 
-    WrapperQuery wrapper = 56;
+    WrapperQuery wrapper = 53;
 
-    XyShapeQuery xy_shape = 57;
+    XyShapeQuery xy_shape = 54;
   }
 }
 message QueryProfile {
@@ -5255,34 +3509,6 @@ message RangeAggregateBase {
 
   MultiBucketAggregateBaseRangeBucketAllOfBuckets buckets = 2;
 }
-message RangeAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggregations = 3;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggs = 4;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 5;
-
-  // The value to apply to documents that do not have a value. By default, documents without a value are ignored.
-  optional int32 missing = 6;
-
-  // An array of ranges used to bucket documents.
-  repeated AggregationRange ranges = 7;
-
-  optional Script script = 8;
-
-  // Set to `true` to associate a unique string key with each bucket and return the ranges as a hash rather than an array.
-  optional bool keyed = 9;
-
-  optional string format = 10;
-}
 message RangeBucket {
   int64 doc_count = 1;
 
@@ -5351,35 +3577,6 @@ message RankFeatureQuery {
 
   optional RankFeatureFunctionSigmoid sigmoid = 7;
 }
-message RareTermsAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggregations = 3;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggs = 4;
-
-  repeated string exclude = 5;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 6;
-
-  optional TermsInclude include = 7;
-
-  // The maximum number of documents a term should appear in.
-  optional int64 max_doc_count = 8;
-
-  optional FieldValue missing = 9;
-
-  // The precision of the internal CuckooFilters. Smaller precision leads to better approximation, but higher memory usage.
-  optional double precision = 10;
-
-  optional string value_type = 11;
-}
 message RateAggregate {
   // The custom metadata attached to a resource.
   optional ObjectMap meta = 1;
@@ -5387,30 +3584,6 @@ message RateAggregate {
   double value = 2;
 
   optional string value_as_string = 3;
-}
-message RateAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 3;
-
-  optional FieldValue missing = 4;
-
-  optional Script script = 5;
-
-  optional string format = 6;
-
-  optional CalendarInterval unit = 7;
-
-  optional RateMode mode = 8;
-}
-enum RateMode {
-  RATE_MODE_UNSPECIFIED = 0;
-  RATE_MODE_SUM = 1;
-  RATE_MODE_VALUE_COUNT = 2;
 }
 enum Refresh {
   REFRESH_UNSPECIFIED = 0;
@@ -5499,21 +3672,6 @@ message ReverseNestedAggregate {
 
   map<string, Aggregate> aggregations = 3;
 }
-message ReverseNestedAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggregations = 3;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggs = 4;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string path = 5;
-}
 message SamplerAggregate {
   // The custom metadata attached to a resource.
   optional ObjectMap meta = 1;
@@ -5521,27 +3679,6 @@ message SamplerAggregate {
   int64 doc_count = 2;
 
   map<string, Aggregate> aggregations = 3;
-}
-message SamplerAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggregations = 3;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggs = 4;
-
-  // Limits how many top-scoring documents are collected in the sample processed on each shard.
-  optional int32 shard_size = 5;
-}
-enum SamplerAggregationExecutionHint {
-  SAMPLER_AGGREGATION_EXECUTION_HINT_UNSPECIFIED = 0;
-  SAMPLER_AGGREGATION_EXECUTION_HINT_BYTES_HASH = 1;
-  SAMPLER_AGGREGATION_EXECUTION_HINT_GLOBAL_ORDINALS = 2;
-  SAMPLER_AGGREGATION_EXECUTION_HINT_MAP = 3;
 }
 enum ScoreMode {
   SCORE_MODE_UNSPECIFIED = 0;
@@ -5590,19 +3727,6 @@ message ScriptQuery {
 message ScriptScoreFunction {
   Script script = 1;
 }
-message ScriptScoreQuery {
-  // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
-  optional float boost = 1;
-
-  optional string x_name = 2;
-
-  // Documents with a score lower than this floating point number are excluded from the search results.
-  optional float min_score = 3;
-
-  QueryContainer query = 4;
-
-  Script script = 5;
-}
 message ScriptSort {
   optional SortOrder order = 1;
 
@@ -5624,38 +3748,11 @@ enum ScriptSortType {
   SCRIPT_SORT_TYPE_STRING = 2;
   SCRIPT_SORT_TYPE_VERSION = 3;
 }
-message ScriptedHeuristic {
-  Script script = 1;
-}
 message ScriptedMetricAggregate {
   // The custom metadata attached to a resource.
   optional ObjectMap meta = 1;
 
   ObjectMap value = 2;
-}
-message ScriptedMetricAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 3;
-
-  optional FieldValue missing = 4;
-
-  optional Script script = 5;
-
-  optional Script combine_script = 6;
-
-  optional Script init_script = 7;
-
-  optional Script map_script = 8;
-
-  // A global object with script parameters for `init`, `map` and `combine` scripts. It is shared between the scripts.
-  optional ObjectMap params = 9;
-
-  optional Script reduce_script = 10;
 }
 message SearchProfile {
   repeated Collector collector = 1;
@@ -5665,98 +3762,90 @@ message SearchProfile {
   int64 rewrite_time = 3;
 }
 message SearchRequestBody {
-  // Defines the aggregations that are run as part of the search request.
-  map<string, AggregationContainer> aggregations = 1;
-
-  // Defines the aggregations that are run as part of the search request.
-  map<string, AggregationContainer> aggs = 2;
-
-  optional FieldCollapse collapse = 3;
+  optional FieldCollapse collapse = 1;
 
   // If `true`, returns detailed information about score computation as part of a hit.
-  optional bool explain = 4;
+  optional bool explain = 2;
 
   // Configuration of search extensions defined by OpenSearch plugins.
-  optional ObjectMap ext = 5;
+  optional ObjectMap ext = 3;
 
   // Starting document offset. Needs to be non-negative. By default, you cannot page through more than 10,000 hits using the `from` and `size` parameters. To page through more hits, use the `search_after` parameter.
-  optional int32 from = 6;
+  optional int32 from = 4;
 
-  optional Highlight highlight = 7;
+  optional Highlight highlight = 5;
 
-  optional TrackHits track_total_hits = 8;
+  optional TrackHits track_total_hits = 6;
 
   // Boosts the `_score` of documents from specified indexes.
-  map<string, float> indices_boost = 9;
+  map<string, float> indices_boost = 7;
 
   // Array of wildcard (`*`) patterns. The request returns doc values for field names matching these patterns in the `hits.fields` property of the response.
-  repeated FieldAndFormat docvalue_fields = 10;
+  repeated FieldAndFormat docvalue_fields = 8;
 
   // Minimum `_score` for matching documents. Documents with a lower `_score` are not included in the search results.
-  optional float min_score = 11;
+  optional float min_score = 9;
 
-  optional QueryContainer post_filter = 12;
+  optional QueryContainer post_filter = 10;
 
   // Set to `true` to return detailed timing information about the execution of individual components in a search request. NOTE: This is a debugging tool and adds significant overhead to search execution.
-  optional bool profile = 13;
+  optional bool profile = 11;
 
   // Customizable sequence of processing stages applied to search queries.
-  optional string search_pipeline = 14;
+  optional string search_pipeline = 12;
 
   // Enables or disables verbose mode for the search pipeline.
-  optional bool verbose_pipeline = 15;
+  optional bool verbose_pipeline = 13;
 
-  optional QueryContainer query = 16;
+  optional QueryContainer query = 14;
 
   // Can be used to improve precision by reordering just the top (for example 100 - 500) documents returned by the `query` and `post_filter` phases.
-  repeated Rescore rescore = 17;
+  repeated Rescore rescore = 15;
 
   // Retrieve a script evaluation (based on different fields) for each hit.
-  map<string, ScriptField> script_fields = 18;
+  map<string, ScriptField> script_fields = 16;
 
-  repeated FieldValue search_after = 19;
+  repeated FieldValue search_after = 17;
 
   // The number of hits to return. By default, you cannot page through more than 10,000 hits using the `from` and `size` parameters. To page through more hits, use the `search_after` parameter.
-  optional int32 size = 20;
+  optional int32 size = 18;
 
-  optional SlicedScroll slice = 21;
+  optional SlicedScroll slice = 19;
 
-  repeated SortCombinations sort = 22;
+  repeated SortCombinations sort = 20;
 
   // Array of wildcard (`*`) patterns. The request returns values for field names matching these patterns in the `hits.fields` property of the response.
-  repeated FieldAndFormat fields = 23;
-
-  optional Suggester suggest = 24;
+  repeated FieldAndFormat fields = 21;
 
   // Maximum number of documents to collect for each shard. If a query reaches this limit, OpenSearch terminates the query early. OpenSearch collects documents before sorting. Use with caution. OpenSearch applies this parameter to each shard handling the request. When possible, let OpenSearch perform early termination automatically. Avoid specifying this parameter for requests that target data streams with backing indexes across multiple data tiers. If set to `0` (default), the query does not terminate early.
-  optional int32 terminate_after = 25;
+  optional int32 terminate_after = 22;
 
   // Specifies the period of time to wait for a response from each shard. If no response is received before the timeout expires, the request fails and returns an error. Defaults to no timeout.
-  optional string timeout = 26;
+  optional string timeout = 23;
 
   // If `true`, calculate and return document scores, even if the scores are not used for sorting.
-  optional bool track_scores = 27;
+  optional bool track_scores = 24;
 
   // Whether to return scores with named queries. Default is false.
-  optional bool include_named_queries_score = 28;
+  optional bool include_named_queries_score = 25;
 
   // If `true`, returns document version as part of a hit.
-  optional bool version = 29;
+  optional bool version = 26;
 
   // If `true`, returns sequence number and primary term of the last modification of each hit.
-  optional bool seq_no_primary_term = 30;
+  optional bool seq_no_primary_term = 27;
 
   // A comma-separated list or a wildcard expression specifying the fields to include in the statistics. Used as the default list unless a specific field list is provided in the `completion_fields` or `fielddata_fields` parameters.
-  repeated string stored_fields = 31;
+  repeated string stored_fields = 28;
 
-  optional PointInTimeReference pit = 32;
+  optional PointInTimeReference pit = 29;
 
   // Stats groups to associate with the search. Each group maintains a statistics aggregation for its associated searches. You can retrieve these stats using the indexes stats API.
-  repeated string stats = 33;
+  repeated string stats = 30;
 
-  map<string, DerivedField> derived = 34;
+  map<string, DerivedField> derived = 31;
 
-  optional SourceConfig x_source = 35;
+  optional SourceConfig x_source = 32;
 }
 message SearchResponse {
   int64 took = 1;
@@ -5826,27 +3915,6 @@ enum SearchType {
   SEARCH_TYPE_UNSPECIFIED = 0;
   SEARCH_TYPE_DFS_QUERY_THEN_FETCH = 1;
   SEARCH_TYPE_QUERY_THEN_FETCH = 2;
-}
-enum Second {
-  SECOND_UNSPECIFIED = 0;
-  SECOND_SECOND = 1;
-  SECOND__1S = 2;
-}
-message SerialDifferencingAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  optional BucketsPath buckets_path = 3;
-
-  // `DecimalFormat` pattern for the output value. If specified, the formatted value is returned in the aggregation's `value_as_string` property.
-  optional string format = 4;
-
-  optional GapPolicy gap_policy = 5;
-
-  // The historical bucket to subtract from the current value. Must be a positive, non-zero integer.
-  optional int32 lag = 6;
 }
 message ShardFailure {
   optional string index = 1;
@@ -5991,142 +4059,12 @@ message SignificantTermsAggregateBaseVoidAllOfBuckets {
 
   map<string, ObjectMap> void = 3;
 }
-message SignificantTermsAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggregations = 3;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggs = 4;
-
-  optional QueryContainer background_filter = 5;
-
-  optional ChiSquareHeuristic chi_square = 6;
-
-  repeated string exclude = 7;
-
-  optional TermsAggregationExecutionHint execution_hint = 8;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 9;
-
-  optional GoogleNormalizedDistanceHeuristic gnd = 10;
-
-  optional TermsInclude include = 11;
-
-  // An empty object with no properties.
-  optional ObjectMap jlh = 12;
-
-  // Only return terms that are found in more than `min_doc_count` hits.
-  optional int64 min_doc_count = 13;
-
-  optional MutualInformationHeuristic mutual_information = 14;
-
-  optional ObjectMap percentage = 15;
-
-  optional ScriptedHeuristic script_heuristic = 16;
-
-  // Regulates the certainty a shard has if the term should actually be added to the candidate list or not with respect to the `min_doc_count`. Terms will only be considered if their local shard frequency within the set is higher than the `shard_min_doc_count`.
-  optional int64 shard_min_doc_count = 17;
-
-  // Can be used to control the volumes of candidate terms produced by each shard. By default, `shard_size` will be automatically estimated based on the number of shards and the `size` parameter.
-  optional int32 shard_size = 18;
-
-  // The number of buckets returned out of the overall terms list.
-  optional int32 size = 19;
-}
 message SignificantTermsBucketBase {
   int64 doc_count = 1;
 
   double score = 2;
 
   int64 bg_count = 3;
-}
-message SignificantTextAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggregations = 3;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggs = 4;
-
-  optional QueryContainer background_filter = 5;
-
-  optional ChiSquareHeuristic chi_square = 6;
-
-  repeated string exclude = 7;
-
-  optional TermsAggregationExecutionHint execution_hint = 8;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 9;
-
-  // Whether to out duplicate text to deal with noisy data.
-  optional bool filter_duplicate_text = 10;
-
-  optional GoogleNormalizedDistanceHeuristic gnd = 11;
-
-  optional TermsInclude include = 12;
-
-  // An empty object with no properties.
-  optional ObjectMap jlh = 13;
-
-  // Only return values that are found in more than `min_doc_count` hits.
-  optional int64 min_doc_count = 14;
-
-  optional MutualInformationHeuristic mutual_information = 15;
-
-  optional ObjectMap percentage = 16;
-
-  optional ScriptedHeuristic script_heuristic = 17;
-
-  // Regulates the certainty a shard has if the values should actually be added to the candidate list or not with respect to the `min_doc_count`. Values will only be considered if their local shard frequency within the set is higher than the `shard_min_doc_count`.
-  optional int64 shard_min_doc_count = 18;
-
-  // The number of candidate terms produced by each shard. By default, `shard_size` will be automatically estimated based on the number of shards and the `size` parameter.
-  optional int32 shard_size = 19;
-
-  // The number of buckets returned out of the overall terms list.
-  optional int32 size = 20;
-
-  // A comma-separated list or a wildcard expression specifying the fields to include in the statistics. Used as the default list unless a specific field list is provided in the `completion_fields` or `fielddata_fields` parameters.
-  repeated string source_fields = 21;
-}
-message SimpleMovingAverageAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  optional BucketsPath buckets_path = 3;
-
-  // `DecimalFormat` pattern for the output value. If specified, the formatted value is returned in the aggregation's `value_as_string` property.
-  optional string format = 4;
-
-  optional GapPolicy gap_policy = 5;
-
-  optional bool minimize = 6;
-
-  optional int32 predict = 7;
-
-  optional int32 window = 8;
-
-  SimpleMovingAverageAggregationAllOfModel model = 9;
-
-  // An empty object with no properties.
-  ObjectMap settings = 10;
-}
-enum SimpleMovingAverageAggregationAllOfModel {
-  SIMPLE_MOVING_AVERAGE_AGGREGATION_ALL_OF_MODEL_UNSPECIFIED = 0;
-  SIMPLE_MOVING_AVERAGE_AGGREGATION_ALL_OF_MODEL_SIMPLE = 1;
 }
 enum SimpleQueryStringFlag {
   SIMPLE_QUERY_STRING_FLAG_UNSPECIFIED = 0;
@@ -6233,15 +4171,6 @@ message SlicedScroll {
 
   // The maximum number of slices.
   int32 max = 3;
-}
-message SmoothingModel {
-  oneof smoothing_model {
-    LaplaceSmoothingModel laplace = 1;
-
-    LinearInterpolationSmoothingModel linear_interpolation = 2;
-
-    StupidBackoffSmoothingModel stupid_backoff = 3;
-  }
 }
 message SortCombinations {
   oneof sort_combinations {
@@ -6566,21 +4495,6 @@ message StatsAggregateBaseAllOfMin {
     NullValue null_value = 2;
   }
 }
-message StatsAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 3;
-
-  optional FieldValue missing = 4;
-
-  optional Script script = 5;
-
-  optional string format = 6;
-}
 message StatsBucketAggregate {
   // The custom metadata attached to a resource.
   optional ObjectMap meta = 1;
@@ -6603,19 +4517,6 @@ message StatsBucketAggregate {
 
   optional string sum_as_string = 10;
 }
-message StatsBucketAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  optional BucketsPath buckets_path = 3;
-
-  // `DecimalFormat` pattern for the output value. If specified, the formatted value is returned in the aggregation's `value_as_string` property.
-  optional string format = 4;
-
-  optional GapPolicy gap_policy = 5;
-}
 message StoredScriptId {
   // Specifies any named parameters that are passed into the script as variables. Use parameters instead of hard-coded values to decrease compilation time.
   optional ObjectMap params = 1;
@@ -6625,17 +4526,6 @@ message StoredScriptId {
 }
 message StringArray {
   repeated string string_array = 1;
-}
-enum StringDistance {
-  STRING_DISTANCE_UNSPECIFIED = 0;
-  STRING_DISTANCE_DAMERAU_LEVENSHTEIN = 1;
-  STRING_DISTANCE_INTERNAL = 2;
-  STRING_DISTANCE_JARO_WINKLER = 3;
-  STRING_DISTANCE_LEVENSHTEIN = 4;
-  STRING_DISTANCE_NGRAM = 5;
-}
-message StringMap {
-  map<string, string> string_map = 1;
 }
 message StringRareTermsAggregate {
   // The custom metadata attached to a resource.
@@ -6665,9 +4555,6 @@ message StringTermsBucket {
 
   string key = 3;
 }
-message StupidBackoffSmoothingModel {
-  double discount = 1;
-}
 message Suggest {
   oneof suggest {
     Completion completion = 1;
@@ -6687,40 +4574,11 @@ message SuggestBase {
 
   string text = 3;
 }
-message SuggestFuzziness {
-  string fuzziness = 1;
-
-  int32 min_length = 2;
-
-  int32 prefix_length = 3;
-
-  bool transpositions = 4;
-
-  bool unicode_aware = 5;
-}
 enum SuggestMode {
   SUGGEST_MODE_UNSPECIFIED = 0;
   SUGGEST_MODE_ALWAYS = 1;
   SUGGEST_MODE_MISSING = 2;
   SUGGEST_MODE_POPULAR = 3;
-}
-enum SuggestSort {
-  SUGGEST_SORT_UNSPECIFIED = 0;
-  SUGGEST_SORT_FREQUENCY = 1;
-  SUGGEST_SORT_SCORE = 2;
-}
-message Suggester {
-  // The global suggest text, which avoids repetition when the same text is used in several suggesters.
-  optional string text = 1;
-
-  map<string, FieldSuggester> suggesters = 2;
-}
-message SuggesterBase {
-  optional string analyzer = 1;
-
-  string field = 2;
-
-  optional int32 size = 3;
 }
 message SumAggregate {
   // The custom metadata attached to a resource.
@@ -6729,38 +4587,6 @@ message SumAggregate {
   SingleMetricAggregateBaseAllOfValue value = 2;
 
   optional string value_as_string = 3;
-}
-message SumAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 3;
-
-  optional FieldValue missing = 4;
-
-  optional Script script = 5;
-
-  optional string format = 6;
-}
-message SumBucketAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  optional BucketsPath buckets_path = 3;
-
-  // `DecimalFormat` pattern for the output value. If specified, the formatted value is returned in the aggregation's `value_as_string` property.
-  optional string format = 4;
-
-  optional GapPolicy gap_policy = 5;
-}
-message TDigest {
-  // Limits the maximum number of nodes used by the underlying TDigest algorithm to `20 * compression`, enabling control of memory usage and approximation error.
-  optional int32 compression = 1;
 }
 message TDigestPercentileRanksAggregate {
   // The custom metadata attached to a resource.
@@ -6788,24 +4614,6 @@ message TTestAggregateAllOfValue {
 
     NullValue null_value = 2;
   }
-}
-message TTestAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  optional TestPopulation a = 3;
-
-  optional TestPopulation b = 4;
-
-  optional TTestType type = 5;
-}
-enum TTestType {
-  T_TEST_TYPE_UNSPECIFIED = 0;
-  T_TEST_TYPE_HETEROSCEDASTIC = 1;
-  T_TEST_TYPE_HOMOSCEDASTIC = 2;
-  T_TEST_TYPE_PAIRED = 3;
 }
 message TermQuery {
   // Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
@@ -6839,37 +4647,6 @@ message TermSuggestOption {
   optional string highlighted = 4;
 
   optional bool collate_match = 5;
-}
-message TermSuggester {
-  optional string analyzer = 1;
-
-  string field = 2;
-
-  optional int32 size = 3;
-
-  optional bool lowercase_terms = 4;
-
-  optional int32 max_edits = 5;
-
-  optional int32 max_inspections = 6;
-
-  optional float max_term_freq = 7;
-
-  optional float min_doc_freq = 8;
-
-  optional int32 min_word_length = 9;
-
-  optional int32 prefix_length = 10;
-
-  optional int32 shard_size = 11;
-
-  optional SuggestSort sort = 12;
-
-  optional StringDistance string_distance = 13;
-
-  optional SuggestMode suggest_mode = 14;
-
-  optional string text = 15;
 }
 message TermsAggregateBase {
   // The custom metadata attached to a resource.
@@ -6966,78 +4743,10 @@ message TermsAggregateBaseVoidAllOfBuckets {
 
   map<string, ObjectMap> void = 3;
 }
-message TermsAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggregations = 3;
-
-  // Sub-aggregations for this bucket aggregation
-  map<string, AggregationContainer> aggs = 4;
-
-  optional TermsAggregationCollectMode collect_mode = 5;
-
-  repeated string exclude = 6;
-
-  optional TermsAggregationExecutionHint execution_hint = 7;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 8;
-
-  optional TermsInclude include = 9;
-
-  // Only return values that are found in more than `min_doc_count` hits.
-  optional int32 min_doc_count = 10;
-
-  optional FieldValue missing = 11;
-
-  // Coerced unmapped fields into the specified type.
-  optional string value_type = 12;
-
-  map<string, SortOrder> order = 13;
-
-  optional Script script = 14;
-
-  // The number of candidate terms produced by each shard. By default, `shard_size` will be automatically estimated based on the number of shards and the `size` parameter.
-  optional int32 shard_size = 15;
-
-  // The minimum number of documents in a bucket on each shard for it to be returned.
-  optional int32 shard_min_doc_count = 16;
-
-  // Set to `true` to return the `doc_count_error_upper_bound`, which is an upper bound to the error on the `doc_count` returned by each shard.
-  optional bool show_term_doc_count_error = 17;
-
-  // The number of buckets returned out of the overall terms list.
-  optional int32 size = 18;
-
-  optional string format = 19;
-}
-enum TermsAggregationCollectMode {
-  TERMS_AGGREGATION_COLLECT_MODE_UNSPECIFIED = 0;
-  TERMS_AGGREGATION_COLLECT_MODE_BREADTH_FIRST = 1;
-  TERMS_AGGREGATION_COLLECT_MODE_DEPTH_FIRST = 2;
-}
-enum TermsAggregationExecutionHint {
-  TERMS_AGGREGATION_EXECUTION_HINT_UNSPECIFIED = 0;
-  TERMS_AGGREGATION_EXECUTION_HINT_GLOBAL_ORDINALS = 1;
-  TERMS_AGGREGATION_EXECUTION_HINT_GLOBAL_ORDINALS_HASH = 2;
-  TERMS_AGGREGATION_EXECUTION_HINT_GLOBAL_ORDINALS_LOW_CARDINALITY = 3;
-  TERMS_AGGREGATION_EXECUTION_HINT_MAP = 4;
-}
 message TermsBucketBase {
   int64 doc_count = 1;
 
   optional int64 doc_count_error = 2;
-}
-message TermsInclude {
-  oneof terms_include {
-    StringArray string_array = 1;
-
-    TermsPartition partition = 2;
-  }
 }
 message TermsLookup {
   string index = 1;
@@ -7052,13 +4761,6 @@ message TermsLookup {
   optional string routing = 4;
 
   optional bool store = 5;
-}
-message TermsPartition {
-  // The number of partitions.
-  int64 num_partitions = 1;
-
-  // The partition number for this request.
-  int64 partition = 2;
 }
 message TermsQuery {
   optional float boost = 1;
@@ -7097,14 +4799,6 @@ message TermsSetQuery {
 
   string field = 6;
 }
-message TestPopulation {
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  string field = 1;
-
-  optional Script script = 2;
-
-  optional QueryContainer filter = 3;
-}
 enum TextQueryType {
   TEXT_QUERY_TYPE_UNSPECIFIED = 0;
   TEXT_QUERY_TYPE_BEST_FIELDS = 1;
@@ -7119,52 +4813,6 @@ message TopHitsAggregate {
   optional ObjectMap meta = 1;
 
   HitsMetadataJsonValue hits = 2;
-}
-message TopHitsAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 3;
-
-  optional FieldValue missing = 4;
-
-  optional Script script = 5;
-
-  // A comma-separated list or a wildcard expression specifying the fields to include in the statistics. Used as the default list unless a specific field list is provided in the `completion_fields` or `fielddata_fields` parameters.
-  repeated string docvalue_fields = 6;
-
-  // If `true`, returns detailed information about score computation as part of a hit.
-  optional bool explain = 7;
-
-  // Starting document offset.
-  optional int32 from = 8;
-
-  optional Highlight highlight = 9;
-
-  // Returns the result of one or more script evaluations for each hit.
-  map<string, ScriptField> script_fields = 10;
-
-  // The maximum number of top matching hits to return per bucket.
-  optional int32 size = 11;
-
-  repeated SortCombinations sort = 12;
-
-  // A comma-separated list or a wildcard expression specifying the fields to include in the statistics. Used as the default list unless a specific field list is provided in the `completion_fields` or `fielddata_fields` parameters.
-  repeated string stored_fields = 13;
-
-  // If `true`, calculates and returns document scores, even if the scores are not used for sorting.
-  optional bool track_scores = 14;
-
-  // If `true`, returns document version as part of a hit.
-  optional bool version = 15;
-
-  // If `true`, returns sequence number and primary term of the last modification of each hit.
-  optional bool seq_no_primary_term = 16;
-
-  optional SourceConfig x_source = 17;
 }
 message TopLeftBottomRightGeoBounds {
   // The upper-left corner coordinates.
@@ -7278,52 +4926,11 @@ message ValueCountAggregate {
 
   optional string value_as_string = 3;
 }
-message ValueCountAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 3;
-
-  optional FieldValue missing = 4;
-
-  optional Script script = 5;
-
-  optional string format = 6;
-}
-enum ValueType {
-  VALUE_TYPE_UNSPECIFIED = 0;
-  VALUE_TYPE_BOOLEAN = 1;
-  VALUE_TYPE_DATE = 2;
-  VALUE_TYPE_DATE_NANOS = 3;
-  VALUE_TYPE_DOUBLE = 4;
-  VALUE_TYPE_GEO_POINT = 5;
-  VALUE_TYPE_IP = 6;
-  VALUE_TYPE_LONG = 7;
-  VALUE_TYPE_NUMBER = 8;
-  VALUE_TYPE_NUMERIC = 9;
-  VALUE_TYPE_STRING = 10;
-}
 message VariableWidthHistogramAggregate {
   // The custom metadata attached to a resource.
   optional ObjectMap meta = 1;
 
   MultiBucketAggregateBaseVariableWidthHistogramBucketAllOfBuckets buckets = 2;
-}
-message VariableWidthHistogramAggregation {
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 1;
-
-  // The target number of buckets.
-  optional int32 buckets = 2;
-
-  // The number of buckets that the coordinating node will request from each shard. Defaults to `buckets * 50`.
-  optional int32 shard_size = 3;
-
-  // Specifies the number of individual documents that will be stored in memory on a shard before the initial bucketing algorithm is run. Defaults to `min(10 * shard_size, 50000)`.
-  optional int32 initial_buffer = 4;
 }
 message VariableWidthHistogramBucket {
   int64 doc_count = 1;
@@ -7360,35 +4967,6 @@ message WaitForActiveShards {
     // Determines how many shards to wait for.
     WaitForActiveShardOptions option = 2;
   }
-}
-enum Week {
-  WEEK_UNSPECIFIED = 0;
-  WEEK_WEEK = 1;
-  WEEK__1W = 2;
-}
-message WeightedAverageAggregation {
-  // The custom metadata attached to a resource.
-  optional ObjectMap meta = 1;
-
-  optional string name = 2;
-
-  // A numeric response formatter.
-  optional string format = 3;
-
-  optional WeightedAverageValue value = 4;
-
-  optional ValueType value_type = 5;
-
-  optional WeightedAverageValue weight = 6;
-}
-message WeightedAverageValue {
-  // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
-  optional string field = 1;
-
-  // A value or weight to use if the field is missing.
-  optional double missing = 2;
-
-  optional Script script = 3;
 }
 message WeightedAvgAggregate {
   // The custom metadata attached to a resource.
@@ -7466,11 +5044,6 @@ message XyShapeQueryField {
   XyShape shape = 2;
 
   optional GeoShapeRelation relation = 3;
-}
-enum Year {
-  YEAR_UNSPECIFIED = 0;
-  YEAR_YEAR = 1;
-  YEAR__1Y = 2;
 }
 enum ZeroTermsQuery {
   ZERO_TERMS_QUERY_UNSPECIFIED = 0;
