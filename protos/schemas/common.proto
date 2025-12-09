@@ -1,15 +1,15 @@
 /**
-This is generated from the spec. DO NOT manually modify.
+   This is generated from the spec. DO NOT manually modify.
 */
 syntax = "proto3";
 package org.opensearch.protobufs;
 
-option java_multiple_files = true;
-option java_package = "org.opensearch.protobufs";
-option java_outer_classname = "CommonProto";
-option go_package = "github.com/opensearch-project/opensearch-protobufs/go/opensearchpb";
-
 import "google/protobuf/struct.proto";
+
+option go_package = "github.com/opensearch-project/opensearch-protobufs/go/opensearchpb";
+option java_multiple_files = true;
+option java_outer_classname = "CommonProto";
+option java_package = "org.opensearch.protobufs";
 
 // The Search API operation to perform a search across all indices in the cluster or index search
 message SearchRequest {
@@ -80,7 +80,6 @@ message SearchRequest {
 }
 
 message SearchRequestBody {
-
   // [optional] The collapse parameter groups search results by a particular field value. This returns only the top document within each group, which helps reduce redundancy by eliminating duplicates.
   optional FieldCollapse collapse = 2;
 
@@ -205,7 +204,6 @@ message TrackHits {
 
 // The response from search request.
 message SearchResponse {
-
   // [required] Milliseconds it took Elasticsearch to execute the request.
   int64 took = 1;
 
@@ -264,7 +262,6 @@ message ProcessorExecutionDetail {
 }
 
 message PhaseTook {
-
   // [required] Time taken in dfs_pre_query phase.
   int64 dfs_pre_query = 1;
   // [required] Time taken in query phase.
@@ -277,18 +274,17 @@ message PhaseTook {
   int64 expand = 5;
   // [required] Time taken in can_match phase.
   int64 can_match = 6;
-
 }
 
 message HitsMetadataTotal {
-  oneof hits_metadata_total{
+  oneof hits_metadata_total {
     TotalHits total_hits = 1;
     int64 int64 = 2;
   }
 }
 
-message HitsMetadataMaxScore{
-  oneof hits_metadata_max_score{
+message HitsMetadataMaxScore {
+  oneof hits_metadata_max_score {
     float float = 1;
     NullValue null_value = 2;
   }
@@ -306,19 +302,15 @@ message HitsMetadata {
 }
 
 message TotalHits {
-
   // [required] Indicates whether the number of matching documents in the value parameter is accurate or a lower bound.
   TotalHitsRelation relation = 1;
   // [required] Total number of matching documents.
   int64 value = 2;
-
 }
 
 message InnerHitsResult {
-
   // [required] An additional nested hits value.
   HitsMetadata hits = 1;
-
 }
 
 message HitXScore {
@@ -329,7 +321,6 @@ message HitXScore {
 }
 
 message HitsMetadataHitsInner {
-
   optional string x_type = 1;
 
   // [optional] Name of the index containing the returned document.
@@ -392,7 +383,6 @@ message HitsMetadataHitsInner {
 }
 
 message ClusterStatistics {
-
   // [required] Number of shards that skipped the request because a lightweight check helped realize that no documents could possibly match on this shard. This typically happens when a search request includes a range filter and the shard only has values that fall outside of that range.
   int32 skipped = 1;
 
@@ -401,18 +391,14 @@ message ClusterStatistics {
 
   // [required] Total number of shards that require querying, including unallocated shards.
   int32 total = 3;
-
 }
 
 message Profile {
-
   // [required] A search request can be executed against one or more shards in the index, and a search may involve one or more indexes. Thus, the profile.shards array contains profiling information for each shard that was involved in the search.
   repeated ShardProfile shards = 1;
-
 }
 
 message RescoreQuery {
-
   // [required] A second query only on the Top-K results returned by the query and post_filter phases.
   QueryContainer rescore_query = 1;
 
@@ -424,21 +410,17 @@ message RescoreQuery {
 
   // [optional] Control the way the scores are combined.
   optional ScoreMode score_mode = 4;
-
 }
 
 message Rescore {
-
   // [required] Contains the rescore_query, which is the secondary query used to adjust the scores of the initial results
   RescoreQuery query = 1;
 
   // [optional] The number of docs which will be examined on each shard can be controlled.
   optional int32 window_size = 2;
-
 }
 
 message SlicedScroll {
-
   // [optional] Specific document field by which slicing is performed.
   optional string field = 1;
 
@@ -447,11 +429,9 @@ message SlicedScroll {
 
   // [required] The maximum number of slices
   int32 max = 3;
-
 }
 
 message ShardProfile {
-
   // [required] Profiling information about the aggregation execution.
   repeated AggregationProfile aggregations = 1;
 
@@ -463,11 +443,9 @@ message ShardProfile {
 
   // [optional] Fetch timing and debug information.
   optional FetchProfile fetch = 4;
-
 }
 
 message AggregationProfile {
-
   // [required]
   AggregationBreakdown breakdown = 1;
   // [required]
@@ -482,11 +460,9 @@ message AggregationProfile {
   optional AggregationProfileDebug debug = 5;
   // [optional]
   repeated AggregationProfile children = 6;
-
 }
 
 message AggregationBreakdown {
-
   // [required] Contains the time spent running the aggregation’s buildAggregations() method, which builds the results of this aggregation. For concurrent segment search, the build_aggregation method contains the total elapsed time across all slices (the difference between the last completed slice execution end time and the first slice execution start time).
   int64 build_aggregation = 1;
 
@@ -522,11 +498,9 @@ message AggregationBreakdown {
 
   // [required] Contains the number of invocations of a reduce.
   int64 reduce_count = 12;
-
 }
 
 message SearchProfile {
-
   // [required] Profiling information about the Lucene collectors that ran the search.
   repeated Collector collector = 1;
 
@@ -535,7 +509,6 @@ message SearchProfile {
 
   // [required] All Lucene queries are rewritten. A query and its children may be rewritten more than once, until the query stops changing. The rewriting process involves performing optimizations, such as removing redundant clauses or replacing a query path with a more efficient one. After the rewriting process, the original query may change significantly. The rewrite_time field contains the cumulative total rewrite time for the query and all its children, in nanoseconds.
   int64 rewrite_time = 3;
-
 }
 
 message PointInTimeReference {
@@ -544,11 +517,9 @@ message PointInTimeReference {
 
   // [optional] Period of time used to extend the life of the PIT. Units can be `nanos`, `micros`, `ms` (milliseconds), `s` (seconds), `m` (minutes), `h` (hours) and `d` (days). Also accepts \"0\" without a unit and \"-1\" to indicate an unspecified value.
   optional string keep_alive = 2;
-
 }
 
 message Collector {
-
   // [required] The collector name.
   string name = 1;
 
@@ -560,11 +531,9 @@ message Collector {
 
   // [optional] If a collector has subcollectors (children), this field contains information about the subcollectors.
   repeated Collector children = 4;
-
 }
 
 message QueryProfile {
-
   // [required] Contains timing statistics about low-level Lucene execution.
   QueryBreakdown breakdown = 1;
 
@@ -579,11 +548,9 @@ message QueryProfile {
 
   // [optional] If a query has subqueries (children), this field contains information about the subqueries.
   repeated QueryProfile children = 5;
-
 }
 
 message QueryBreakdown {
-
   // [required] The advance method is a lower-level version of the next_doc method in Lucene. It also finds the next matching document but necessitates that the calling query perform additional tasks, such as identifying skips. Some queries, such as conjunctions (must clauses in Boolean queries), cannot use next_doc. For those queries, advance is timed.
   int64 advance = 1;
   // [required] Contains the number of invocations of the advance method. Different invocations of the same method occur because the method is called on different documents. You can determine the selectivity of a query by comparing counts in different query components.
@@ -620,19 +587,15 @@ message QueryBreakdown {
   int64 set_min_competitive_score = 17;
   // [required] Set_min_competitive_score_count contains the number of invocations of the set_min_competitive_score method. Different invocations of the same method occur because the method is called on different documents. You can determine the selectivity of a query by comparing counts in different query components.
   int64 set_min_competitive_score_count = 18;
-
 }
 
 message FetchProfileDebug {
-
   repeated string stored_fields = 1;
 
   optional int32 fast_path = 2;
-
 }
 
 message FetchProfile {
-
   string type = 1;
 
   string description = 2;
@@ -645,9 +608,7 @@ message FetchProfile {
   optional FetchProfileDebug debug = 5;
 
   repeated FetchProfile children = 6;
-
 }
-
 
 message FetchProfileBreakdown {
   optional int32 load_source = 1;
@@ -668,7 +629,6 @@ message FetchProfileBreakdown {
 }
 
 message AggregationProfileDebug {
-
   optional int32 segments_with_multi_valued_ords = 1;
 
   optional string collection_strategy = 2;
@@ -714,7 +674,6 @@ message AggregationProfileDebug {
   repeated string deferred_aggregators = 22;
 
   optional string map_reducer = 28;
-
 }
 
 message AggregationProfileDelegateDebug {
@@ -730,7 +689,6 @@ message AggregationProfileDelegateDebug {
 }
 
 message AggregationProfileDelegateDebugFilter {
-
   optional int32 results_from_metadata = 1;
 
   optional string query = 2;
@@ -738,22 +696,18 @@ message AggregationProfileDelegateDebugFilter {
   optional string specialized_for = 3;
 
   optional int32 segments_counted_in_constant_time = 4;
-
 }
 
 message Explanation {
-
   // [required] Explains what type of calculation is performed
   string description = 1;
   // [optional] Shows any subcalculations performed.
   repeated Explanation details = 2;
   // [required] Shows the result of the calculation,
   float value = 3;
-
 }
 
 message NestedIdentity {
-
   // [required] The name of the nested field.
   string field = 1;
 
@@ -762,7 +716,6 @@ message NestedIdentity {
 
   // [optional] Inner nested object.
   optional NestedIdentity x_nested = 3;
-
 }
 
 // The bulk operation lets you add, update, or delete multiple documents in a single request, index name needs to be specified in `BulkRequestBody`
@@ -860,7 +813,6 @@ message IndexOperation {
 
   // [optional] If `true`, the request's actions must target an index alias. Defaults to false.
   optional bool require_alias = 10;
-
 }
 
 message WriteOperation {
@@ -895,7 +847,6 @@ message UpdateOperation {
   optional bool require_alias = 6;
   // [optional] Specify how many times an update should be retried in the case of a version conflict.
   optional int32 retry_on_conflict = 7;
-
 }
 
 message DeleteOperation {
@@ -914,7 +865,6 @@ message DeleteOperation {
   optional int64 version = 6;
   // [optional] Assigns a specific type to the document.
   optional VersionType version_type = 7;
-
 }
 message BulkResponse {
   // [required] If true, one or more of the operations in the bulk request did not complete successfully.
@@ -925,7 +875,6 @@ message BulkResponse {
   int64 took = 3;
   // [optional] How long, in milliseconds, it took to process documents through an ingest pipeline
   optional int64 ingest_took = 4;
-
 }
 
 message Item {
@@ -968,7 +917,6 @@ message ResponseItem {
   optional InlineGetDictUserDefined get = 12;
 }
 
-
 message InlineGetDictUserDefined {
   // [optional]
   optional ObjectMap metadata_fields = 1;
@@ -987,7 +935,6 @@ message InlineGetDictUserDefined {
 }
 
 message WaitForActiveShards {
-
   oneof wait_for_active_shards {
     int32 count = 1;
     WaitForActiveShardOptions option = 2;
@@ -1082,17 +1029,15 @@ message LatLonGeoLocation {
 
   // [required] Longitude
   double lon = 2;
-
 }
 
 message GeoHashLocation {
   // [required]
   string geohash = 1;
-
 }
 
 message GeneralNumber {
-  oneof value{
+  oneof value {
     int32 int32_value = 1;
     int64 int64_value = 2;
     float float_value = 3;
@@ -1101,30 +1046,26 @@ message GeneralNumber {
 }
 
 message SourceConfigParam {
-
   oneof source_config_param {
     // `true` or `false` to return the `_source` field or not
     bool fetch = 1;
     // list of fields to be retrieved from `_source`
     StringArray fields = 2;
   }
-
 }
 
-message StringArray{
+message StringArray {
   repeated string string_array = 1;
 }
 
 message SourceConfig {
-
-  oneof source_config{
+  oneof source_config {
     // [optional] if the source_config is bool value. true: The entire document source is returned. false: The document source is not returned.
     bool fetch = 1;
 
     // [optional] source_filter type containing a list of source fields to include or exclude.
     SourceFilter filter = 2;
   }
-
 }
 
 message SourceFilter {
@@ -1135,7 +1076,6 @@ message SourceFilter {
 }
 
 message ErrorCause {
-
   // [required] The type of error
   string type = 1;
 
@@ -1172,7 +1112,6 @@ message ShardStatistics {
 
   // [optional] Number of shards that skipped the request because a lightweight check helped realize that no documents could possibly match on this shard. This typically happens when a search request includes a range filter and the shard only has values that fall outside of that range.
   optional int32 skipped = 5;
-
 }
 
 message ShardInfo {
@@ -1187,11 +1126,9 @@ message ShardInfo {
 
   // [optional] An array of any shard-specific failures that occurred during the search operation.
   repeated ShardFailure failures = 4;
-
 }
 
 message ShardFailure {
-
   // [optional] Name of the index in which the shard failure occurred.
   optional string index = 1;
 
@@ -1209,11 +1146,10 @@ message ShardFailure {
 
   // [required]
   bool primary = 6;
-
 }
 
 message QueryContainer {
-  oneof query_container{
+  oneof query_container {
     // A Boolean (bool) query can combine several query clauses into one advanced query. The clauses are combined with Boolean logic to find matching documents returned in the results.
     BoolQuery bool = 1;
 
@@ -1332,7 +1268,6 @@ message ScriptQuery {
   optional float boost = 2;
   // [optional] Query name for query tagging.
   optional string x_name = 3;
-
 }
 
 message GeoBoundingBoxQuery {
@@ -1452,7 +1387,6 @@ message NestedQuery {
 }
 
 message InnerHits {
-
   // [optional] The name to be used for the particular inner hit definition in the response. Useful when multiple inner hits have been defined in a single search request.
   optional string name = 1;
 
@@ -1500,7 +1434,6 @@ message InnerHits {
 
   // [optional] Whether to include the document version as a match.
   optional bool version = 16;
-
 }
 
 message ScriptField {
@@ -1517,7 +1450,6 @@ message HighlighterType {
 }
 
 message SortCombinations {
-
   oneof sort_combinations {
     // The path to a field or an array of paths. Some APIs support wildcards in the path, which allows you to select multiple fields.
     string field = 1;
@@ -1528,19 +1460,15 @@ message SortCombinations {
 }
 
 message SortOrderMap {
-
   map<string, SortOrder> sort_order_map = 1;
-
 }
 
 message FieldSortMap {
-
   map<string, FieldSort> field_sort_map = 1;
-
 }
 
 message SortOptions {
-  oneof sort_options{
+  oneof sort_options {
     ScoreSort x_score = 1;
 
     GeoDistanceSort x_geo_distance = 2;
@@ -1619,7 +1547,6 @@ message Highlight {
 
   // [required] Specifies the fields to search for text to be highlighted. Supports wildcard expressions. If you use wildcards, only text and keyword fields are highlighted. For example, you can set fields to my_field* to include all text and keyword fields that start with the prefix my_field.
   map<string, HighlightField> fields = 24;
-
 }
 
 message HighlightField {
@@ -1687,7 +1614,6 @@ message HighlightField {
 
   // [optional] Combines matches from different fields to highlight one field. The most common use case for this functionality is highlighting text that is analyzed in different ways and kept in multi-fields. All fields in the matched_fields list must have the term_vector field set to with_positions_offsets. The field in which the matches are combined is the only loaded field, so it is beneficial to set its store option to yes. Valid only for the fvh highlighter.
   repeated string matched_fields = 23;
-
 }
 
 message FieldSort {
@@ -1716,7 +1642,6 @@ message ScoreSort {
 }
 
 message GeoDistanceSort {
-
   // [optional] Specifies how to handle a field with several geopoints.
   optional SortMode mode = 1;
   // [optional] Specifies the method of computing the distance.
@@ -1735,11 +1660,9 @@ message GeoDistanceSort {
   map<string, GeoLocationArray> location = 8;
 }
 
-
 message GeoLocationArray {
   // The geo points to use for distance calculation.
   repeated GeoLocation geo_location_array = 1;
-
 }
 
 message ScriptSort {
@@ -1753,11 +1676,9 @@ message ScriptSort {
   optional SortMode mode = 4;
   // [optional] Supports sorting by fields that are inside one or more nested objects.
   optional NestedSortValue nested = 5;
-
 }
 
 message NestedSortValue {
-
   // [required] Specifies the path to the field on which to sort.
   string path = 1;
   // [optional] A filter that the inner objects inside the nested path should match with in order for its field values to be taken into account by sorting. Common case is to repeat the query / filter inside the nested filter or query. By default no filter is active.
@@ -1766,21 +1687,17 @@ message NestedSortValue {
   optional int32 max_children = 3;
   // [optional] Same as top-level nested but applies to another nested path within the current nested object.
   optional NestedSortValue nested = 4;
-
 }
 
 message FieldAndFormat {
-
   // [required] Wildcard pattern. The request returns doc values for field names matching this pattern.
   string field = 1;
 
   // [optional] Format in which the values are returned.
   optional string format = 2;
-
 }
 
 message FieldCollapse {
-
   // [required] The document field by which you want to group or collapse the search results
   string field = 1;
 
@@ -1789,11 +1706,9 @@ message FieldCollapse {
 
   // [optional] Use to control the maximum number of concurrent searches allowed in this phase.
   optional int32 max_concurrent_group_searches = 3;
-
 }
 
 message ScriptScoreQuery {
-
   // [optional] Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
 
@@ -1806,7 +1721,6 @@ message ScriptScoreQuery {
   QueryContainer query = 4;
 
   Script script = 5;
-
 }
 
 message ExistsQuery {
@@ -1821,7 +1735,6 @@ message ExistsQuery {
 }
 
 message SimpleQueryStringQuery {
-
   // [optional] Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
 
@@ -1887,7 +1800,6 @@ message WildcardQuery {
   optional string wildcard = 7;
 
   optional string rewrite = 8;
-
 }
 
 message SimpleQueryStringFlags {
@@ -1940,7 +1852,6 @@ message KnnQuery {
 
   // [optional] When true, retrieves scores for all nested field documents within each parent document. Used with nested queries. For more information, see Vector search with nested fields.
   optional bool expand_nested_docs = 11;
-
 }
 
 message RescoreContext {
@@ -1991,7 +1902,6 @@ message MatchQuery {
 }
 
 message BoolQuery {
-
   // [optional] Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
 
@@ -2017,8 +1927,8 @@ message BoolQuery {
   optional bool adjust_pure_negative = 8;
 }
 
-message MinimumShouldMatch{
-  oneof minimum_should_match{
+message MinimumShouldMatch {
+  oneof minimum_should_match {
     // if minimum_should_match is integer type. see "https://opensearch.org/docs/latest/query-dsl/minimum-should-match/#valid-values"
     int32 int32 = 1;
     // if minimum_should_match is string type like percentage or combinations. see "https://opensearch.org/docs/latest/query-dsl/minimum-should-match/#valid-values"
@@ -2027,7 +1937,6 @@ message MinimumShouldMatch{
 }
 
 message BoostingQuery {
-
   // [optional] Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
 
@@ -2040,7 +1949,6 @@ message BoostingQuery {
   QueryContainer negative = 4;
 
   QueryContainer positive = 5;
-
 }
 
 message ConstantScoreQuery {
@@ -2053,7 +1961,6 @@ message ConstantScoreQuery {
 }
 
 message DisMaxQuery {
-
   // [optional] Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
 
@@ -2065,7 +1972,6 @@ message DisMaxQuery {
 
   // Floating point number between 0 and 1.0 used to increase the relevance scores of documents matching multiple query clauses.
   optional float tie_breaker = 4;
-
 }
 
 message FunctionScoreQuery {
@@ -2085,11 +1991,9 @@ message FunctionScoreQuery {
   optional QueryContainer query = 7;
   // [optional] Specifies how the computed scores are combined
   optional FunctionScoreMode score_mode = 8;
-
 }
 
 message IntervalsAllOf {
-
   // An array of rules to combine. All rules must produce a match in a document for the overall source to match.
   repeated IntervalsContainer intervals = 1;
 
@@ -2100,7 +2004,6 @@ message IntervalsAllOf {
   optional bool ordered = 3;
 
   optional IntervalsFilter filter = 4;
-
 }
 
 message IntervalsAnyOf {
@@ -2152,7 +2055,6 @@ message IntervalsQuery {
 
     IntervalsWildcard wildcard = 9;
   }
-
 }
 
 message FunctionScoreContainer {
@@ -2183,18 +2085,15 @@ message DecayFunction {
 
   // [required] Decay functions score a document with a function that decays depending on the distance of a numeric field value of the document from a user given origin
   map<string, DecayPlacement> placement = 2;
-
 }
 
 message DecayPlacement {
   oneof decay_placement {
-
     DateDecayPlacement date_decay_placement = 1;
 
     GeoDecayPlacement geo_decay_placement = 2;
 
     NumericDecayPlacement numeric_decay_placement = 3;
-
   }
 }
 
@@ -2207,7 +2106,6 @@ message DateDecayPlacement {
   optional string offset = 3;
   // [optional] The decay function will only compute the decay function for documents with a distance greater than the defined
   optional string origin = 4;
-
 }
 
 message GeoDecayPlacement {
@@ -2233,9 +2131,7 @@ message NumericDecayPlacement {
 }
 
 message ScriptScoreFunction {
-
   Script script = 1;
-
 }
 
 message IntervalsFilter {
@@ -2258,11 +2154,9 @@ message IntervalsFilter {
 
     Script script = 9;
   }
-
 }
 
 message IntervalsContainer {
-
   oneof intervals_container {
     IntervalsAllOf all_of = 1;
 
@@ -2276,7 +2170,6 @@ message IntervalsContainer {
 
     IntervalsWildcard wildcard = 6;
   }
-
 }
 
 message PrefixQuery {
@@ -2341,7 +2234,6 @@ message TermsSetQuery {
 
   // [optional] A script that returns the number of matching terms required in order to return a document in the results.
   optional Script minimum_should_match_script = 6;
-
 }
 
 message RegexpQuery {
@@ -2390,9 +2282,7 @@ message TermQuery {
   // [optional]
   // Allows ASCII case insensitive matching of the value with the indexed field values when set to `true`. When `false`, the case sensitivity of matching depends on the underlying field's mapping.
   optional bool case_insensitive = 5;
-
 }
-
 
 message QueryStringQuery {
   // [optional] Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
@@ -2472,18 +2362,15 @@ message RandomScoreFunction {
   optional string field = 1;
 
   optional RandomScoreFunctionSeed seed = 2;
-
 }
 
 message RandomScoreFunctionSeed {
   oneof random_score_function_seed {
-
     int32 int32 = 1;
 
     int64 int64 = 2;
 
     string string = 3;
-
   }
 }
 
@@ -2529,7 +2416,6 @@ message NumberRangeQuery {
 
   // [optional] Include the upper bound
   optional bool include_upper = 12;
-
 }
 message NumberRangeQueryAllOfFrom {
   oneof number_range_query_all_of_from {
@@ -2619,15 +2505,13 @@ message FuzzyQuery {
   optional string rewrite = 10;
 }
 
-message Fuzziness{
-
-  oneof fuzziness{
+message Fuzziness {
+  oneof fuzziness {
     // AUTO: Generates an edit distance based on the length of the term. Low and high distance arguments may be optionally provided AUTO:[low],[high]. AUTO should generally be the preferred value for fuzziness.
     string string = 1;
     // 0,1,2: The maximum allowed Levenshtein Edit Distance (or number of edits)
     int32 int32 = 2;
   }
-
 }
 
 message FieldValue {
@@ -2641,7 +2525,6 @@ message FieldValue {
 }
 
 message IdsQuery {
-
   // [optional] Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
 
@@ -2649,7 +2532,6 @@ message IdsQuery {
   optional string x_name = 2;
 
   repeated string values = 3;
-
 }
 
 message IntervalsFuzzy {
@@ -2731,7 +2613,6 @@ message MatchBoolPrefixQuery {
 }
 
 message MatchNoneQuery {
-
   // [optional] Floating point number used to decrease or increase the relevance scores of the query. Boost values are relative to the default value of 1.0. A boost value between 0 and 1.0 decreases the relevance score. A value greater than 1.0 increases the relevance score.
   optional float boost = 1;
 
@@ -2835,7 +2716,6 @@ message MultiMatchQuery {
 }
 
 message FieldValueFactorScoreFunction {
-
   // [required] Path to field or array of paths. Some API's support wildcards in the path to select multiple fields.
   string field = 1;
 
@@ -2847,7 +2727,6 @@ message FieldValueFactorScoreFunction {
 
   // [optional]
   optional FieldValueFactorModifier modifier = 4;
-
 }
 
 enum FieldValueFactorModifier {
