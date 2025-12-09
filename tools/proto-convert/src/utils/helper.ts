@@ -172,9 +172,19 @@ export function remove_unused(spec: OpenAPIV3.Document): void {
         (key) => _.keys((spec?.components as any)?.[key]).map((ref) => `#/components/${key}/${ref}`)
     );
 
-    deleteMatchingKeys(spec, (obj: any) =>
-        obj.$ref !== undefined && !_.includes(remaining, obj.$ref)
-    );
+    // Remove properties where additionalProperties.$ref is broken
+    deleteMatchingKeys(spec, (obj: any) => {
+        // Case 1: Direct broken $ref
+        if (obj.$ref !== undefined && !_.includes(remaining, obj.$ref)) {
+            return true;
+        }
+        // Case 2: Property with additionalProperties that has broken $ref
+        if (obj.additionalProperties?.$ref !== undefined &&
+            !_.includes(remaining, obj.additionalProperties.$ref)) {
+            return true;
+        }
+        return false;
+    });
 }
 
 /**
