@@ -2939,7 +2939,8 @@ enum HighlighterOrder {
 }
 enum HighlighterTagsSchema {
   HIGHLIGHTER_TAGS_SCHEMA_UNSPECIFIED = 0;
-  HIGHLIGHTER_TAGS_SCHEMA_STYLED = 1;
+  HIGHLIGHTER_TAGS_SCHEMA_DEFAULT = 1;
+  HIGHLIGHTER_TAGS_SCHEMA_STYLED = 2;
 }
 message HighlighterType {
   oneof highlighter_type {
