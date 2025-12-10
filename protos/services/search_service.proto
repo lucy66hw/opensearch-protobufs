@@ -12,12 +12,12 @@
 syntax = "proto3";
 package org.opensearch.protobufs.services;
 
-option java_multiple_files = true;
-option java_package = "org.opensearch.protobufs.services";
-option java_outer_classname = "SearchServiceProto";
-option go_package = "github.com/opensearch-project/opensearch-protobufs/go/services";
+import "protos/schemas/common.proto";
 
-import "protos/schemas/search.proto";
+option go_package = "github.com/opensearch-project/opensearch-protobufs/go/services";
+option java_multiple_files = true;
+option java_outer_classname = "SearchServiceProto";
+option java_package = "org.opensearch.protobufs.services";
 
 service SearchService {
   rpc Search(SearchRequest) returns (SearchResponse) {}
