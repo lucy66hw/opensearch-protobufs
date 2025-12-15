@@ -1,11 +1,6 @@
 /**
  * Merger module: Compare and merge messages/enums for backward compatibility.
  *
- * Rules:
- * - If modifier changed (optional added/removed) → ERROR
- * - If type changed → ERROR
- * - If field only in source but not upcoming → mark [deprecated = true]
- * - If field only in upcoming but not source → add at end with new field number
  */
 
 import {
