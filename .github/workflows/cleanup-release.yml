@@ -36,7 +36,7 @@ jobs:
         id: version
         uses: nguyenvukhang/semver-increment@v1
         with:
-          increment: patch
+          increment: minor
           version-file: version.properties
           version-regex: '^version=(.*)'
 
@@ -65,8 +65,6 @@ jobs:
           ### Added
 
           ### Changed
-
-          ### Deprecated
 
           ### Removed
 
