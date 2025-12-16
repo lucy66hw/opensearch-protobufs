@@ -7,10 +7,11 @@ on:
   push:
     tags:
       - "*"
+  # Manual trigger for testing
   workflow_dispatch:
     inputs:
-      test_tag:
-        description: 'Tag version to simulate (e.g., 1.0.0)'
+      release_tag:
+        description: 'Release tag to simulate (e.g., 1.0.0) - used for release notes filename'
         required: true
         type: string
 
@@ -22,8 +23,8 @@ jobs:
       contents: write
       pull-requests: write
     env:
-      # Use test_tag input if provided, otherwise use the actual tag
-      RELEASE_TAG: ${{ inputs.test_tag || github.ref_name }}
+      # Use input if provided (manual trigger), otherwise use the actual tag
+      RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -37,7 +38,7 @@ jobs:
         with:
           increment: patch
           version-file: version.properties
-          version-regex: '^(.*)'
+          version-regex: '^version=(.*)'
 
       - name: Create release notes from current CHANGELOG
         run: |
