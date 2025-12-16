@@ -1,13 +1,14 @@
 name: Cleanup release
 
-# Runs after a release tag is pushed to prepare for next development cycle
+# Runs after publish-release workflow completes successfully
 # Can also be triggered manually for testing
 
 on:
-  push:
-    tags:
-      - "*"
-  # Manual trigger for testing
+  # Triggered when publish-release workflow completes
+  workflow_run:
+    workflows: ["Release drafter"]
+    types:
+      - completed
   workflow_dispatch:
     inputs:
       release_tag:
@@ -19,12 +20,12 @@ jobs:
   cleanup-release:
     name: Cleanup release
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     permissions:
       contents: write
       pull-requests: write
     env:
-      # Use input if provided (manual trigger), otherwise use the actual tag
-      RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
+      RELEASE_TAG: ${{ inputs.release_tag || github.event.workflow_run.head_branch }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
