@@ -1,0 +1,95 @@
+name: Cleanup release
+
+# Runs after a release tag is pushed to prepare for next development cycle
+# Can also be triggered manually for testing
+
+on:
+  push:
+    tags:
+      - "*"
+  workflow_dispatch:
+    inputs:
+      test_tag:
+        description: 'Tag version to simulate (e.g., 1.0.0)'
+        required: true
+        type: string
+
+jobs:
+  cleanup-release:
+    name: Cleanup release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      # Use test_tag input if provided, otherwise use the actual tag
+      RELEASE_TAG: ${{ inputs.test_tag || github.ref_name }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Increment Version
+        id: version
+        uses: nguyenvukhang/semver-increment@v1
+        with:
+          increment: patch
+          version-file: version.properties
+          version-regex: '^(.*)'
+
+      - name: Create release notes from current CHANGELOG
+        run: |
+          mkdir -p release-notes
+          RELEASE_NOTES_FILE="release-notes/opensearch-protobufs.release-notes-${{ env.RELEASE_TAG }}.md"
+
+          # Create header
+          echo "# OpenSearch Protobufs ${{ env.RELEASE_TAG }} Release Notes" > "$RELEASE_NOTES_FILE"
+          echo "" >> "$RELEASE_NOTES_FILE"
+
+          # Copy changelog content (everything after the [Unreleased] header)
+          sed -n '/^## \[Unreleased\]/,/^## \[/{ /^## \[Unreleased\]/d; /^## \[/d; p; }' CHANGELOG.md >> "$RELEASE_NOTES_FILE"
+
+          echo "Created $RELEASE_NOTES_FILE"
+
+      - name: Reset CHANGELOG for next iteration
+        run: |
+          cat > CHANGELOG.md << 'EOF'
+          # CHANGELOG
+
+          Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
+
+          ## [Unreleased]
+          ### Added
+
+          ### Changed
+
+          ### Deprecated
+
+          ### Removed
+
+          ### Fixed
+
+          ### Security
+          EOF
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Cleanup release ${{ env.RELEASE_TAG }}, prepare ${{ steps.version.outputs.version }}"
+          signoff: true
+          branch: cleanup-release/${{ env.RELEASE_TAG }}
+          base: main
+          delete-branch: true
+          title: "Cleanup release ${{ env.RELEASE_TAG }}"
+          body: |
+            Release ${{ env.RELEASE_TAG }} has been drafted.
+
+            This PR prepares for the next development iteration (${{ steps.version.outputs.version }}).
+
+            ### Changes:
+            - Created release notes from CHANGELOG: `release-notes/opensearch-protobufs.release-notes-${{ env.RELEASE_TAG }}.md`
+            - Reset `CHANGELOG.md` for next iteration
+            - Bumped `version.properties` to `${{ steps.version.outputs.version }}`
