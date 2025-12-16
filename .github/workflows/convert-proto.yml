@@ -107,10 +107,7 @@ jobs:
         run: npm ci && npm run preprocessing -- --opensearch-version "$OPENSEARCH_VERSION"
 
       - name: Clone Protobuf Generator Repository
-        run: |
-          git clone https://github.com/OpenAPITools/openapi-generator cloned-repo
-          cd cloned-repo
-          git checkout 6699ecd9d2f4e0868f23bb36566ea03cd1230e6a
+        run: git clone https://github.com/OpenAPITools/openapi-generator cloned-repo
 
       - name: Build Protobuf Generator Tool
         run: |
