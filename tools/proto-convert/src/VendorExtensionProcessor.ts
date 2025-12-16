@@ -1,5 +1,5 @@
 import { OpenAPIV3 } from 'openapi-types';
-import { traverse } from './utils/OpenApiTraverser';
+import { SpecificationVisitor, SpecificationContext, traverseSpec, MaybeRef, is_ref } from './utils/SpecificationVisitor';
 import { resolveRef, deleteMatchingKeys, remove_unused } from './utils/helper';
 import logger from './utils/logger';
 import _ from 'lodash';
@@ -37,26 +37,24 @@ export class VendorExtensionProcessor {
 
         remove_unused(this.root);
 
-        traverse(this.root, {
-            onParameter: (param: any, name: string) => {
-                this.applyNameOverrideToParameter(param);
-            },
-            onSchema: (schema: any, name: string) => {
-                this.applyTypeOverride(schema);
-                this.applyNameOverride(schema);
-            },
-            onResponseSchema: (schema: any, name: string) => {
-                this.applyTypeOverride(schema);
-                this.applyNameOverride(schema);
-            },
-            onRequestSchema: (schema: any, name: string) => {
-                this.applyTypeOverride(schema);
-                this.applyNameOverride(schema);
-            },
-            onSchemaProperty: (schema: any, name: string) => {
-                this.applyTypeOverride(schema);
+        const processor = this;
+        class VendorExtensionVisitor extends SpecificationVisitor {
+            visit_schema(ctx: SpecificationContext, schema: MaybeRef<OpenAPIV3.SchemaObject>): void {
+                super.visit_schema(ctx, schema);
+                if (is_ref(schema)) return;
+
+                processor.applyTypeOverride(schema);
+                processor.applyNameOverride(schema);
             }
-        });
+
+            visit_parameter(ctx: SpecificationContext, param: MaybeRef<OpenAPIV3.ParameterObject>): void {
+                super.visit_parameter(ctx, param);
+                if (is_ref(param)) return;
+
+                processor.applyNameOverrideToParameter(param);
+            }
+        }
+        traverseSpec(this.root, new VendorExtensionVisitor());
 
         return this.root;
     }

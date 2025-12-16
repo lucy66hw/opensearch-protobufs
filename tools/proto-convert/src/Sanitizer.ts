@@ -1,6 +1,6 @@
 import _ from "lodash";
 import type {OpenAPIV3} from "openapi-types";
-import {traverse} from "./utils/OpenApiTraverser";
+import { SpecificationVisitor, SpecificationContext, traverseSpec, MaybeRef, is_ref } from "./utils/SpecificationVisitor";
 /**
  * Sanitizer class:
  * Provides a static method to sanitize a spec by updating $ref strings
@@ -69,22 +69,25 @@ export class Sanitizer {
         delete OpenApiSpec.components.schemas[schemaName]
       }
     }
-    traverse(OpenApiSpec, {
-      // Run sanitize_schema on all top-level component schemas
-      onSchema: (schema, _schemaName) => {
-        if (!('$ref' in schema)) {
-          this.sanitize_schema(schema);
+
+    const sanitizer = this;
+    class SanitizerVisitor extends SpecificationVisitor {
+      visit_schema(ctx: SpecificationContext, schema: MaybeRef<OpenAPIV3.SchemaObject>): void {
+        super.visit_schema(ctx, schema);
+        if (!is_ref(schema)) {
+          sanitizer.sanitize_schema(schema);
         }
-      },
-      onRequestSchema: (schema) => this.sanitize_schema(schema),
-      onResponseSchema: (schema) => this.sanitize_schema(schema),
-      onParameter: (param, _paramName) => {
-        if (!('$ref' in param) && param.name && param.name.startsWith('_')) {
+      }
+
+      visit_parameter(ctx: SpecificationContext, param: MaybeRef<OpenAPIV3.ParameterObject>): void {
+        super.visit_parameter(ctx, param);
+        if (!is_ref(param) && param.name && param.name.startsWith('_')) {
           param.name = Sanitizer.META_PREFIX + param.name;
         }
       }
-    });
-}
+    }
+    traverseSpec(OpenApiSpec, new SanitizerVisitor());
+  }
 
   public sanitize_schema(schema: OpenAPIV3.SchemaObject): void {
     if (!schema) return;

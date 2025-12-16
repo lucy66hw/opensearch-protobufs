@@ -1,5 +1,5 @@
 import type {OpenAPIV3} from "openapi-types";
-import {traverse} from './utils/OpenApiTraverser';
+import { SpecificationVisitor, SpecificationContext, traverseSpec, MaybeRef, is_ref } from './utils/SpecificationVisitor';
 import isEqual from 'lodash.isequal';
 import {compressMultipleUnderscores, isPrimitiveType, resolveObj, isReferenceObject, isEmptyObjectSchema, is_simple_ref} from './utils/helper';
 import logger from "./utils/logger";
@@ -14,44 +14,42 @@ export class SchemaModifier {
         this.root = root;
     }
     public modify(): OpenAPIV3.Document {
-        traverse(this.root, {
-            onSchemaProperty: (schema) => {
-                this.deduplicateEnumValue(schema)
-                this.handleAdditionalPropertiesUndefined(schema)
-                this.convertNullTypeToNullValue(schema)
-                this.deduplicateOneOfWithArrayType(schema)
-                this.collapseSingleItemComposite(schema);
-                this.removeArrayOfMapWrapper(schema)
-            },
-            onSchema: (schema, schemaName) => {
-                if (!schema || isReferenceObject(schema)) return;
-                this.deduplicateEnumValue(schema)
-                this.convertAdditionalPropertiesToProperty(schema)
-                this.handleAdditionalPropertiesUndefined(schema)
-                this.convertNullTypeToNullValue(schema)
-                this.handleOneOfConst(schema, schemaName)
-                this.deduplicateOneOfWithArrayType(schema)
-                this.collapseSingleItemComposite(schema);
-                this.collapseOneOfObjectPropContainsTitleSchema(schema)
-                this.removeArrayOfMapWrapper(schema)
-                this.convertOneOfToMinMaxProperties(schema)
-            },
-        });
-        const visit = new Set();
-        traverse(this.root, {
-            onSchemaProperty: (schema) => {
-                this.simplifySingleMapSchema(schema, visit);
-                this.handleAdditionalPropertiesUndefined(schema)
+        const modifier = this;
 
-            },
-            onSchema: (schema) => {
-                if (!schema || isReferenceObject(schema)) return;
-                this.simplifySingleMapSchema(schema, visit)
-                this.handleAdditionalPropertiesUndefined(schema)
-                this.markOneOfExtensions(schema);
-            },
-        });
-        return this.root
+        class FirstPassVisitor extends SpecificationVisitor {
+            visit_schema(ctx: SpecificationContext, schema: MaybeRef<OpenAPIV3.SchemaObject>): void {
+                super.visit_schema(ctx, schema);
+                if (is_ref(schema)) return;
+
+                const schemaName = ctx.key;
+                modifier.deduplicateEnumValue(schema);
+                modifier.convertAdditionalPropertiesToProperty(schema);
+                modifier.handleAdditionalPropertiesUndefined(schema);
+                modifier.convertNullTypeToNullValue(schema);
+                modifier.handleOneOfConst(schema, schemaName);
+                modifier.deduplicateOneOfWithArrayType(schema);
+                modifier.collapseSingleItemComposite(schema);
+                modifier.collapseOneOfObjectPropContainsTitleSchema(schema);
+                modifier.removeArrayOfMapWrapper(schema);
+                modifier.convertOneOfToMinMaxProperties(schema);
+            }
+        }
+        traverseSpec(this.root, new FirstPassVisitor());
+
+        const visited = new Set();
+        class SecondPassVisitor extends SpecificationVisitor {
+            visit_schema(ctx: SpecificationContext, schema: MaybeRef<OpenAPIV3.SchemaObject>): void {
+                super.visit_schema(ctx, schema);
+                if (is_ref(schema)) return;
+
+                modifier.simplifySingleMapSchema(schema, visited);
+                modifier.handleAdditionalPropertiesUndefined(schema);
+                modifier.markOneOfExtensions(schema);
+            }
+        }
+        traverseSpec(this.root, new SecondPassVisitor());
+
+        return this.root;
     }
 
     // Converts `additionalProperties: true` or `additionalProperties: {}` to `type: object`.
