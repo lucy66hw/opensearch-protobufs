@@ -12,6 +12,14 @@ option java_multiple_files = true;
 option java_outer_classname = "CommonProto";
 option java_package = "org.opensearch.protobufs";
 
+service DefaultService {
+  rpc Bulk(BulkRequest) returns (BulkResponse);
+
+  rpc Index(IndexRequest) returns (WriteResponseBase);
+
+  rpc Search(SearchRequest) returns (SearchResponse);
+}
+
 message BulkRequest {
   repeated BulkRequestBody bulk_request_body = 1;
 
@@ -50,6 +58,49 @@ message BulkRequest {
 
   // Global query parameters
   optional GlobalParams global_params = 13;
+}
+
+message IndexRequest {
+  // Name of the data stream or index to target.
+  string index = 1;
+
+  ObjectMap body = 2;
+
+  // Only perform the operation if the document has this primary term.
+  optional int64 if_primary_term = 3;
+
+  // Only perform the operation if the document has this sequence number.
+  optional int64 if_seq_no = 4;
+
+  // Set to create to only index the document if it does not already exist (put if absent). If a document with the specified `_id` already exists, the indexing operation will fail. Same as using the `<index>/_create` endpoint. Valid values: `index`, `create`. If document id is specified, it defaults to `index`. Otherwise, it defaults to `create`.
+  optional OpType op_type = 5;
+
+  // ID of the pipeline to use to preprocess incoming documents. If the index has a default ingest pipeline specified, then setting the value to `_none` disables the default ingest pipeline for this request. If a final pipeline is configured it will always run, regardless of the value of this parameter.
+  optional string pipeline = 6;
+
+  // If `true`, OpenSearch refreshes the affected shards to make this operation visible to search, if `wait_for` then wait for a refresh to make this operation visible to search, if `false` do nothing with refreshes. Valid values: `true`, `false`, `wait_for`.
+  optional Refresh refresh = 7;
+
+  // If `true`, the destination must be an index alias.
+  optional bool require_alias = 8;
+
+  // A custom value used to route operations to a specific shard.
+  repeated string routing = 9;
+
+  // Period the request waits for the following operations: automatic index creation, dynamic mapping updates, waiting for active shards.
+  optional string timeout = 10;
+
+  // Explicit version number for concurrency control. The specified version must match the current version of the document for the request to succeed.
+  optional int64 version = 11;
+
+  // The specific version type: `external`, `external_gte`.
+  optional VersionType version_type = 12;
+
+  // The number of shard copies that must be active before proceeding with the operation. Set to all or any positive integer up to the total number of shards in the index (`number_of_replicas+1`).
+  optional WaitForActiveShards wait_for_active_shards = 13;
+
+  // Global query parameters
+  optional GlobalParams global_params = 14;
 }
 
 message SearchRequest {
