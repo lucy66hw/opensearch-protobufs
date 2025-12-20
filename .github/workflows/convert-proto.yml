@@ -10,7 +10,7 @@ on:
 jobs:
   auto-proto-convert:
     runs-on: ubuntu-latest
-    if: github.repository == 'opensearch-project/opensearch-protobufs'
+    # if: github.repository == 'opensearch-project/opensearch-protobufs'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -25,11 +25,6 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-
-      - name: Install buf
-        run: |
-          npm install -g @bufbuild/buf
-          buf --version
 
       - name: Download Release Assets
         uses: robinraju/release-downloader@v1
@@ -120,10 +115,6 @@ jobs:
       - name: Convert protobuf
         run: |
           java -jar cloned-repo/modules/openapi-generator-cli/target/openapi-generator-cli.jar generate -c tools/proto-convert/src/config/protobuf-generator-config.yaml
-
-      - name: Reformat proto files
-        run: |
-          buf format -w protos/generated
 
       - name: Post Process Protobuf
         run: npm run postprocessing
