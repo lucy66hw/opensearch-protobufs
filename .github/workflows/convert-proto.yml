@@ -7,6 +7,9 @@ on:
         description: 'OpenSearch version. Leave empty to fetch latest.'
         required: false
         type: string
+  repository_dispatch:
+    types: [spec-updated]
+
 jobs:
   auto-proto-convert:
     runs-on: ubuntu-latest
@@ -29,7 +32,7 @@ jobs:
       - name: Download Release Assets
         uses: robinraju/release-downloader@v1
         with:
-         repository: 'opensearch-project/opensearch-api-specification'
+         repository: 'lucy66hw/opensearch-api-specification'
          latest: true
          fileName: 'opensearch-openapi.yaml'
          tag: 'main-latest'
@@ -119,6 +122,20 @@ jobs:
       - name: Post Process Protobuf
         run: npm run postprocessing
 
+      - name: Generate Merge Report
+        id: merge_report
+        run: |
+          npm run backward-compat -- --dry-run --report /tmp/merge-report.md || true
+          if [ -f /tmp/merge-report.md ]; then
+            # Escape for GitHub Actions multiline output
+            REPORT=$(cat /tmp/merge-report.md)
+            echo "report<<EOF" >> $GITHUB_OUTPUT
+            echo "$REPORT" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "report=No changes detected." >> $GITHUB_OUTPUT
+          fi
+
       - name: Configure Git User
         run: |
           git config --global user.name "github-actions[bot]"
@@ -152,3 +169,7 @@ jobs:
 
             **OpenSearch Version**: ${{ steps.get_opensearch_version.outputs.version }}
             **API Spec Commit**: ${{ steps.get_commit.outputs.latest_commit }}
+
+            ---
+
+            ${{ steps.merge_report.outputs.report }}

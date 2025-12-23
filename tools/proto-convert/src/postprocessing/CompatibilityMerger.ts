@@ -10,6 +10,7 @@ import {
     ProtoOneof,
     Annotation
 } from './types';
+import { MergeReporter, formatField } from './MergeReporter';
 
 const DEPRECATED: Annotation = { name: 'deprecated', value: 'true' };
 
@@ -55,20 +56,25 @@ function addDeprecated<T extends HasAnnotations>(item: T): T {
 }
 
 /**
- * Check if optional added or removed. If so, push error and return true
+ * Check if optional modifier changed and report it.
  */
-function hasOptionalError(
+function checkOptionalChange(
     source: ProtoField,
     upcoming: ProtoField,
     msgName: string,
-    errors: string[]
+    reporter?: MergeReporter
 ): boolean {
     const sourceOptional = source.modifier === 'optional';
     const upcomingOptional = upcoming.modifier === 'optional';
 
     if (sourceOptional !== upcomingOptional) {
-        const change = sourceOptional ? 'removed' : 'added';
-        errors.push(`${msgName}.${source.name}: optional ${change}`);
+        reporter?.addFieldChange({
+            messageName: msgName,
+            changeType: 'optional_error',
+            fieldName: source.name,
+            existingType: formatField(source),
+            incomingType: formatField(upcoming)
+        });
         return true;
     }
     return false;
@@ -88,7 +94,7 @@ function mergeField(
     sourceField: ProtoField,
     upcomingMap: Map<string, ProtoField>,
     msgName: string,
-    errors: string[]
+    reporter?: MergeReporter
 ): ProtoField {
     if (isDeprecated(sourceField)) {
         return sourceField;
@@ -100,9 +106,8 @@ function mergeField(
     if (upcomingField) {
         upcomingMap.delete(baseName);
 
-        if (hasOptionalError(sourceField, upcomingField, msgName, errors)) {
-            return sourceField;
-        }
+        // Report optional modifier changes (but don't stop)
+        checkOptionalChange(sourceField, upcomingField, msgName, reporter);
 
         if (fieldsMatch(sourceField, upcomingField)) {
             return sourceField;
@@ -110,11 +115,30 @@ function mergeField(
             // Type or repeated change - deprecate and version
             const newName = `${baseName}_${getFieldVersion(sourceField.name) + 1}`;
             upcomingMap.set(newName, { ...upcomingField, name: newName });
+            reporter?.addFieldChange({
+                messageName: msgName,
+                changeType: 'type_changed',
+                fieldName: sourceField.name,
+                existingType: formatField(sourceField),
+                incomingType: formatField(upcomingField),
+                versionedName: newName
+            });
             return addDeprecated(sourceField);
         }
     } else {
+        reporter?.addFieldChange({
+            messageName: msgName,
+            changeType: 'removed',
+            fieldName: sourceField.name,
+            existingType: formatField(sourceField)
+        });
         return addDeprecated(sourceField);
     }
+}
+
+/** Check if field name is a versioned name (ends with _N where N is a number) */
+function isVersionedName(name: string): boolean {
+    return /_\d+$/.test(name);
 }
 
 /**
@@ -123,7 +147,7 @@ function mergeField(
 export function mergeMessage(
     sourceMsg: ProtoMessage,
     upcomingMsg: ProtoMessage,
-    errors: string[]
+    reporter?: MergeReporter
 ): ProtoMessage {
     const upcomingByName = new Map(upcomingMsg.fields.map(f => [f.name, f]));
 
@@ -133,7 +157,7 @@ export function mergeMessage(
     // Process regular fields
     for (const sourceField of sourceMsg.fields) {
         maxFieldNumber = Math.max(maxFieldNumber, sourceField.number);
-        mergedFields.push(mergeField(sourceField, upcomingByName, sourceMsg.name, errors));
+        mergedFields.push(mergeField(sourceField, upcomingByName, sourceMsg.name, reporter));
     }
 
     // Process oneofs
@@ -155,7 +179,7 @@ export function mergeMessage(
             const mergedOneofFields: ProtoField[] = [];
             for (const sourceField of sourceOneof.fields) {
                 maxFieldNumber = Math.max(maxFieldNumber, sourceField.number);
-                mergedOneofFields.push(mergeField(sourceField, upcomingOneofByName, sourceMsg.name, errors));
+                mergedOneofFields.push(mergeField(sourceField, upcomingOneofByName, sourceMsg.name, reporter));
             }
 
             mergedOneofs.push({ ...sourceOneof, fields: mergedOneofFields });
@@ -165,6 +189,14 @@ export function mergeMessage(
 
     // Assign field max number to remaining fields.
     for (const field of upcomingByName.values()) {
+        if (!isVersionedName(field.name)) {
+            reporter?.addFieldChange({
+                messageName: sourceMsg.name,
+                changeType: 'added',
+                fieldName: field.name,
+                incomingType: formatField(field)
+            });
+        }
         mergedFields.push({ ...field, number: ++maxFieldNumber });
     }
 
@@ -174,6 +206,14 @@ export function mergeMessage(
             const remaining = oneofMaps.get(oneof.name);
             if (remaining) {
                 for (const field of remaining.values()) {
+                    if (!isVersionedName(field.name)) {
+                        reporter?.addFieldChange({
+                            messageName: sourceMsg.name,
+                            changeType: 'added',
+                            fieldName: `${oneof.name}.${field.name}`,
+                            incomingType: formatField(field)
+                        });
+                    }
                     oneof.fields.push({ ...field, number: ++maxFieldNumber });
                 }
             }
@@ -192,7 +232,8 @@ export function mergeMessage(
  */
 export function mergeEnum(
     sourceEnum: ProtoEnum,
-    upcomingEnum: ProtoEnum
+    upcomingEnum: ProtoEnum,
+    reporter?: MergeReporter
 ): ProtoEnum {
     const sourceValueMap = new Map(sourceEnum.values.map(v => [v.name, v]));
     const upcomingValueMap = new Map(upcomingEnum.values.map(v => [v.name, v]));
@@ -208,12 +249,22 @@ export function mergeEnum(
         if (upcomingValue) {
             mergedValues.push(sourceValue);
         } else {
+            reporter?.addEnumChange({
+                enumName: sourceEnum.name,
+                changeType: 'removed',
+                valueName: sourceValue.name
+            });
             mergedValues.push(addDeprecated(sourceValue));
         }
     }
 
     for (const [valueName, upcomingValue] of upcomingValueMap) {
         if (!sourceValueMap.has(valueName)) {
+            reporter?.addEnumChange({
+                enumName: sourceEnum.name,
+                changeType: 'added',
+                valueName: valueName
+            });
             mergedValues.push({
                 ...upcomingValue,
                 number: ++maxValueNumber

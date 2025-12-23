@@ -210,8 +210,8 @@ describe('BackwardCompatibleWriter', () => {
         });
     });
 
-    describe('error handling', () => {
-        it('should throw BackwardCompatibilityError on optional change (added)', () => {
+    describe('change reporting', () => {
+        it('should throw BackwardCompatibilityError on optional change in real run', () => {
             const badIncoming = path.join(tempDir, 'bad_incoming.proto');
             fs.writeFileSync(badIncoming, PROTO_OPTIONAL_ADDED);
 
@@ -221,7 +221,30 @@ describe('BackwardCompatibleWriter', () => {
                 outputPath
             );
 
+            // Should throw in real run mode
             expect(() => writer.process()).toThrow(BackwardCompatibilityError);
+
+            // Report should still have the error recorded
+            const reporter = writer.getReporter();
+            expect(reporter.hasIncompatibleChanges()).toBe(true);
+        });
+
+        it('should report optional change without throwing in dry-run mode', () => {
+            const badIncoming = path.join(tempDir, 'bad_incoming.proto');
+            fs.writeFileSync(badIncoming, PROTO_OPTIONAL_ADDED);
+
+            const writer = new BackwardCompatibleWriter(
+                EXISTING_PROTO,
+                [badIncoming],
+                outputPath
+            );
+
+            // Should not throw in dry-run mode
+            writer.process(true);
+
+            const reporter = writer.getReporter();
+            expect(reporter.hasIncompatibleChanges()).toBe(true);
+            expect(reporter.getIncompatibleChanges().length).toBeGreaterThan(0);
         });
 
         it('should handle type change by deprecating old field', () => {

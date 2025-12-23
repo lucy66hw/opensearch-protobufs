@@ -1,13 +1,10 @@
-import { existsSync } from 'fs';
+import { existsSync, writeFileSync } from 'fs';
 import { Command, Option } from '@commander-js/extra-typings';
-import {
-    ProtoMessage,
-    ProtoEnum,
-    BackwardCompatibilityError
-} from './types';
+import { ProtoMessage, ProtoEnum, BackwardCompatibilityError } from './types';
 import { parseProtoFile } from './parser';
 import { mergeMessage, mergeEnum } from './CompatibilityMerger';
 import { writeProtoFile, CUSTOM_MESSAGE_NAMES, CUSTOM_ENUM_NAMES } from './writer';
+import { MergeReporter } from './MergeReporter';
 import logger from '../utils/logger';
 
 export class BackwardCompatibleWriter {
@@ -15,8 +12,8 @@ export class BackwardCompatibleWriter {
     private existingEnums: ProtoEnum[];
     private incomingMessageMap: Map<string, ProtoMessage> = new Map();
     private incomingEnumMap: Map<string, ProtoEnum> = new Map();
-    private errors: string[] = [];
     private outputPath: string;
+    private reporter: MergeReporter = new MergeReporter();
 
     constructor(existingPath: string, incomingPaths: string[], outputPath: string) {
         this.outputPath = outputPath;
@@ -46,7 +43,7 @@ export class BackwardCompatibleWriter {
         }
     }
 
-    process(): void {
+    process(dryRun: boolean = false): void {
         const finalMessages: ProtoMessage[] = [];
         const finalEnums: ProtoEnum[] = [];
 
@@ -59,7 +56,7 @@ export class BackwardCompatibleWriter {
 
             const incomingMsg = this.incomingMessageMap.get(existingMsg.name);
             if (incomingMsg) {
-                finalMessages.push(mergeMessage(existingMsg, incomingMsg, this.errors));
+                finalMessages.push(mergeMessage(existingMsg, incomingMsg, this.reporter));
                 this.incomingMessageMap.delete(existingMsg.name);
             } else {
                 finalMessages.push(existingMsg);
@@ -75,7 +72,7 @@ export class BackwardCompatibleWriter {
 
             const incomingEnum = this.incomingEnumMap.get(existingEnum.name);
             if (incomingEnum) {
-                finalEnums.push(mergeEnum(existingEnum, incomingEnum));
+                finalEnums.push(mergeEnum(existingEnum, incomingEnum, this.reporter));
                 this.incomingEnumMap.delete(existingEnum.name);
             } else {
                 finalEnums.push(existingEnum);
@@ -96,20 +93,39 @@ export class BackwardCompatibleWriter {
             }
         }
 
-        // Check for errors before writing
-        if (this.errors.length > 0) {
-            logger.error('Backward compatibility errors:');
-            for (const error of this.errors) {
-                logger.error(`  ${error}`);
+        // Check for backward incompatible changes
+        if (this.reporter.hasIncompatibleChanges()) {
+            const errors = this.reporter.getIncompatibleChanges();
+            logger.error('Backward incompatible changes detected:');
+            for (const err of errors) {
+                logger.error(`  ${err.messageName}.${err.fieldName}: ${err.existingType} → ${err.incomingType}`);
             }
-            throw new BackwardCompatibilityError(
-                `Found ${this.errors.length} backward compatibility violation(s).`
-            );
+
+            if (!dryRun) {
+                // In real run mode, throw error and don't write
+                throw new BackwardCompatibilityError(
+                    `Found ${errors.length} backward incompatible change(s). Proto file not updated.`
+                );
+            }
+            // In dry-run mode, continue (report will show the errors)
+            logger.info(`Dry run: ${this.outputPath} would NOT be updated due to incompatible changes`);
+            return;
         }
 
-        // Write output using shared function
-        writeProtoFile(finalMessages, finalEnums, this.outputPath);
-        logger.info(`Updated: ${this.outputPath}`);
+        // Write output using shared function (skip if dry-run)
+        if (dryRun) {
+            logger.info(`Dry run: would update ${this.outputPath}`);
+        } else {
+            writeProtoFile(finalMessages, finalEnums, this.outputPath);
+            logger.info(`Updated: ${this.outputPath}`);
+        }
+    }
+
+    /**
+     * Get the merge reporter for accessing change reports.
+     */
+    getReporter(): MergeReporter {
+        return this.reporter;
     }
 }
 
@@ -124,6 +140,8 @@ if (require.main === module) {
             .argParser((val: string) => val.split(',').map(s => s.trim()))
             .default(['protos/generated/models/aggregated_models.proto', 'protos/generated/services/default_service.proto']))
         .addOption(new Option('-o, --output <path>', 'output proto file').default('protos/schemas/common.proto'))
+        .addOption(new Option('-r, --report <path>', 'output merge report (markdown)'))
+        .addOption(new Option('-d, --dry-run', 'preview changes without writing output file').default(false))
         .allowExcessArguments(false)
         .parse();
 
@@ -131,6 +149,8 @@ if (require.main === module) {
         existing: string;
         incoming: string[];
         output: string;
+        report?: string;
+        dryRun: boolean;
     };
 
     const opts = command.opts() as BackwardCompatOpts;
@@ -146,17 +166,30 @@ if (require.main === module) {
         process.exit(1);
     }
 
+    const writer = new BackwardCompatibleWriter(
+        opts.existing,
+        opts.incoming,
+        opts.output
+    );
+
     try {
-        const writer = new BackwardCompatibleWriter(
-            opts.existing,
-            opts.incoming,
-            opts.output
-        );
-        writer.process();
+        writer.process(opts.dryRun);
     } catch (error) {
+        // Write report even on error
+        if (opts.report) {
+            writeFileSync(opts.report, writer.getReporter().toMarkdown());
+            logger.info(`Report written: ${opts.report}`);
+        }
+
         if (error instanceof BackwardCompatibilityError) {
             process.exit(1);
         }
         throw error;
+    }
+
+    // Write report on success
+    if (opts.report) {
+        writeFileSync(opts.report, writer.getReporter().toMarkdown());
+        logger.info(`Report written: ${opts.report}`);
     }
 }

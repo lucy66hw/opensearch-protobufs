@@ -3,6 +3,7 @@
  */
 
 import { mergeMessage, mergeEnum } from '../../src/postprocessing/CompatibilityMerger';
+import { MergeReporter } from '../../src/postprocessing/MergeReporter';
 import { ProtoMessage, ProtoEnum, ProtoField, ProtoEnumValue } from '../../src/postprocessing/types';
 
 describe('mergeMessage', () => {
@@ -29,11 +30,9 @@ describe('mergeMessage', () => {
                     field('name', 'string', 2)
                 ]
             };
-            const errors: string[] = [];
 
-            const result = mergeMessage(source, upcoming, errors);
+            const result = mergeMessage(source, upcoming);
 
-            expect(errors).toHaveLength(0);
             expect(result.fields).toHaveLength(2);
             expect(result.fields[0].name).toBe('id');
             expect(result.fields[0].number).toBe(1);
@@ -56,19 +55,17 @@ describe('mergeMessage', () => {
                     field('name', 'string', 3)
                 ]
             };
-            const errors: string[] = [];
 
-            const result = mergeMessage(source, upcoming, errors);
+            const result = mergeMessage(source, upcoming);
 
-            expect(errors).toHaveLength(0);
             // Source field numbers should be preserved
             expect(result.fields[0].number).toBe(1);
             expect(result.fields[1].number).toBe(2);
         });
     });
 
-    describe('optional changes (error)', () => {
-        it('should error when optional is added', () => {
+    describe('optional changes (reported)', () => {
+        it('should report when optional is added and handle as type change', () => {
             const source: ProtoMessage = {
                 name: 'TestMessage',
                 fields: [field('id', 'int32', 1)]
@@ -77,18 +74,22 @@ describe('mergeMessage', () => {
                 name: 'TestMessage',
                 fields: [field('id', 'int32', 1, 'optional')]
             };
-            const errors: string[] = [];
+            const reporter = new MergeReporter();
 
-            const result = mergeMessage(source, upcoming, errors);
+            const result = mergeMessage(source, upcoming, reporter);
 
-            expect(errors).toHaveLength(1);
-            expect(errors[0]).toContain('optional added');
-            // Field unchanged (not deprecated)
-            expect(result.fields).toHaveLength(1);
+            // Optional change is reported
+            const optionalChanges = reporter.getFieldChanges().filter(c => c.changeType === 'optional_error');
+            expect(optionalChanges).toHaveLength(1);
+            // Modifier mismatch causes deprecation + versioning (2 fields)
+            expect(result.fields).toHaveLength(2);
             expect(result.fields[0].name).toBe('id');
+            expect(result.fields[0].annotations).toContainEqual({ name: 'deprecated', value: 'true' });
+            expect(result.fields[1].name).toBe('id_1');
+            expect(result.fields[1].modifier).toBe('optional');
         });
 
-        it('should error when optional is removed', () => {
+        it('should report when optional is removed and handle as type change', () => {
             const source: ProtoMessage = {
                 name: 'TestMessage',
                 fields: [field('id', 'int32', 1, 'optional')]
@@ -97,15 +98,20 @@ describe('mergeMessage', () => {
                 name: 'TestMessage',
                 fields: [field('id', 'int32', 1)]
             };
-            const errors: string[] = [];
+            const reporter = new MergeReporter();
 
-            const result = mergeMessage(source, upcoming, errors);
+            const result = mergeMessage(source, upcoming, reporter);
 
-            expect(errors).toHaveLength(1);
-            expect(errors[0]).toContain('optional removed');
-            // Field unchanged (not deprecated)
-            expect(result.fields).toHaveLength(1);
+            // Optional change is reported
+            const optionalChanges = reporter.getFieldChanges().filter(c => c.changeType === 'optional_error');
+            expect(optionalChanges).toHaveLength(1);
+            // Modifier mismatch causes deprecation + versioning (2 fields)
+            expect(result.fields).toHaveLength(2);
             expect(result.fields[0].name).toBe('id');
+            expect(result.fields[0].modifier).toBe('optional');
+            expect(result.fields[0].annotations).toContainEqual({ name: 'deprecated', value: 'true' });
+            expect(result.fields[1].name).toBe('id_1');
+            expect(result.fields[1].modifier).toBeUndefined();
         });
     });
 
@@ -119,11 +125,9 @@ describe('mergeMessage', () => {
                 name: 'TestMessage',
                 fields: [field('items', 'string', 1, 'repeated')]
             };
-            const errors: string[] = [];
 
-            const result = mergeMessage(source, upcoming, errors);
+            const result = mergeMessage(source, upcoming);
 
-            expect(errors).toHaveLength(0);
             expect(result.fields).toHaveLength(2);
             // Old field deprecated
             expect(result.fields[0].name).toBe('items');
@@ -143,11 +147,9 @@ describe('mergeMessage', () => {
                 name: 'TestMessage',
                 fields: [field('items', 'string', 1)]
             };
-            const errors: string[] = [];
 
-            const result = mergeMessage(source, upcoming, errors);
+            const result = mergeMessage(source, upcoming);
 
-            expect(errors).toHaveLength(0);
             expect(result.fields).toHaveLength(2);
             // Old field deprecated
             expect(result.fields[0].name).toBe('items');
@@ -169,11 +171,9 @@ describe('mergeMessage', () => {
                 name: 'TestMessage',
                 fields: [field('id', 'int64', 1)]
             };
-            const errors: string[] = [];
 
-            const result = mergeMessage(source, upcoming, errors);
+            const result = mergeMessage(source, upcoming);
 
-            expect(errors).toHaveLength(0);
             expect(result.fields).toHaveLength(2);
             // Old field should be deprecated
             expect(result.fields[0].name).toBe('id');
@@ -194,11 +194,9 @@ describe('mergeMessage', () => {
                 name: 'TestMessage',
                 fields: [field('data', 'NewType', 1)]
             };
-            const errors: string[] = [];
 
-            const result = mergeMessage(source, upcoming, errors);
+            const result = mergeMessage(source, upcoming);
 
-            expect(errors).toHaveLength(0);
             expect(result.fields).toHaveLength(2);
             // Old field deprecated
             expect(result.fields[0].name).toBe('data');
@@ -223,11 +221,9 @@ describe('mergeMessage', () => {
                 name: 'TestMessage',
                 fields: [field('id', 'int32', 1)]
             };
-            const errors: string[] = [];
 
-            const result = mergeMessage(source, upcoming, errors);
+            const result = mergeMessage(source, upcoming);
 
-            expect(errors).toHaveLength(0);
             expect(result.fields).toHaveLength(2);
 
             const deprecatedField = result.fields.find(f => f.name === 'old_field');
@@ -249,9 +245,8 @@ describe('mergeMessage', () => {
                 name: 'TestMessage',
                 fields: []
             };
-            const errors: string[] = [];
 
-            const result = mergeMessage(source, upcoming, errors);
+            const result = mergeMessage(source, upcoming);
 
             const deprecatedField = result.fields[0];
             const deprecatedOptions = deprecatedField.annotations?.filter(
@@ -278,11 +273,9 @@ describe('mergeMessage', () => {
                     field('new_field', 'bool', 99)
                 ]
             };
-            const errors: string[] = [];
 
-            const result = mergeMessage(source, upcoming, errors);
+            const result = mergeMessage(source, upcoming);
 
-            expect(errors).toHaveLength(0);
             expect(result.fields).toHaveLength(3);
 
             const newField = result.fields.find(f => f.name === 'new_field');
@@ -304,9 +297,8 @@ describe('mergeMessage', () => {
                     field('new2', 'bool', 2)
                 ]
             };
-            const errors: string[] = [];
 
-            const result = mergeMessage(source, upcoming, errors);
+            const result = mergeMessage(source, upcoming);
 
             expect(result.fields).toHaveLength(3);
             expect(result.fields[0].number).toBe(5);
@@ -341,11 +333,9 @@ describe('mergeMessage', () => {
                     ]
                 }]
             };
-            const errors: string[] = [];
 
-            const result = mergeMessage(source, upcoming, errors);
+            const result = mergeMessage(source, upcoming);
 
-            expect(errors).toHaveLength(0);
             expect(result.oneofs).toHaveLength(1);
             expect(result.oneofs![0].fields).toHaveLength(2);
         });
@@ -370,11 +360,9 @@ describe('mergeMessage', () => {
                     fields: [field('str_val', 'string', 1)]
                 }]
             };
-            const errors: string[] = [];
 
-            const result = mergeMessage(source, upcoming, errors);
+            const result = mergeMessage(source, upcoming);
 
-            expect(errors).toHaveLength(0);
             const removedField = result.oneofs![0].fields.find(f => f.name === 'removed_val');
             expect(removedField).toBeDefined();
             expect(removedField!.annotations).toContainEqual({ name: 'deprecated', value: 'true' });
@@ -400,11 +388,9 @@ describe('mergeMessage', () => {
                     ]
                 }]
             };
-            const errors: string[] = [];
 
-            const result = mergeMessage(source, upcoming, errors);
+            const result = mergeMessage(source, upcoming);
 
-            expect(errors).toHaveLength(0);
             expect(result.oneofs![0].fields).toHaveLength(2);
 
             const newField = result.oneofs![0].fields.find(f => f.name === 'new_val');
@@ -430,11 +416,9 @@ describe('mergeMessage', () => {
                     fields: [field('val', 'bytes', 1)]
                 }]
             };
-            const errors: string[] = [];
 
-            const result = mergeMessage(source, upcoming, errors);
+            const result = mergeMessage(source, upcoming);
 
-            expect(errors).toHaveLength(0);
             expect(result.oneofs![0].fields).toHaveLength(2);
             // Old field deprecated
             expect(result.oneofs![0].fields[0].name).toBe('val');
@@ -468,10 +452,8 @@ describe('mergeMessage', () => {
                     ]
                 }]
             };
-            const errors: string[] = [];
 
-            const result = mergeMessage(source, upcoming, errors);
-
+            const result = mergeMessage(source, upcoming);
 
             const newOneofField = result.oneofs![0].fields.find(f => f.name === 'new_oneof_val');
             const newRegularField = result.fields.find(f => f.name === 'new_field');
@@ -498,11 +480,9 @@ describe('mergeMessage', () => {
                     field('field2', 'string', 2, 'repeated')  // repeated added
                 ]
             };
-            const errors: string[] = [];
 
-            const result = mergeMessage(source, upcoming, errors);
+            const result = mergeMessage(source, upcoming);
 
-            expect(errors).toHaveLength(0);
             // 2 original fields deprecated + 2 new versioned fields = 4 total
             expect(result.fields).toHaveLength(4);
 
@@ -548,11 +528,9 @@ describe('mergeMessage', () => {
                 name: 'TestMessage',
                 fields: [field('test_name', 'int32', 1)]
             };
-            const errors: string[] = [];
 
-            const result = mergeMessage(source, upcoming, errors);
+            const result = mergeMessage(source, upcoming);
 
-            expect(errors).toHaveLength(0);
             expect(result.fields).toHaveLength(3);
 
             // First field: kept as-is (already deprecated)
@@ -599,11 +577,9 @@ describe('mergeEnum', () => {
                     enumVal('STATUS_INACTIVE', 2)
                 ]
             };
-            const errors: string[] = [];
 
             const result = mergeEnum(source, upcoming);
 
-            expect(errors).toHaveLength(0);
             expect(result.values).toHaveLength(3);
         });
 
@@ -622,7 +598,6 @@ describe('mergeEnum', () => {
                     enumVal('STATUS_ACTIVE', 3)
                 ]
             };
-            const errors: string[] = [];
 
             const result = mergeEnum(source, upcoming);
 
@@ -643,11 +618,9 @@ describe('mergeEnum', () => {
                 name: 'Status',
                 values: [enumVal('STATUS_UNSPECIFIED', 0)]
             };
-            const errors: string[] = [];
 
             const result = mergeEnum(source, upcoming);
 
-            expect(errors).toHaveLength(0);
             expect(result.values).toHaveLength(2);
 
             const deprecatedValue = result.values.find(v => v.name === 'STATUS_OLD');
@@ -668,7 +641,6 @@ describe('mergeEnum', () => {
                 name: 'Status',
                 values: []
             };
-            const errors: string[] = [];
 
             const result = mergeEnum(source, upcoming);
 
@@ -696,11 +668,9 @@ describe('mergeEnum', () => {
                     enumVal('STATUS_NEW', 99)
                 ]
             };
-            const errors: string[] = [];
 
             const result = mergeEnum(source, upcoming);
 
-            expect(errors).toHaveLength(0);
             expect(result.values).toHaveLength(3);
 
             const newValue = result.values.find(v => v.name === 'STATUS_NEW');
@@ -721,7 +691,6 @@ describe('mergeEnum', () => {
                     enumVal('STATUS_NEW2', 20)
                 ]
             };
-            const errors: string[] = [];
 
             const result = mergeEnum(source, upcoming);
 
@@ -751,11 +720,9 @@ describe('mergeEnum', () => {
                     enumVal('STATUS_NEW', 99)
                 ]
             };
-            const errors: string[] = [];
 
             const result = mergeEnum(source, upcoming);
 
-            expect(errors).toHaveLength(0);
             expect(result.values).toHaveLength(4);
 
             // Old value deprecated
