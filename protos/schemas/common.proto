@@ -415,7 +415,7 @@ message HitsMetadataHitsInner {
   map<string, InnerHitsResult> inner_hits = 8;
 
   // [optional] List of matched query names used in the search request.
-  repeated string matched_queries = 9;
+  repeated string matched_queries = 9 [deprecated = true];
 
   // [optional] Defines from what inner nested object this inner hit came from
   optional NestedIdentity x_nested = 10;
@@ -451,6 +451,8 @@ message HitsMetadataHitsInner {
 
   // [optional] Contains metadata values for the documents.
   optional ObjectMap meta_fields = 21;
+
+  optional HitMatchedQueries matched_queries_1 = 22;
 }
 
 message ClusterStatistics {
@@ -3146,6 +3148,21 @@ message FieldValueFactorScoreFunction {
 
   // [optional]
   optional FieldValueFactorModifier modifier = 4;
+}
+
+message DoubleMap {
+
+  // A map of matched query names to their scores (when `include_named_queries_score` is true).
+  map<string, double> double_map = 1;
+}
+
+message HitMatchedQueries {
+  oneof hit_matched_queries {
+    StringArray string_array = 1;
+
+    DoubleMap scores = 2;
+
+  }
 }
 
 enum FieldValueFactorModifier {
