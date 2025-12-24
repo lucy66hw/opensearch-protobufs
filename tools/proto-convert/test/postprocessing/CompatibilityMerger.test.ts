@@ -3,7 +3,7 @@
  */
 
 import { mergeMessage, mergeEnum } from '../../src/postprocessing/CompatibilityMerger';
-import { MergeReporter } from '../../src/postprocessing/MergeReporter';
+import { CompatibilityReporter } from '../../src/postprocessing/CompatibilityReporter';
 import { ProtoMessage, ProtoEnum, ProtoField, ProtoEnumValue } from '../../src/postprocessing/types';
 
 describe('mergeMessage', () => {
@@ -64,8 +64,8 @@ describe('mergeMessage', () => {
         });
     });
 
-    describe('optional changes (reported as incompatible but versioned)', () => {
-        it('should report and version when optional is added', () => {
+    describe('optional changes (breaking, no versioning)', () => {
+        it('should report when optional is added (no versioning, just update)', () => {
             const source: ProtoMessage = {
                 name: 'TestMessage',
                 fields: [field('id', 'int32', 1)]
@@ -74,7 +74,7 @@ describe('mergeMessage', () => {
                 name: 'TestMessage',
                 fields: [field('id', 'int32', 1, 'optional')]
             };
-            const reporter = new MergeReporter();
+            const reporter = new CompatibilityReporter();
 
             const result = mergeMessage(source, upcoming, reporter);
 
@@ -82,38 +82,34 @@ describe('mergeMessage', () => {
             const optionalChanges = reporter.getFieldChanges().filter(c => c.changeType === 'optional_change');
             expect(optionalChanges).toHaveLength(1);
             expect(reporter.hasIncompatibleChanges()).toBe(true);
-            // Optional mismatch causes deprecation + versioning (2 fields)
-            expect(result.fields).toHaveLength(2);
-            expect(result.fields[0].name).toBe('id');
-            expect(result.fields[0].annotations).toContainEqual({ name: 'deprecated', value: 'true' });
-            expect(result.fields[1].name).toBe('id_1');
-            expect(result.fields[1].modifier).toBe('optional');
-        });
-
-        it('should report and version when optional is removed', () => {
-            const source: ProtoMessage = {
-                name: 'TestMessage',
-                fields: [field('id', 'int32', 1, 'optional')]
-            };
-            const upcoming: ProtoMessage = {
-                name: 'TestMessage',
-                fields: [field('id', 'int32', 1)]
-            };
-            const reporter = new MergeReporter();
-
-            const result = mergeMessage(source, upcoming, reporter);
-
-            // Optional change is reported as optional_change (incompatible)
-            const optionalChanges = reporter.getFieldChanges().filter(c => c.changeType === 'optional_change');
-            expect(optionalChanges).toHaveLength(1);
-            expect(reporter.hasIncompatibleChanges()).toBe(true);
-            // Optional mismatch causes deprecation + versioning (2 fields)
-            expect(result.fields).toHaveLength(2);
+            expect(result.fields).toHaveLength(1);
             expect(result.fields[0].name).toBe('id');
             expect(result.fields[0].modifier).toBe('optional');
-            expect(result.fields[0].annotations).toContainEqual({ name: 'deprecated', value: 'true' });
-            expect(result.fields[1].name).toBe('id_1');
-            expect(result.fields[1].modifier).toBeUndefined();
+            expect(result.fields[0].number).toBe(1);
+        });
+
+        it('should report when optional is removed (no versioning, just update)', () => {
+            const source: ProtoMessage = {
+                name: 'TestMessage',
+                fields: [field('id', 'int32', 1, 'optional')]
+            };
+            const upcoming: ProtoMessage = {
+                name: 'TestMessage',
+                fields: [field('id', 'int32', 1)]
+            };
+            const reporter = new CompatibilityReporter();
+
+            const result = mergeMessage(source, upcoming, reporter);
+
+            // Optional change is reported as optional_change (incompatible)
+            const optionalChanges = reporter.getFieldChanges().filter(c => c.changeType === 'optional_change');
+            expect(optionalChanges).toHaveLength(1);
+            expect(reporter.hasIncompatibleChanges()).toBe(true);
+
+            expect(result.fields).toHaveLength(1);
+            expect(result.fields[0].name).toBe('id');
+            expect(result.fields[0].modifier).toBeUndefined();
+            expect(result.fields[0].number).toBe(1);
         });
     });
 
@@ -463,6 +459,100 @@ describe('mergeMessage', () => {
             // Regular fields processed first, then oneofs
             expect(newRegularField!.number).toBe(6);
             expect(newOneofField!.number).toBe(7);
+        });
+    });
+
+    describe('oneof structure changes (breaking)', () => {
+        it('should report when oneof is added', () => {
+            const source: ProtoMessage = {
+                name: 'TestMessage',
+                fields: [field('value', 'string', 1)]
+            };
+            const upcoming: ProtoMessage = {
+                name: 'TestMessage',
+                fields: [],
+                oneofs: [{
+                    name: 'data',
+                    fields: [field('value', 'string', 1)]
+                }]
+            };
+            const reporter = new CompatibilityReporter();
+
+            mergeMessage(source, upcoming, reporter);
+
+            const oneofChanges = reporter.getFieldChanges().filter(c => c.changeType === 'oneof_change');
+            expect(oneofChanges).toHaveLength(1);
+            expect(oneofChanges[0].existingLocation).toBe('no oneof');
+            expect(oneofChanges[0].incomingLocation).toBe('has oneof');
+            expect(reporter.hasIncompatibleChanges()).toBe(true);
+        });
+
+        it('should report when oneof is removed', () => {
+            const source: ProtoMessage = {
+                name: 'TestMessage',
+                fields: [],
+                oneofs: [{
+                    name: 'data',
+                    fields: [field('value', 'string', 1)]
+                }]
+            };
+            const upcoming: ProtoMessage = {
+                name: 'TestMessage',
+                fields: [field('value', 'string', 1)]
+            };
+            const reporter = new CompatibilityReporter();
+
+            mergeMessage(source, upcoming, reporter);
+
+            const oneofChanges = reporter.getFieldChanges().filter(c => c.changeType === 'oneof_change');
+            expect(oneofChanges).toHaveLength(1);
+            expect(oneofChanges[0].existingLocation).toBe('has oneof');
+            expect(oneofChanges[0].incomingLocation).toBe('no oneof');
+            expect(reporter.hasIncompatibleChanges()).toBe(true);
+        });
+
+        it('should not report when both have oneof', () => {
+            const source: ProtoMessage = {
+                name: 'TestMessage',
+                fields: [],
+                oneofs: [{
+                    name: 'data',
+                    fields: [field('value', 'string', 1)]
+                }]
+            };
+            const upcoming: ProtoMessage = {
+                name: 'TestMessage',
+                fields: [],
+                oneofs: [{
+                    name: 'data',
+                    fields: [field('value', 'string', 1)]
+                }]
+            };
+            const reporter = new CompatibilityReporter();
+
+            mergeMessage(source, upcoming, reporter);
+
+            const oneofChanges = reporter.getFieldChanges().filter(c => c.changeType === 'oneof_change');
+            expect(oneofChanges).toHaveLength(0);
+            expect(reporter.hasIncompatibleChanges()).toBe(false);
+        });
+
+        it('should not report when neither has oneof', () => {
+            const source: ProtoMessage = {
+                name: 'TestMessage',
+                fields: [field('value', 'string', 1)]
+            };
+            const upcoming: ProtoMessage = {
+                name: 'TestMessage',
+                fields: [field('value', 'string', 1)]
+            };
+            const reporter = new CompatibilityReporter();
+
+            mergeMessage(source, upcoming, reporter);
+
+            const oneofChanges = reporter.getFieldChanges().filter(c => c.changeType === 'oneof_change');
+            expect(oneofChanges).toHaveLength(0);
+            expect(reporter.hasIncompatibleChanges()).toBe(false);
         });
     });
 

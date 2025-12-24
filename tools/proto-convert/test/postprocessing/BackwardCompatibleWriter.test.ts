@@ -6,7 +6,6 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as os from 'os';
 import { BackwardCompatibleWriter } from '../../src/postprocessing/BackwardCompatibleWriter';
-import { BackwardCompatibilityError } from '../../src/postprocessing/types';
 import { parseProtoFile } from '../../src/postprocessing/parser';
 
 const FIXTURES_DIR = path.join(__dirname, '../fixtures/proto');

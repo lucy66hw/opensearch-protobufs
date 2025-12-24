@@ -10,7 +10,7 @@ import {
     ProtoOneof,
     Annotation
 } from './types';
-import { MergeReporter, formatField } from './MergeReporter';
+import { CompatibilityReporter, formatField } from './CompatibilityReporter';
 
 const DEPRECATED: Annotation = { name: 'deprecated', value: 'true' };
 
@@ -69,7 +69,7 @@ function mergeField(
     sourceField: ProtoField,
     upcomingMap: Map<string, ProtoField>,
     msgName: string,
-    reporter?: MergeReporter
+    reporter?: CompatibilityReporter
 ): ProtoField {
     if (isDeprecated(sourceField)) {
         return sourceField;
@@ -84,23 +84,34 @@ function mergeField(
         if (fieldsMatch(sourceField, upcomingField)) {
             return sourceField;
         } else {
-            const newName = `${baseName}_${getFieldVersion(sourceField.name) + 1}`;
-            upcomingMap.set(newName, { ...upcomingField, name: newName });
-
             const sameType = sourceField.type === upcomingField.type;
             const sourceOptional = sourceField.modifier === 'optional';
             const upcomingOptional = upcomingField.modifier === 'optional';
             const isOptionalChange = sameType && (sourceOptional !== upcomingOptional);
 
-            reporter?.addFieldChange({
-                messageName: msgName,
-                changeType: isOptionalChange ? 'optional_change' : 'type_changed',
-                fieldName: sourceField.name,
-                existingType: formatField(sourceField),
-                incomingType: formatField(upcomingField),
-                versionedName: newName
-            });
-            return addDeprecated(sourceField);
+            if (isOptionalChange) {
+                reporter?.addFieldChange({
+                    messageName: msgName,
+                    changeType: 'optional_change',
+                    fieldName: sourceField.name,
+                    existingType: formatField(sourceField),
+                    incomingType: formatField(upcomingField)
+                });
+                return { ...upcomingField, name: sourceField.name, number: sourceField.number };
+            } else {
+                const newName = `${baseName}_${getFieldVersion(sourceField.name) + 1}`;
+                upcomingMap.set(newName, { ...upcomingField, name: newName });
+
+                reporter?.addFieldChange({
+                    messageName: msgName,
+                    changeType: 'type_changed',
+                    fieldName: sourceField.name,
+                    existingType: formatField(sourceField),
+                    incomingType: formatField(upcomingField),
+                    versionedName: newName
+                });
+                return addDeprecated(sourceField);
+            }
         }
     } else {
         reporter?.addFieldChange({
@@ -118,14 +129,33 @@ function isVersionedName(name: string): boolean {
     return /_\d+$/.test(name);
 }
 
+/** Check if message has any oneof with fields */
+function hasOneof(msg: ProtoMessage): boolean {
+    return (msg.oneofs?.some(o => o.fields.length > 0)) ?? false;
+}
+
 /**
  * Merge a source message with an upcoming message.
  */
 export function mergeMessage(
     sourceMsg: ProtoMessage,
     upcomingMsg: ProtoMessage,
-    reporter?: MergeReporter
+    reporter?: CompatibilityReporter
 ): ProtoMessage {
+    // Check for oneof structure change (one has oneof, other doesn't)
+    const sourceHasOneof = hasOneof(sourceMsg);
+    const upcomingHasOneof = hasOneof(upcomingMsg);
+
+    if (sourceHasOneof !== upcomingHasOneof) {
+        reporter?.addFieldChange({
+            messageName: sourceMsg.name,
+            changeType: 'oneof_change',
+            fieldName: '*',
+            existingLocation: sourceHasOneof ? 'has oneof' : 'no oneof',
+            incomingLocation: upcomingHasOneof ? 'has oneof' : 'no oneof'
+        });
+    }
+
     const upcomingByName = new Map(upcomingMsg.fields.map(f => [f.name, f]));
 
     let maxFieldNumber = 0;
@@ -210,7 +240,7 @@ export function mergeMessage(
 export function mergeEnum(
     sourceEnum: ProtoEnum,
     upcomingEnum: ProtoEnum,
-    reporter?: MergeReporter
+    reporter?: CompatibilityReporter
 ): ProtoEnum {
     const sourceValueMap = new Map(sourceEnum.values.map(v => [v.name, v]));
     const upcomingValueMap = new Map(upcomingEnum.values.map(v => [v.name, v]));

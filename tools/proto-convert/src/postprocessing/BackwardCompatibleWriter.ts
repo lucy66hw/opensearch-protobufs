@@ -1,10 +1,12 @@
 import { existsSync, writeFileSync } from 'fs';
+import { tmpdir } from 'os';
+import { join } from 'path';
 import { Command, Option } from '@commander-js/extra-typings';
-import { ProtoMessage, ProtoEnum, BackwardCompatibilityError } from './types';
+import { ProtoMessage, ProtoEnum } from './types';
 import { parseProtoFile } from './parser';
 import { mergeMessage, mergeEnum } from './CompatibilityMerger';
 import { writeProtoFile, CUSTOM_MESSAGE_NAMES, CUSTOM_ENUM_NAMES } from './writer';
-import { MergeReporter } from './MergeReporter';
+import { CompatibilityReporter } from './CompatibilityReporter';
 import logger from '../utils/logger';
 
 export class BackwardCompatibleWriter {
@@ -13,7 +15,7 @@ export class BackwardCompatibleWriter {
     private incomingMessageMap: Map<string, ProtoMessage> = new Map();
     private incomingEnumMap: Map<string, ProtoEnum> = new Map();
     private outputPath: string;
-    private reporter: MergeReporter = new MergeReporter();
+    private reporter: CompatibilityReporter = new CompatibilityReporter();
 
     constructor(existingPath: string, incomingPaths: string[], outputPath: string) {
         this.outputPath = outputPath;
@@ -93,15 +95,6 @@ export class BackwardCompatibleWriter {
             }
         }
 
-        // Report backward incompatible changes (but don't block)
-        if (this.reporter.hasIncompatibleChanges()) {
-            const warnings = this.reporter.getIncompatibleChanges();
-            logger.warn('Backward incompatible changes detected (will be versioned):');
-            for (const warn of warnings) {
-                logger.warn(`  ${warn.messageName}.${warn.fieldName}: ${warn.existingType} → ${warn.incomingType}`);
-            }
-        }
-
         // Write output using shared function (skip if dry-run)
         if (dryRun) {
             logger.info(`Dry run: would update ${this.outputPath}`);
@@ -114,7 +107,7 @@ export class BackwardCompatibleWriter {
     /**
      * Get the merge reporter for accessing change reports.
      */
-    getReporter(): MergeReporter {
+    getReporter(): CompatibilityReporter {
         return this.reporter;
     }
 }
@@ -130,7 +123,6 @@ if (require.main === module) {
             .argParser((val: string) => val.split(',').map(s => s.trim()))
             .default(['protos/generated/models/aggregated_models.proto', 'protos/generated/services/default_service.proto']))
         .addOption(new Option('-o, --output <path>', 'output proto file').default('protos/schemas/common.proto'))
-        .addOption(new Option('-r, --report <path>', 'output merge report (markdown)'))
         .addOption(new Option('-d, --dry-run', 'preview changes without writing output file').default(false))
         .allowExcessArguments(false)
         .parse();
@@ -139,22 +131,21 @@ if (require.main === module) {
         existing: string;
         incoming: string[];
         output: string;
-        report?: string;
         dryRun: boolean;
     };
 
     const opts = command.opts() as BackwardCompatOpts;
 
-if (!existsSync(opts.existing)) {
-    logger.error(`Existing file not found: ${opts.existing}`);
-    process.exit(1);
-}
+    if (!existsSync(opts.existing)) {
+        logger.error(`Existing file not found: ${opts.existing}`);
+        process.exit(1);
+    }
 
-const existingIncoming = opts.incoming.filter(p => existsSync(p));
-if (existingIncoming.length === 0) {
-    logger.error(`No incoming proto files found.`);
-    process.exit(1);
-}
+    const existingIncoming = opts.incoming.filter(p => existsSync(p));
+    if (existingIncoming.length === 0) {
+        logger.error(`No incoming proto files found.`);
+        process.exit(1);
+    }
 
     const writer = new BackwardCompatibleWriter(
         opts.existing,
@@ -162,24 +153,11 @@ if (existingIncoming.length === 0) {
         opts.output
     );
 
-    try {
-        writer.process(opts.dryRun);
-} catch (error) {
-        // Write report even on error
-        if (opts.report) {
-            writeFileSync(opts.report, writer.getReporter().toMarkdown());
-            logger.info(`Report written: ${opts.report}`);
-        }
+    // Process and merge
+    writer.process(opts.dryRun);
 
-    if (error instanceof BackwardCompatibilityError) {
-        process.exit(1);
-    }
-    throw error;
-}
-
-    // Write report on success
-    if (opts.report) {
-        writeFileSync(opts.report, writer.getReporter().toMarkdown());
-        logger.info(`Report written: ${opts.report}`);
-    }
+    // write report to temp directory
+    const reportPath = join(tmpdir(), 'merge-report.md');
+    writeFileSync(reportPath, writer.getReporter().toMarkdown());
+    logger.info(`Report written: ${reportPath}`);
 }

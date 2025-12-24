@@ -74,7 +74,6 @@ export class MergeReporter {
 
         const lines: string[] = ['## Merge Report\n'];
 
-        // Group field changes by message
         const byMessage = new Map<string, FieldChange[]>();
         for (const change of this.fieldChanges) {
             const list = byMessage.get(change.messageName) || [];
@@ -98,7 +97,6 @@ export class MergeReporter {
             }
         }
 
-        // Group enum changes by enum
         const byEnum = new Map<string, EnumValueChange[]>();
         for (const change of this.enumChanges) {
             const list = byEnum.get(change.enumName) || [];
