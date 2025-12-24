@@ -121,7 +121,7 @@ jobs:
         id: merge_report
         run: |
           npm run postprocessing:dry-run
-          REPORT_PATH="merge-report.md"
+          REPORT_PATH="/tmp/merge-report.md"
 
           echo "=== Compatibility Report ==="
           cat "$REPORT_PATH"
