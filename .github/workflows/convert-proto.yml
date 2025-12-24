@@ -120,12 +120,9 @@ jobs:
           java -jar cloned-repo/modules/openapi-generator-cli/target/openapi-generator-cli.jar generate -c tools/proto-convert/src/config/protobuf-generator-config.yaml
 
       - name: Post Process Protobuf
-        run: npm run postprocessing
-
-      - name: Generate Merge Report
         id: merge_report
         run: |
-          npm run backward-compat -- --dry-run --report /tmp/merge-report.md || true
+          npm run postprocessing:report
           if [ -f /tmp/merge-report.md ]; then
             # Escape for GitHub Actions multiline output
             REPORT=$(cat /tmp/merge-report.md)
