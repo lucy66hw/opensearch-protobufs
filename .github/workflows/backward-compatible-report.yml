@@ -16,9 +16,6 @@ on:
       report:
         description: 'The compatibility report in markdown format'
         value: ${{ jobs.generate-report.outputs.report }}
-      has_breaking_changes:
-        description: 'Whether breaking changes were detected'
-        value: ${{ jobs.generate-report.outputs.has_breaking_changes }}
 
   workflow_dispatch:
     inputs:
@@ -32,7 +29,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       report: ${{ steps.merge_report.outputs.report }}
-      has_breaking_changes: ${{ steps.merge_report.outputs.has_breaking_changes }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -126,18 +122,12 @@ jobs:
         run: |
           npm run postprocessing:dry-run
           REPORT_PATH="merge-report.md"
-          if [ -f "$REPORT_PATH" ]; then
-            REPORT=$(cat "$REPORT_PATH")
-            echo "report<<EOF" >> $GITHUB_OUTPUT
-            echo "$REPORT" >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
-            # Check if report contains breaking changes
-            if grep -q "⚠️ Breaking" "$REPORT_PATH"; then
-              echo "has_breaking_changes=true" >> $GITHUB_OUTPUT
-            else
-              echo "has_breaking_changes=false" >> $GITHUB_OUTPUT
-            fi
-          else
-            echo "report=No changes detected." >> $GITHUB_OUTPUT
-            echo "has_breaking_changes=false" >> $GITHUB_OUTPUT
-          fi
+
+          echo "=== Compatibility Report ==="
+          cat "$REPORT_PATH"
+          echo "============================="
+
+          REPORT=$(cat "$REPORT_PATH")
+          echo "report<<EOF" >> $GITHUB_OUTPUT
+          echo "$REPORT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
