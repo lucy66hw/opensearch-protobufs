@@ -64,8 +64,8 @@ describe('mergeMessage', () => {
         });
     });
 
-    describe('optional changes (reported)', () => {
-        it('should report when optional is added and handle as type change', () => {
+    describe('optional changes (reported as incompatible but versioned)', () => {
+        it('should report and version when optional is added', () => {
             const source: ProtoMessage = {
                 name: 'TestMessage',
                 fields: [field('id', 'int32', 1)]
@@ -78,10 +78,11 @@ describe('mergeMessage', () => {
 
             const result = mergeMessage(source, upcoming, reporter);
 
-            // Optional change is reported
-            const optionalChanges = reporter.getFieldChanges().filter(c => c.changeType === 'optional_error');
+            // Optional change is reported as optional_change (incompatible)
+            const optionalChanges = reporter.getFieldChanges().filter(c => c.changeType === 'optional_change');
             expect(optionalChanges).toHaveLength(1);
-            // Modifier mismatch causes deprecation + versioning (2 fields)
+            expect(reporter.hasIncompatibleChanges()).toBe(true);
+            // Optional mismatch causes deprecation + versioning (2 fields)
             expect(result.fields).toHaveLength(2);
             expect(result.fields[0].name).toBe('id');
             expect(result.fields[0].annotations).toContainEqual({ name: 'deprecated', value: 'true' });
@@ -89,7 +90,7 @@ describe('mergeMessage', () => {
             expect(result.fields[1].modifier).toBe('optional');
         });
 
-        it('should report when optional is removed and handle as type change', () => {
+        it('should report and version when optional is removed', () => {
             const source: ProtoMessage = {
                 name: 'TestMessage',
                 fields: [field('id', 'int32', 1, 'optional')]
@@ -102,10 +103,11 @@ describe('mergeMessage', () => {
 
             const result = mergeMessage(source, upcoming, reporter);
 
-            // Optional change is reported
-            const optionalChanges = reporter.getFieldChanges().filter(c => c.changeType === 'optional_error');
+            // Optional change is reported as optional_change (incompatible)
+            const optionalChanges = reporter.getFieldChanges().filter(c => c.changeType === 'optional_change');
             expect(optionalChanges).toHaveLength(1);
-            // Modifier mismatch causes deprecation + versioning (2 fields)
+            expect(reporter.hasIncompatibleChanges()).toBe(true);
+            // Optional mismatch causes deprecation + versioning (2 fields)
             expect(result.fields).toHaveLength(2);
             expect(result.fields[0].name).toBe('id');
             expect(result.fields[0].modifier).toBe('optional');

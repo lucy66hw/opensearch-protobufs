@@ -93,23 +93,13 @@ export class BackwardCompatibleWriter {
             }
         }
 
-        // Check for backward incompatible changes
+        // Report backward incompatible changes (but don't block)
         if (this.reporter.hasIncompatibleChanges()) {
-            const errors = this.reporter.getIncompatibleChanges();
-            logger.error('Backward incompatible changes detected:');
-            for (const err of errors) {
-                logger.error(`  ${err.messageName}.${err.fieldName}: ${err.existingType} → ${err.incomingType}`);
+            const warnings = this.reporter.getIncompatibleChanges();
+            logger.warn('Backward incompatible changes detected (will be versioned):');
+            for (const warn of warnings) {
+                logger.warn(`  ${warn.messageName}.${warn.fieldName}: ${warn.existingType} → ${warn.incomingType}`);
             }
-
-            if (!dryRun) {
-                // In real run mode, throw error and don't write
-                throw new BackwardCompatibilityError(
-                    `Found ${errors.length} backward incompatible change(s). Proto file not updated.`
-                );
-            }
-            // In dry-run mode, continue (report will show the errors)
-            logger.info(`Dry run: ${this.outputPath} would NOT be updated due to incompatible changes`);
-            return;
         }
 
         // Write output using shared function (skip if dry-run)
@@ -155,16 +145,16 @@ if (require.main === module) {
 
     const opts = command.opts() as BackwardCompatOpts;
 
-    if (!existsSync(opts.existing)) {
-        logger.error(`Existing file not found: ${opts.existing}`);
-        process.exit(1);
-    }
+if (!existsSync(opts.existing)) {
+    logger.error(`Existing file not found: ${opts.existing}`);
+    process.exit(1);
+}
 
-    const existingIncoming = opts.incoming.filter(p => existsSync(p));
-    if (existingIncoming.length === 0) {
-        logger.error(`No incoming proto files found.`);
-        process.exit(1);
-    }
+const existingIncoming = opts.incoming.filter(p => existsSync(p));
+if (existingIncoming.length === 0) {
+    logger.error(`No incoming proto files found.`);
+    process.exit(1);
+}
 
     const writer = new BackwardCompatibleWriter(
         opts.existing,
@@ -174,18 +164,18 @@ if (require.main === module) {
 
     try {
         writer.process(opts.dryRun);
-    } catch (error) {
+} catch (error) {
         // Write report even on error
         if (opts.report) {
             writeFileSync(opts.report, writer.getReporter().toMarkdown());
             logger.info(`Report written: ${opts.report}`);
         }
 
-        if (error instanceof BackwardCompatibilityError) {
-            process.exit(1);
-        }
-        throw error;
+    if (error instanceof BackwardCompatibilityError) {
+        process.exit(1);
     }
+    throw error;
+}
 
     // Write report on success
     if (opts.report) {

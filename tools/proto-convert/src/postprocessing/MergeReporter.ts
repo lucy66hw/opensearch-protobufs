@@ -1,9 +1,9 @@
 /**
  * Reporter for tracking changes during proto merge.
- * Only tracks meaningful changes: added, removed, type_changed.
+ * Tracks: added, removed, type_changed, optional_change.
  */
 
-export type ChangeType = 'added' | 'removed' | 'type_changed' | 'optional_error';
+export type ChangeType = 'added' | 'removed' | 'type_changed' | 'optional_change';
 
 /** Format a field for report display */
 export function formatField(f: { name: string; type: string; modifier?: string }): string {
@@ -46,14 +46,14 @@ export class MergeReporter {
      * Check if there are any backward incompatible changes (optional modifier changes).
      */
     hasIncompatibleChanges(): boolean {
-        return this.fieldChanges.some(c => c.changeType === 'optional_error');
+        return this.fieldChanges.some(c => c.changeType === 'optional_change');
     }
 
     /**
      * Get list of backward incompatible changes.
      */
     getIncompatibleChanges(): FieldChange[] {
-        return this.fieldChanges.filter(c => c.changeType === 'optional_error');
+        return this.fieldChanges.filter(c => c.changeType === 'optional_change');
     }
 
     getFieldChanges(): FieldChange[] {
@@ -132,8 +132,8 @@ export class MergeReporter {
                 return `Deprecated: \`${c.existingType}\``;
             case 'type_changed':
                 return `\`${c.existingType}\` → \`${c.incomingType}\` (versioned as \`${c.versionedName}\`)`;
-            case 'optional_error':
-                return `Optional modifier changed: \`${c.existingType}\` → \`${c.incomingType}\``;
+            case 'optional_change':
+                return `⚠️ Breaking: \`${c.existingType}\` → \`${c.incomingType}\` (versioned as \`${c.versionedName}\`)`;
             default:
                 return '';
         }

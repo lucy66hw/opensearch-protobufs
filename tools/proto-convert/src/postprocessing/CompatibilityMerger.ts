@@ -56,31 +56,6 @@ function addDeprecated<T extends HasAnnotations>(item: T): T {
 }
 
 /**
- * Check if optional modifier changed and report it.
- */
-function checkOptionalChange(
-    source: ProtoField,
-    upcoming: ProtoField,
-    msgName: string,
-    reporter?: MergeReporter
-): boolean {
-    const sourceOptional = source.modifier === 'optional';
-    const upcomingOptional = upcoming.modifier === 'optional';
-
-    if (sourceOptional !== upcomingOptional) {
-        reporter?.addFieldChange({
-            messageName: msgName,
-            changeType: 'optional_error',
-            fieldName: source.name,
-            existingType: formatField(source),
-            incomingType: formatField(upcoming)
-        });
-        return true;
-    }
-    return false;
-}
-
-/**
  * Check if two fields are compatible (same type and compatible modifiers).
  */
 function fieldsMatch(a: ProtoField, b: ProtoField): boolean {
@@ -106,18 +81,20 @@ function mergeField(
     if (upcomingField) {
         upcomingMap.delete(baseName);
 
-        // Report optional modifier changes (but don't stop)
-        checkOptionalChange(sourceField, upcomingField, msgName, reporter);
-
         if (fieldsMatch(sourceField, upcomingField)) {
             return sourceField;
         } else {
-            // Type or repeated change - deprecate and version
             const newName = `${baseName}_${getFieldVersion(sourceField.name) + 1}`;
             upcomingMap.set(newName, { ...upcomingField, name: newName });
+
+            const sameType = sourceField.type === upcomingField.type;
+            const sourceOptional = sourceField.modifier === 'optional';
+            const upcomingOptional = upcomingField.modifier === 'optional';
+            const isOptionalChange = sameType && (sourceOptional !== upcomingOptional);
+
             reporter?.addFieldChange({
                 messageName: msgName,
-                changeType: 'type_changed',
+                changeType: isOptionalChange ? 'optional_change' : 'type_changed',
                 fieldName: sourceField.name,
                 existingType: formatField(sourceField),
                 incomingType: formatField(upcomingField),
