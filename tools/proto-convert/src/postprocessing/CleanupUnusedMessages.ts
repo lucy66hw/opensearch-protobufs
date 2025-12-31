@@ -93,6 +93,8 @@ export function filterMessages(
 
 /**
  * Filter enums to only include referenced ones.
+ * Note: Not used in cleanupUnusedMessages to preserve enum value options,
+ * but exported for testing purposes.
  */
 export function filterEnums(
     enums: ProtoEnum[],
@@ -159,16 +161,17 @@ export function cleanupUnusedMessages(opts: CleanupOptions): { removedMessages: 
     // Find reachable types
     const reachable = findReachableTypes(roots, parsed.messages);
 
-    // Filter to keep only reachable
+    // Filter to keep only reachable messages
+    // Note: We keep ALL enums to preserve enum value options (deprecated annotations)
+    // which protobufjs doesn't parse correctly
     const keptMessages = filterMessages(parsed.messages, reachable);
-    const keptEnums = filterEnums(parsed.enums, reachable);
 
     const removedMessages = parsed.messages.length - keptMessages.length;
-    const removedEnums = parsed.enums.length - keptEnums.length;
+    const removedEnums = 0;  // We don't filter enums
 
     // Write output
     const outputPath = opts.output || opts.input;
-    writeProtoFile(keptMessages, keptEnums, outputPath);
+    writeProtoFile(keptMessages, parsed.enums, outputPath);
 
     return { removedMessages, removedEnums };
 }
