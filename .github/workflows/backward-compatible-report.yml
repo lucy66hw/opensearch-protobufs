@@ -102,20 +102,9 @@ jobs:
           OPENSEARCH_VERSION: ${{ steps.get_opensearch_version.outputs.version }}
         run: npm ci && npm run preprocessing -- --opensearch-version "$OPENSEARCH_VERSION"
 
-      - name: Clone Protobuf Generator Repository
-        run: |
-          git clone https://github.com/OpenAPITools/openapi-generator cloned-repo
-          cd cloned-repo
-          git checkout 6699ecd9d2f4e0868f23bb36566ea03cd1230e6a
-
-      - name: Build Protobuf Generator Tool
-        run: |
-          cd cloned-repo
-          ./mvnw clean package
-
       - name: Convert protobuf
         run: |
-          java -jar cloned-repo/modules/openapi-generator-cli/target/openapi-generator-cli.jar generate -c tools/proto-convert/src/config/protobuf-generator-config.yaml
+          java -jar tools/bin/openapi-generator-cli.jar generate -c tools/proto-convert/src/config/protobuf-generator-config.yaml
 
       - name: Check for auto-pr-branch and use its protos if exists
         run: |
