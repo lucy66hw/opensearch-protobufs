@@ -58,6 +58,7 @@ maven_output/
 # Gradle
 .gradle/
 !gradle-wrapper.jar
+!tools/bin/openapi-generator-cli.jar
 
 # Logs
 *.log
@@ -67,7 +68,6 @@ maven_output/
 Thumbs.db
 
 # proto conversion
-protos/generated/.openapi-generator/
-protos/generated/.openapi-generator-ignore
+protos/generated
 /cloned-repo
 opensearch-openapi.yaml
