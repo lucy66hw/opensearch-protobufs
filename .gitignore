@@ -58,7 +58,6 @@ maven_output/
 # Gradle
 .gradle/
 !gradle-wrapper.jar
-!tools/bin/openapi-generator-cli.jar
 
 # Logs
 *.log
