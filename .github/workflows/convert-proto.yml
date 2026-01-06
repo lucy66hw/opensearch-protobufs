@@ -106,11 +106,8 @@ jobs:
 
       - name: Download openapi-generator JAR
         run: |
-          gh release download openapi-generator-v7.19.0-SNAPSHOT \
-            --pattern 'openapi-generator-cli.jar' \
-            --dir .
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          curl -L -o openapi-generator-cli.jar \
+            https://github.com/opensearch-project/opensearch-protobufs/releases/download/openapi-generator-v7.19.0-SNAPSHOT/openapi-generator-cli.jar
 
       - name: Convert protobuf
         run: |
