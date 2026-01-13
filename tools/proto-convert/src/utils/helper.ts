@@ -200,6 +200,27 @@ export function remove_unused(spec: OpenAPIV3.Document): void {
         }
         return false;
     });
+
+    // Clean up empty properties objects and oneOf/anyOf items left after removing broken refs
+    deleteMatchingKeys(spec, (obj: any) => {
+        // Remove oneOf/anyOf items with empty or missing properties (after broken refs removed)
+        if (obj.properties !== undefined && obj.required !== undefined) {
+            // Check if all properties are empty or removed
+            const propKeys = Object.keys(obj.properties);
+            if (propKeys.length === 0) {
+                return true; // Remove this oneOf item entirely
+            }
+            // Check if properties only contain empty objects
+            const hasValidProps = propKeys.some(k => {
+                const prop = obj.properties[k];
+                return prop && Object.keys(prop).length > 0;
+            });
+            if (!hasValidProps) {
+                return true;
+            }
+        }
+        return false;
+    });
 }
 
 /**
