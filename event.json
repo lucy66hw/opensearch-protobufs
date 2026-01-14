@@ -1,0 +1,7 @@
+{
+  "action": "auto-proto-convert",
+  "client_payload": {
+    "foo": "bar"
+  }
+}
+

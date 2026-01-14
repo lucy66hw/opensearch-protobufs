@@ -164,3 +164,14 @@ jobs:
             ---
 
             ${{ steps.merge_report.outputs.report }}
+      - name: Locate generated file (debug)
+        run: |
+          echo "pwd=$(pwd)"
+          echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
+          ls -la "$GITHUB_WORKSPACE" || true
+      
+          echo "Searching workspace for aggregated_models.proto..."
+          find "$GITHUB_WORKSPACE" -name "aggregated_models.proto" -print || true
+      
+          echo "Searching entire container (may be slow)..."
+          find / -name "aggregated_models.proto" -print 2>/dev/null | head -50 || true
