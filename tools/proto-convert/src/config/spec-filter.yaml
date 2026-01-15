@@ -2,6 +2,8 @@
 paths:
   - /{index}/_bulk
   - /{index}/_search
+  - /_plugins/_ml/models/{model_id}/_predict/stream
+  - /_plugins/_ml/agents/{agent_id}/_execute/stream
 
 # Schemas to exclude from proto generation
 # These schemas and their nested dependencies will not be included
