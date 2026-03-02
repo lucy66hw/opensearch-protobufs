@@ -14,6 +14,260 @@ describe('SchemaModifier', () => {
         components: { schemas: {} }
     });
 
+    describe('modify - full pipeline', () => {
+        it('should apply all transformations through modify()', () => {
+            const doc = createDocument();
+            doc.components!.schemas!.TestSchema = {
+                type: 'object',
+                properties: {
+                    field1: { type: 'string' },
+                    field2: { type: 'number' }
+                }
+            };
+
+            const modifier = new SchemaModifier(doc);
+            const result = modifier.modify();
+
+            expect(result).toBe(doc);
+            expect(result.components!.schemas!.TestSchema).toBeDefined();
+        });
+
+        it('should handle single map schemas in modify()', () => {
+            const doc = createDocument();
+            doc.components!.schemas!.SortOrder = {
+                type: 'string',
+                enum: ['asc', 'desc']
+            };
+            doc.components!.schemas!.TestMap = {
+                type: 'object',
+                additionalProperties: {
+                    $ref: '#/components/schemas/SortOrder'
+                },
+                minProperties: 1,
+                maxProperties: 1
+            };
+
+            const modifier = new SchemaModifier(doc);
+            modifier.modify();
+
+            // Should create SingleMap schema
+            expect(doc.components!.schemas!.SortOrderSingleMap).toBeDefined();
+        });
+
+        it('should handle QueryContainer properties in modify()', () => {
+            const doc = createDocument();
+            doc.components!.schemas!.BoolQuery = {
+                type: 'object',
+                properties: {
+                    must: { 
+                        type: 'array',
+                        items: { type: 'string' }
+                    }
+                }
+            };
+            doc.components!.schemas!.QueryContainer = {
+                type: 'object',
+                properties: {
+                    bool: {
+                        type: 'object',
+                        additionalProperties: {
+                            $ref: '#/components/schemas/BoolQuery'
+                        },
+                        minProperties: 1,
+                        maxProperties: 1
+                    }
+                }
+            };
+
+            const modifier = new SchemaModifier(doc);
+            modifier.modify();
+
+            // QueryContainer properties should use inline behavior
+            const boolProp = (doc.components!.schemas!.QueryContainer as any).properties.bool;
+            expect(boolProp.$ref).toBe('#/components/schemas/BoolQuery');
+        });
+
+        it('should deduplicate enum values in modify()', () => {
+            const doc = createDocument();
+            doc.components!.schemas!.TestEnum = {
+                type: 'string',
+                enum: ['a', 'b', 'a', 'c', 'b']
+            };
+
+            const modifier = new SchemaModifier(doc);
+            modifier.modify();
+
+            const schema = doc.components!.schemas!.TestEnum as any;
+            expect(schema.enum).toEqual(['a', 'b', 'c']);
+        });
+
+        it('should handle additionalProperties: true in modify()', () => {
+            const doc = createDocument();
+            doc.components!.schemas!.TestSchema = {
+                type: 'object',
+                properties: {
+                    nested: {
+                        additionalProperties: true
+                    } as any
+                }
+            };
+
+            const modifier = new SchemaModifier(doc);
+            modifier.modify();
+
+            const nestedProp = (doc.components!.schemas!.TestSchema as any).properties.nested;
+            expect(nestedProp.type).toBe('object');
+            expect(nestedProp.additionalProperties).toBeUndefined();
+        });
+
+        it('should collapse single item composites in modify()', () => {
+            const doc = createDocument();
+            doc.components!.schemas!.TestSchema = {
+                type: 'object',
+                properties: {
+                    field: {
+                        allOf: [
+                            { type: 'string' }
+                        ]
+                    }
+                }
+            };
+
+            const modifier = new SchemaModifier(doc);
+            modifier.modify();
+
+            const fieldProp = (doc.components!.schemas!.TestSchema as any).properties.field;
+            expect(fieldProp.allOf).toBeUndefined();
+            expect(fieldProp.type).toBe('string');
+        });
+
+        it('should handle null type conversion in modify()', () => {
+            const doc = createDocument();
+            doc.components!.schemas!.TestSchema = {
+                type: 'object',
+                properties: {
+                    field: {
+                        type: 'null' as any
+                    }
+                }
+            };
+
+            const modifier = new SchemaModifier(doc);
+            modifier.modify();
+
+            const fieldProp = (doc.components!.schemas!.TestSchema as any).properties.field;
+            expect(fieldProp.type).toBe('NullValue');
+        });
+
+        it('should deduplicate oneOf with array type in modify()', () => {
+            const doc = createDocument();
+            doc.components!.schemas!.TestSchema = {
+                type: 'object',
+                properties: {
+                    field: {
+                        oneOf: [
+                            { type: 'string' },
+                            { type: 'array', items: { type: 'string' } }
+                        ]
+                    }
+                }
+            };
+
+            const modifier = new SchemaModifier(doc);
+            modifier.modify();
+
+            const fieldProp = (doc.components!.schemas!.TestSchema as any).properties.field;
+            // After deduplication and collapseSingleItemComposite, the oneOf should be collapsed
+            // to just the array type
+            expect(fieldProp.type).toBe('array');
+            expect(fieldProp.items).toEqual({ type: 'string' });
+        });
+
+        it('should convert additionalProperties to named property in modify()', () => {
+            const doc = createDocument();
+            doc.components!.schemas!.TestSchema = {
+                type: 'object',
+                additionalProperties: {
+                    title: 'metadata',
+                    type: 'object'
+                },
+                minProperties: 2
+            };
+
+            const modifier = new SchemaModifier(doc);
+            modifier.modify();
+
+            const schema = doc.components!.schemas!.TestSchema as any;
+            expect(schema.properties).toHaveProperty('metadata');
+            expect(schema.additionalProperties).toBeUndefined();
+        });
+
+        it('should handle oneOf with const values in modify()', () => {
+            const doc = createDocument();
+            doc.components!.schemas!.TestEnum = {
+                oneOf: [
+                    { type: 'string', const: 'option1' } as any,
+                    { type: 'string', const: 'option2' } as any,
+                    { type: 'string', const: 'option3' } as any
+                ]
+            };
+
+            const modifier = new SchemaModifier(doc);
+            modifier.modify();
+
+            const schema = doc.components!.schemas!.TestEnum as any;
+            expect(schema.oneOf).toBeUndefined();
+            expect(schema.type).toBe('string');
+            expect(schema.enum).toEqual(['option1', 'option2', 'option3']);
+        });
+
+        it('should mark oneOf extensions in modify()', () => {
+            const doc = createDocument();
+            doc.components!.schemas!.OptionA = {
+                type: 'object',
+                properties: { a: { type: 'string' } }
+            };
+            doc.components!.schemas!.OptionB = {
+                type: 'object',
+                properties: { b: { type: 'number' } }
+            };
+            doc.components!.schemas!.TestUnion = {
+                type: 'object',
+                maxProperties: 1,
+                properties: {
+                    variant: {
+                        oneOf: [
+                            { title: 'optionA', $ref: '#/components/schemas/OptionA' },
+                            { title: 'optionB', $ref: '#/components/schemas/OptionB' }
+                        ]
+                    }
+                }
+            };
+
+            const modifier = new SchemaModifier(doc);
+            modifier.modify();
+
+            const schema = doc.components!.schemas!.TestUnion as any;
+            expect(schema['x-oneof-schema']).toBe(true);
+            expect(schema.properties.variant['x-oneof-property']).toBe(true);
+        });
+
+        it('should skip $ref objects in onSchema callbacks', () => {
+            const doc = createDocument();
+            doc.components!.schemas!.RefSchema = {
+                $ref: '#/components/schemas/OtherSchema'
+            };
+            doc.components!.schemas!.OtherSchema = {
+                type: 'string'
+            };
+
+            const modifier = new SchemaModifier(doc);
+            
+            // Should not throw error on $ref
+            expect(() => modifier.modify()).not.toThrow();
+        });
+    });
+
     describe('deduplicateOneOfWithArrayType', () => {
         it('should remove single item when array of same primitive type exists', () => {
             const doc = createDocument();
@@ -623,9 +877,8 @@ describe('SchemaModifier', () => {
     });
 
     describe('simplifySingleMapSchema', () => {
-        it('should create wrapper schema with sanitized names (real-world usage)', () => {
+        it('should create new map schema and reference it', () => {
             const doc = createDocument();
-            // After Sanitizer runs, schema names have '___' prefixes removed
             doc.components!.schemas!.SortOrder = {
                 type: 'string',
                 enum: ['asc', 'desc']
@@ -645,69 +898,23 @@ describe('SchemaModifier', () => {
 
             modifier.simplifySingleMapSchema(schema, visit);
 
-            expect(schema.type).toBe('object');
-            expect(schema.title).toBe('SortOrderMap');
-            expect(schema.properties).toBeDefined();
-            expect(schema.properties.field).toEqual({ type: 'string' });
-            expect(schema.properties.sort_order).toEqual({
+            // Schema should be replaced with $ref
+            expect(schema.$ref).toBe('#/components/schemas/SortOrderSingleMap');
+            expect(schema.type).toBeUndefined();
+            expect(schema.properties).toBeUndefined();
+
+            // New SortOrderSingleMap schema should be created
+            expect(doc.components!.schemas!.SortOrderSingleMap).toBeDefined();
+            const mapSchema = doc.components!.schemas!.SortOrderSingleMap as OpenAPIV3.SchemaObject;
+            expect(mapSchema.type).toBe('object');
+            expect(mapSchema.properties!.field).toEqual({ type: 'string' });
+            expect(mapSchema.properties!.sort_order).toEqual({
                 $ref: '#/components/schemas/SortOrder'
             });
-            expect(schema.required).toEqual(['field', 'sort_order']);
-            expect(schema.additionalProperties).toBeUndefined();
-            expect(schema.minProperties).toBeUndefined();
-            expect(schema.maxProperties).toBeUndefined();
+            expect(mapSchema.required).toEqual(['field', 'sort_order']);
         });
 
-        it('should handle schema with title', () => {
-            const doc = createDocument();
-            const modifier = new SchemaModifier(doc);
-            const visit = new Set();
-
-            const schema: any = {
-                type: 'object',
-                title: 'CustomTitle',
-                additionalProperties: {
-                    type: 'string',
-                    title: 'Value'
-                },
-                minProperties: 1,
-                maxProperties: 1
-            };
-
-            modifier.simplifySingleMapSchema(schema, visit);
-
-            expect(schema.title).toBe('CustomTitle');
-            expect(schema.properties.field).toBeDefined();
-            expect(schema.properties.value).toEqual({ type: 'string', title: 'Value' });
-        });
-
-        it('should convert PascalCase to snake_case for property name', () => {
-            const doc = createDocument();
-            doc.components!.schemas!.MyComplexType = {
-                type: 'object',
-                properties: {
-                    prop1: { type: 'string' }
-                }
-            };
-
-            const modifier = new SchemaModifier(doc);
-            const visit = new Set();
-
-            const schema: any = {
-                type: 'object',
-                additionalProperties: {
-                    $ref: '#/components/schemas/MyComplexType'
-                },
-                minProperties: 1,
-                maxProperties: 1
-            };
-
-            modifier.simplifySingleMapSchema(schema, visit);
-
-            expect(schema.properties.my_complex_type).toBeDefined();
-        });
-
-        it('should remove propertyNames if present', () => {
+        it('should use propertyNames ref for field property', () => {
             const doc = createDocument();
             doc.components!.schemas!.Field = {
                 type: 'string'
@@ -733,14 +940,21 @@ describe('SchemaModifier', () => {
 
             modifier.simplifySingleMapSchema(schema, visit);
 
-            expect(schema.propertyNames).toBeUndefined();
-            expect(schema.properties.field).toBeDefined();
-            expect(schema.properties.sort_order).toBeDefined();
+            // Check new map schema uses propertyNames for field
+            const mapSchema = doc.components!.schemas!.SortOrderSingleMap as OpenAPIV3.SchemaObject;
+            expect(mapSchema.properties!.field).toEqual({
+                $ref: '#/components/schemas/Field'
+            });
         });
 
-        it('should rename value property to field_value when type name collides with field', () => {
+        it('should convert PascalCase to snake_case for property name', () => {
             const doc = createDocument();
-            doc.components!.schemas!.Field = { type: 'string' };
+            doc.components!.schemas!.MyComplexType = {
+                type: 'object',
+                properties: {
+                    prop1: { type: 'string' }
+                }
+            };
 
             const modifier = new SchemaModifier(doc);
             const visit = new Set();
@@ -748,7 +962,7 @@ describe('SchemaModifier', () => {
             const schema: any = {
                 type: 'object',
                 additionalProperties: {
-                    $ref: '#/components/schemas/Field'
+                    $ref: '#/components/schemas/MyComplexType'
                 },
                 minProperties: 1,
                 maxProperties: 1
@@ -756,9 +970,9 @@ describe('SchemaModifier', () => {
 
             modifier.simplifySingleMapSchema(schema, visit);
 
-            expect(schema.properties.field).toEqual({ type: 'string' });
-            expect(schema.properties.field_value).toEqual({ $ref: '#/components/schemas/Field' });
-            expect(schema.required).toEqual(['field', 'field_value']);
+            expect(doc.components!.schemas!.MyComplexTypeSingleMap).toBeDefined();
+            const mapSchema = doc.components!.schemas!.MyComplexTypeSingleMap as OpenAPIV3.SchemaObject;
+            expect(mapSchema.properties!.my_complex_type).toBeDefined();
         });
 
         it('should not modify when not single-key map', () => {
@@ -776,6 +990,71 @@ describe('SchemaModifier', () => {
             modifier.simplifySingleMapSchema(schema, visit);
 
             expect(schema.additionalProperties).toBeDefined();
+        });
+
+        it('should use inline modification for QueryContainer properties', () => {
+            const doc = createDocument();
+            doc.components!.schemas!.BoolQuery = {
+                type: 'object',
+                properties: {
+                    must: { 
+                        type: 'array',
+                        items: { type: 'string' }
+                    }
+                }
+            };
+
+            const modifier = new SchemaModifier(doc);
+            const visit = new Set();
+
+            const schema: any = {
+                type: 'object',
+                additionalProperties: {
+                    $ref: '#/components/schemas/BoolQuery'
+                },
+                minProperties: 1,
+                maxProperties: 1
+            };
+
+            // Pass 'QueryContainer' as parent schema name
+            modifier.simplifySingleMapSchema(schema, visit, 'QueryContainer');
+
+            // Should use old inline behavior - becomes a $ref directly (no SingleMap wrapper)
+            expect(schema.$ref).toBe('#/components/schemas/BoolQuery');
+            expect(doc.components!.schemas!.BoolQuerySingleMap).toBeUndefined();
+            
+            // Properties should be deleted
+            expect(schema.type).toBeUndefined();
+            expect(schema.additionalProperties).toBeUndefined();
+            expect(schema.minProperties).toBeUndefined();
+            expect(schema.maxProperties).toBeUndefined();
+        });
+
+        it('should create SingleMap for non-QueryContainer properties', () => {
+            const doc = createDocument();
+            doc.components!.schemas!.SortOrder = {
+                type: 'string',
+                enum: ['asc', 'desc']
+            };
+
+            const modifier = new SchemaModifier(doc);
+            const visit = new Set();
+
+            const schema: any = {
+                type: 'object',
+                additionalProperties: {
+                    $ref: '#/components/schemas/SortOrder'
+                },
+                minProperties: 1,
+                maxProperties: 1
+            };
+
+            // Pass a different parent schema name (not QueryContainer)
+            modifier.simplifySingleMapSchema(schema, visit, 'AggregateOrder');
+
+            // Should use new SingleMap behavior
+            expect(schema.$ref).toBe('#/components/schemas/SortOrderSingleMap');
+            expect(doc.components!.schemas!.SortOrderSingleMap).toBeDefined();
         });
     });
 
@@ -933,6 +1212,209 @@ describe('SchemaModifier', () => {
 
             expect(result).toHaveProperty('properties');
             expect((result as any).properties).toHaveProperty('customValue');
+        });
+
+        it('should handle oneOf schemas recursively', () => {
+            const doc = createDocument();
+            doc.components!.schemas!.OptionA = {
+                type: 'object',
+                properties: { a: { type: 'string' } }
+            };
+            doc.components!.schemas!.OptionB = {
+                type: 'object',
+                properties: { b: { type: 'number' } }
+            };
+            doc.components!.schemas!.UnionType = {
+                oneOf: [
+                    { $ref: '#/components/schemas/OptionA' },
+                    { $ref: '#/components/schemas/OptionB' }
+                ]
+            };
+
+            const modifier = new SchemaModifier(doc);
+            const visit = new Set();
+
+            const schema = { $ref: '#/components/schemas/UnionType' };
+            modifier.reconstructAdditionalPropertySchema(schema, visit);
+
+            const optionA = doc.components!.schemas!.OptionA as any;
+            const optionB = doc.components!.schemas!.OptionB as any;
+            
+            // Both options should have the field property added
+            expect(optionA.properties).toHaveProperty('field');
+            expect(optionB.properties).toHaveProperty('field');
+        });
+
+        it('should handle anyOf schemas recursively', () => {
+            const doc = createDocument();
+            doc.components!.schemas!.OptionC = {
+                type: 'object',
+                properties: { c: { type: 'string' } }
+            };
+            doc.components!.schemas!.OptionD = {
+                type: 'object',
+                properties: { d: { type: 'number' } }
+            };
+            doc.components!.schemas!.FlexibleType = {
+                anyOf: [
+                    { $ref: '#/components/schemas/OptionC' },
+                    { $ref: '#/components/schemas/OptionD' }
+                ]
+            };
+
+            const modifier = new SchemaModifier(doc);
+            const visit = new Set();
+
+            const schema = { $ref: '#/components/schemas/FlexibleType' };
+            modifier.reconstructAdditionalPropertySchema(schema, visit);
+
+            const optionC = doc.components!.schemas!.OptionC as any;
+            const optionD = doc.components!.schemas!.OptionD as any;
+            
+            // Both options should have the field property added
+            expect(optionC.properties).toHaveProperty('field');
+            expect(optionD.properties).toHaveProperty('field');
+        });
+
+        it('should return original schema if already visited', () => {
+            const doc = createDocument();
+            doc.components!.schemas!.TestSchema = {
+                type: 'object',
+                properties: { test: { type: 'string' } }
+            };
+
+            const modifier = new SchemaModifier(doc);
+            const visit = new Set();
+            
+            const schema = { $ref: '#/components/schemas/TestSchema' };
+            const resolvedSchema = doc.components!.schemas!.TestSchema;
+            
+            visit.add(resolvedSchema);
+            
+            const result = modifier.reconstructAdditionalPropertySchema(schema, visit);
+            
+            // Should return original schema without modification
+            expect(result).toBe(schema);
+            expect((resolvedSchema as any).properties).not.toHaveProperty('field');
+        });
+
+        it('should handle primitive types without title', () => {
+            const doc = createDocument();
+            const modifier = new SchemaModifier(doc);
+            const visit = new Set();
+
+            const schema: any = { type: 'number' };
+            const result = modifier.reconstructAdditionalPropertySchema(schema, visit);
+
+            expect(result).toHaveProperty('properties');
+            expect((result as any).properties).toHaveProperty('value');
+        });
+
+        it('should log error when field property already exists', () => {
+            const doc = createDocument();
+            doc.components!.schemas!.ConflictSchema = {
+                type: 'object',
+                properties: {
+                    field: { type: 'string' },
+                    existing: { type: 'number' }
+                }
+            };
+
+            const modifier = new SchemaModifier(doc);
+            const visit = new Set();
+
+            const schema = { $ref: '#/components/schemas/ConflictSchema' };
+            
+            const errorSpy = jest.spyOn(console, 'error').mockImplementation();
+            
+            modifier.reconstructAdditionalPropertySchema(schema, visit);
+            
+            expect(errorSpy).toHaveBeenCalled();
+            errorSpy.mockRestore();
+        });
+    });
+
+    describe('getTypeName', () => {
+        it('should extract name from $ref', () => {
+            const doc = createDocument();
+            const modifier = new SchemaModifier(doc) as any;
+
+            const schema = { $ref: '#/components/schemas/TestType' };
+            const result = modifier.getTypeName(schema);
+
+            expect(result).toBe('TestType');
+        });
+
+        it('should extract name from title', () => {
+            const doc = createDocument();
+            const modifier = new SchemaModifier(doc) as any;
+
+            const schema: OpenAPIV3.SchemaObject = { type: 'object', title: 'CustomTitle' };
+            const result = modifier.getTypeName(schema);
+
+            expect(result).toBe('CustomTitle');
+        });
+
+        it('should return null if no $ref or title', () => {
+            const doc = createDocument();
+            const modifier = new SchemaModifier(doc) as any;
+
+            const schema: OpenAPIV3.SchemaObject = { type: 'string' };
+            const result = modifier.getTypeName(schema);
+
+            expect(result).toBeNull();
+        });
+    });
+
+    describe('createAdditionalPropertySchema', () => {
+        it('should create schema with field property', () => {
+            const doc = createDocument();
+            const modifier = new SchemaModifier(doc) as any;
+
+            const result = modifier.createAdditionalPropertySchema();
+
+            expect(result.type).toBe('object');
+            expect(result.properties).toHaveProperty('field');
+            expect(result.properties!.field).toEqual({ type: 'string' });
+        });
+    });
+
+    describe('isArraySchemaObject', () => {
+        it('should return true for array schema with items', () => {
+            const doc = createDocument();
+            const modifier = new SchemaModifier(doc) as any;
+
+            const schema: OpenAPIV3.ArraySchemaObject = {
+                type: 'array',
+                items: { type: 'string' }
+            };
+
+            const result = modifier.isArraySchemaObject(schema);
+            expect(result).toBe(true);
+        });
+
+        it('should return false for non-array schema', () => {
+            const doc = createDocument();
+            const modifier = new SchemaModifier(doc) as any;
+
+            const schema: OpenAPIV3.SchemaObject = {
+                type: 'object'
+            };
+
+            const result = modifier.isArraySchemaObject(schema);
+            expect(result).toBe(false);
+        });
+
+        it('should return false for array without items', () => {
+            const doc = createDocument();
+            const modifier = new SchemaModifier(doc) as any;
+
+            const schema: any = {
+                type: 'array'
+            };
+
+            const result = modifier.isArraySchemaObject(schema);
+            expect(result).toBe(false);
         });
     });
 });
