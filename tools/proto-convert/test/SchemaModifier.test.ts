@@ -947,6 +947,41 @@ describe('SchemaModifier', () => {
             });
         });
 
+        it('should use propertyNames title as field property name', () => {
+            const doc = createDocument();
+            doc.components!.schemas!.SortOrder = {
+                type: 'string',
+                enum: ['asc', 'desc']
+            };
+
+            const modifier = new SchemaModifier(doc);
+            const visit = new Set();
+
+            const schema: any = {
+                type: 'object',
+                propertyNames: {
+                    title: 'customField',
+                    type: 'string'
+                },
+                additionalProperties: {
+                    $ref: '#/components/schemas/SortOrder'
+                },
+                minProperties: 1,
+                maxProperties: 1
+            };
+
+            modifier.simplifySingleMapSchema(schema, visit);
+
+            // Check that the title is used as the field property name
+            const mapSchema = doc.components!.schemas!.SortOrderSingleMap as OpenAPIV3.SchemaObject;
+            expect(mapSchema.properties!.customField).toBeDefined();
+            expect(mapSchema.properties!.customField).toEqual({ type: 'string' });
+            expect(mapSchema.properties!.sort_order).toEqual({
+                $ref: '#/components/schemas/SortOrder'
+            });
+            expect(mapSchema.required).toEqual(['customField', 'sort_order']);
+        });
+
         it('should convert PascalCase to snake_case for property name', () => {
             const doc = createDocument();
             doc.components!.schemas!.MyComplexType = {

@@ -335,73 +335,64 @@ export class SchemaModifier {
                 // Old behavior: inline modification
                 const reconstructAdditionalPropertySchema = this.reconstructAdditionalPropertySchema(schema.additionalProperties, visit);
                 Object.assign(schema, reconstructAdditionalPropertySchema);
+            } else {
+                // New behavior: create intermediate SingleMap schema
+                const valueSchema = schema.additionalProperties;
+                const typeName = this.getTypeName(valueSchema) || 'Value';
 
-                delete schema.additionalProperties;
-                delete schema.minProperties;
-                delete schema.maxProperties;
-                delete schema.type;
-                if ('propertyNames' in schema) {
-                    delete schema.propertyNames;
+                // Extract field property name and schema from propertyNames
+                let fieldPropertyName = 'field';
+                let fieldPropertySchema: any = { type: 'string' as const };
+
+                if ((schema as any).propertyNames) {
+                    const propertyNames = (schema as any).propertyNames;
+
+                    // If propertyNames has a title, use it as the property name
+                    if (propertyNames.title && typeof propertyNames.title === 'string') {
+                        fieldPropertyName = propertyNames.title;
+
+                        fieldPropertySchema = { ...propertyNames };
+                        delete fieldPropertySchema.title;
+                    } else {
+                        // Use propertyNames as-is for the field schema
+                        fieldPropertySchema = propertyNames;
+                    }
                 }
-                return;
-            }
 
-            // New behavior: create intermediate SingleMap schema
-            const valueSchema = schema.additionalProperties;
-            const typeName = this.getTypeName(valueSchema) || 'Value';
+                // Create new map schema name
+                const mapSchemaName = `${typeName}SingleMap`;
 
-            // Extract field property name and schema from propertyNames
-            let fieldPropertyName = 'field';
-            let fieldPropertySchema: any = { type: 'string' as const };
+                // Create the new map schema
+                const newMapSchema: OpenAPIV3.SchemaObject = {
+                    type: 'object',
+                    properties: {
+                        [fieldPropertyName]: fieldPropertySchema,
+                        [toSnakeCase(typeName)]: valueSchema
+                    },
+                    required: [fieldPropertyName, toSnakeCase(typeName)]
+                };
 
-            if ((schema as any).propertyNames) {
-                const propertyNames = (schema as any).propertyNames;
-
-                // If propertyNames has a title, use it as the property name
-                if (propertyNames.title && typeof propertyNames.title === 'string') {
-                    fieldPropertyName = propertyNames.title;
-
-                    fieldPropertySchema = { ...propertyNames };
-                    delete fieldPropertySchema.title;
-                } else {
-                    // Use propertyNames as-is for the field schema
-                    fieldPropertySchema = propertyNames;
+                // Add to components.schemas if not already exists
+                if (!this.root.components) {
+                    this.root.components = {};
                 }
+                if (!this.root.components.schemas) {
+                    this.root.components.schemas = {};
+                }
+                if (!this.root.components.schemas[mapSchemaName]) {
+                    this.root.components.schemas[mapSchemaName] = newMapSchema;
+                }
+
+                // Replace current schema with $ref to the new map schema
+                (schema as any).$ref = `#/components/schemas/${mapSchemaName}`;
             }
 
-            // Create new map schema name
-            const mapSchemaName = `${typeName}SingleMap`;
-
-            // Create the new map schema
-            const newMapSchema: OpenAPIV3.SchemaObject = {
-                type: 'object',
-                properties: {
-                    [fieldPropertyName]: fieldPropertySchema,
-                    [toSnakeCase(typeName)]: valueSchema
-                },
-                required: [fieldPropertyName, toSnakeCase(typeName)]
-            };
-
-            // Add to components.schemas if not already exists
-            if (!this.root.components) {
-                this.root.components = {};
-            }
-            if (!this.root.components.schemas) {
-                this.root.components.schemas = {};
-            }
-            if (!this.root.components.schemas[mapSchemaName]) {
-                this.root.components.schemas[mapSchemaName] = newMapSchema;
-            }
-
-            // Replace current schema with $ref to the new map schema
-            // Only delete the properties we don't need, keep vendor extensions (x-*)
+            // Cleanup properties for both paths (keep vendor extensions like x-*)
             delete schema.type;
             delete schema.additionalProperties;
             delete schema.minProperties;
             delete schema.maxProperties;
-            delete (schema as any).propertyNames;
-
-            (schema as any).$ref = `#/components/schemas/${mapSchemaName}`;
+            delete (schema as any).propertyNames
         }
     }
 
