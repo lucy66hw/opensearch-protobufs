@@ -10,7 +10,7 @@ package org.opensearch.transport.grpc.proto.response.search.aggregation.metrics;
 import org.opensearch.protobufs.Aggregate;
 import org.opensearch.search.aggregations.InternalAggregation;
 import org.opensearch.search.aggregations.metrics.InternalMin;
-import org.opensearch.transport.grpc.spi.AggregateProtoConverter;
+import org.opensearch.transport.grpc.proto.response.search.aggregation.AbstractAggregateProtoConverter;
 
 import java.io.IOException;
 
@@ -18,7 +18,7 @@ import java.io.IOException;
  * Converter for {@link InternalMin} aggregations to Protocol Buffer Aggregate messages.
  * Delegates the actual conversion logic to {@link MinAggregateProtoUtils}.
  */
-public class MinAggregateProtoConverter implements AggregateProtoConverter {
+public class MinAggregateProtoConverter extends AbstractAggregateProtoConverter {
 
     /**
      * Creates a new MinAggregateProtoConverter.
@@ -31,7 +31,7 @@ public class MinAggregateProtoConverter implements AggregateProtoConverter {
     }
 
     @Override
-    public Aggregate.Builder toProto(InternalAggregation aggregation) throws IOException {
+    protected Aggregate.Builder doProtoBody(InternalAggregation aggregation) throws IOException {
         Aggregate aggregate = MinAggregateProtoUtils.toProto((InternalMin) aggregation);
         return aggregate.toBuilder();
     }

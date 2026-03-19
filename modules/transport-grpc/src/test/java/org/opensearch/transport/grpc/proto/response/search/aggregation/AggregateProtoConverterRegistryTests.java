@@ -21,7 +21,6 @@ import org.opensearch.transport.grpc.spi.AggregateProtoConverter;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -53,10 +52,7 @@ public class AggregateProtoConverterRegistryTests extends OpenSearchTestCase {
     public void testRegisterNullConverterThrowsException() {
         AggregateProtoConverterSpiRegistry registry = new AggregateProtoConverterSpiRegistry();
 
-        IllegalArgumentException ex = expectThrows(
-            IllegalArgumentException.class,
-            () -> registry.registerConverter(null)
-        );
+        IllegalArgumentException ex = expectThrows(IllegalArgumentException.class, () -> registry.registerConverter(null));
         assertTrue("Exception message should mention null converter", ex.getMessage().contains("Converter cannot be null"));
     }
 
@@ -75,14 +71,8 @@ public class AggregateProtoConverterRegistryTests extends OpenSearchTestCase {
             }
         };
 
-        IllegalArgumentException ex = expectThrows(
-            IllegalArgumentException.class,
-            () -> registry.registerConverter(converter)
-        );
-        assertTrue(
-            "Exception message should mention null type",
-            ex.getMessage().contains("Handled aggregation type cannot be null")
-        );
+        IllegalArgumentException ex = expectThrows(IllegalArgumentException.class, () -> registry.registerConverter(converter));
+        assertTrue("Exception message should mention null type", ex.getMessage().contains("Handled aggregation type cannot be null"));
     }
 
     // ========================================
@@ -122,10 +112,7 @@ public class AggregateProtoConverterRegistryTests extends OpenSearchTestCase {
     public void testConvertNullAggregationThrowsException() {
         AggregateProtoConverterSpiRegistry registry = new AggregateProtoConverterSpiRegistry();
 
-        IllegalArgumentException ex = expectThrows(
-            IllegalArgumentException.class,
-            () -> registry.toProto(null)
-        );
+        IllegalArgumentException ex = expectThrows(IllegalArgumentException.class, () -> registry.toProto(null));
         assertTrue("Exception message should mention null", ex.getMessage().contains("must not be null"));
     }
 
@@ -135,10 +122,7 @@ public class AggregateProtoConverterRegistryTests extends OpenSearchTestCase {
 
         InternalMin internalMin = new InternalMin("min_price", 10.5, DocValueFormat.RAW, Collections.emptyMap());
 
-        IllegalArgumentException ex = expectThrows(
-            IllegalArgumentException.class,
-            () -> registry.toProto(internalMin)
-        );
+        IllegalArgumentException ex = expectThrows(IllegalArgumentException.class, () -> registry.toProto(internalMin));
         assertTrue("Exception message should mention unsupported type", ex.getMessage().contains("Unsupported aggregation type"));
         assertTrue("Exception message should include class name", ex.getMessage().contains("InternalMin"));
     }

@@ -305,18 +305,14 @@ public class SearchResponseSectionsProtoUtilsTests extends OpenSearchTestCase {
 
     public void testToProtoWithAggregations() throws IOException {
         // Create mock Min aggregation
-        org.opensearch.search.aggregations.metrics.InternalMin minAgg = mock(
-            org.opensearch.search.aggregations.metrics.InternalMin.class
-        );
+        org.opensearch.search.aggregations.metrics.InternalMin minAgg = mock(org.opensearch.search.aggregations.metrics.InternalMin.class);
         when(minAgg.getName()).thenReturn("min_price");
         when(minAgg.getValue()).thenReturn(-50.0);
         when(minAgg.getFormat()).thenReturn(org.opensearch.search.DocValueFormat.RAW);
         when(minAgg.getMetadata()).thenReturn(Collections.emptyMap());
 
         // Create mock Max aggregation
-        org.opensearch.search.aggregations.metrics.InternalMax maxAgg = mock(
-            org.opensearch.search.aggregations.metrics.InternalMax.class
-        );
+        org.opensearch.search.aggregations.metrics.InternalMax maxAgg = mock(org.opensearch.search.aggregations.metrics.InternalMax.class);
         when(maxAgg.getName()).thenReturn("max_price");
         when(maxAgg.getValue()).thenReturn(9999.0);
         when(maxAgg.getFormat()).thenReturn(org.opensearch.search.DocValueFormat.RAW);
@@ -326,8 +322,9 @@ public class SearchResponseSectionsProtoUtilsTests extends OpenSearchTestCase {
         List<org.opensearch.search.aggregations.InternalAggregation> aggsList = new ArrayList<>();
         aggsList.add(minAgg);
         aggsList.add(maxAgg);
-        org.opensearch.search.aggregations.InternalAggregations aggregations = org.opensearch.search.aggregations.InternalAggregations
-            .from(aggsList);
+        org.opensearch.search.aggregations.InternalAggregations aggregations = org.opensearch.search.aggregations.InternalAggregations.from(
+            aggsList
+        );
 
         // Create mock SearchResponseSections
         SearchResponseSections mockSections = mock(SearchResponseSections.class);

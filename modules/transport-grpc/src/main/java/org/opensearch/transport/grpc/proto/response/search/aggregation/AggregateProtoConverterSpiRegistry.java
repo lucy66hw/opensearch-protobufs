@@ -10,9 +10,7 @@ package org.opensearch.transport.grpc.proto.response.search.aggregation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.protobufs.Aggregate;
-import org.opensearch.protobufs.ObjectMap;
 import org.opensearch.search.aggregations.InternalAggregation;
-import org.opensearch.transport.grpc.proto.response.common.ObjectMapProtoUtils;
 import org.opensearch.transport.grpc.spi.AggregateProtoConverter;
 import org.opensearch.transport.grpc.spi.AggregateProtoConverterRegistry;
 
@@ -53,9 +51,7 @@ public class AggregateProtoConverterSpiRegistry implements AggregateProtoConvert
 
         Class<? extends InternalAggregation> type = converter.getHandledAggregationType();
         if (type == null) {
-            throw new IllegalArgumentException(
-                "Handled aggregation type cannot be null for converter: " + converter.getClass().getName()
-            );
+            throw new IllegalArgumentException("Handled aggregation type cannot be null for converter: " + converter.getClass().getName());
         }
 
         AggregateProtoConverter existingConverter = converters.put(type, converter);
@@ -107,15 +103,6 @@ public class AggregateProtoConverterSpiRegistry implements AggregateProtoConvert
         logger.debug("Using converter for {}: {}", aggregation.getClass().getName(), converter.getClass().getName());
 
         Aggregate.Builder builder = converter.toProto(aggregation);
-
-        // Handle metadata centrally (all aggregations can have metadata)
-        if (aggregation.getMetadata() != null && !aggregation.getMetadata().isEmpty()) {
-            ObjectMap.Value metaValue = ObjectMapProtoUtils.toProto(aggregation.getMetadata());
-            if (metaValue.hasObjectMap()) {
-                builder.setMeta(metaValue.getObjectMap());
-            }
-            logger.debug("Applied metadata to aggregation '{}': {}", aggregation.getName(), aggregation.getMetadata());
-        }
 
         return builder.build();
     }

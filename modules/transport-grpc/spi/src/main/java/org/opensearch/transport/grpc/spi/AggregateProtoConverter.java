@@ -17,8 +17,9 @@ import java.io.IOException;
  * SPI interface for converting OpenSearch InternalAggregation objects to Protocol Buffer Aggregate messages.
  * Follows the same pattern as {@link AggregationBuilderProtoConverter} for request-side conversions.
  *
- * <p>The registry handles metadata centrally. Converters should delegate to existing
- * {@code *AggregateProtoUtils} classes for the actual conversion logic.
+ * <p>Implementations should extend {@code AbstractAggregateProtoConverter} which handles metadata
+ * centrally via the template method pattern, mirroring how {@code InternalAggregation.toXContent}
+ * handles metadata then delegates to {@code doXContentBody}.
  */
 public interface AggregateProtoConverter {
 

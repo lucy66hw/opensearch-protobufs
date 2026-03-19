@@ -10,7 +10,6 @@ package org.opensearch.transport.grpc.proto.response.search.aggregation;
 import org.opensearch.protobufs.Aggregate;
 import org.opensearch.protobufs.ObjectMap;
 import org.opensearch.search.DocValueFormat;
-import org.opensearch.search.aggregations.Aggregation;
 import org.opensearch.search.aggregations.InternalAggregation;
 import org.opensearch.search.aggregations.metrics.InternalMax;
 import org.opensearch.search.aggregations.metrics.InternalMin;
@@ -57,10 +56,7 @@ public class AggregateProtoUtilsTests extends OpenSearchTestCase {
     }
 
     public void testToProtoWithNullThrowsException() {
-        IllegalArgumentException ex = expectThrows(
-            IllegalArgumentException.class,
-            () -> AggregateProtoUtils.toProto(null)
-        );
+        IllegalArgumentException ex = expectThrows(IllegalArgumentException.class, () -> AggregateProtoUtils.toProto(null));
         assertTrue("Exception message should mention null", ex.getMessage().contains("must not be null"));
     }
 
@@ -101,10 +97,7 @@ public class AggregateProtoUtilsTests extends OpenSearchTestCase {
             }
         };
 
-        IllegalArgumentException ex = expectThrows(
-            IllegalArgumentException.class,
-            () -> AggregateProtoUtils.toProto(unsupported)
-        );
+        IllegalArgumentException ex = expectThrows(IllegalArgumentException.class, () -> AggregateProtoUtils.toProto(unsupported));
         assertTrue("Exception message should mention unsupported", ex.getMessage().contains("Unsupported"));
     }
 

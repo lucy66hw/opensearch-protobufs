@@ -9,7 +9,7 @@ package org.opensearch.transport.grpc.proto.response.search.aggregation.metrics;
 
 import org.opensearch.protobufs.Aggregate;
 import org.opensearch.protobufs.NullValue;
-import org.opensearch.protobufs.SingleMetricAggregateBaseValue;
+import org.opensearch.protobufs.SingleMetricAggregateBaseAllOfValue;
 import org.opensearch.search.DocValueFormat;
 import org.opensearch.search.aggregations.metrics.InternalMin;
 
@@ -37,7 +37,7 @@ public class MinAggregateProtoUtils {
         double min = internalMin.getValue();
         boolean hasValue = !Double.isInfinite(min);
 
-        SingleMetricAggregateBaseValue.Builder valueBuilder = SingleMetricAggregateBaseValue.newBuilder();
+        SingleMetricAggregateBaseAllOfValue.Builder valueBuilder = SingleMetricAggregateBaseAllOfValue.newBuilder();
         if (hasValue) {
             valueBuilder.setDouble(min);
         } else {
