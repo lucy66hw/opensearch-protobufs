@@ -8,9 +8,9 @@
 package org.opensearch.transport.grpc.proto.response.search.aggregation.bucket.terms;
 
 import org.opensearch.protobufs.Aggregate;
-import org.opensearch.protobufs.ObjectMap;
+import org.opensearch.protobufs.DoubleTermsAggregate;
+import org.opensearch.protobufs.DoubleTermsBucket;
 import org.opensearch.search.DocValueFormat;
-import org.opensearch.search.aggregations.Aggregation;
 import org.opensearch.search.aggregations.BucketOrder;
 import org.opensearch.search.aggregations.InternalAggregations;
 import org.opensearch.search.aggregations.bucket.terms.DoubleTerms;
@@ -20,7 +20,6 @@ import org.opensearch.test.OpenSearchTestCase;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Tests for {@link DoubleTermsAggregateConverter}.
@@ -39,9 +38,11 @@ public class DoubleTermsAggregateConverterTests extends OpenSearchTestCase {
         Aggregate.Builder result = converter.toProto(doubleTerms);
         Aggregate aggregate = result.build();
 
-        assertEquals(0, aggregate.getDocCountErrorUpperBound());
-        assertEquals(0, aggregate.getSumOtherDocCount());
-        assertEquals(0, aggregate.getBucketsCount());
+        assertTrue("Should have dterms set", aggregate.hasDterms());
+        DoubleTermsAggregate dterms = aggregate.getDterms();
+        assertEquals(0, dterms.getDocCountErrorUpperBound());
+        assertEquals(0, dterms.getSumOtherDocCount());
+        assertEquals(0, dterms.getBucketsCount());
     }
 
     public void testSingleBucket() throws IOException {
@@ -49,14 +50,14 @@ public class DoubleTermsAggregateConverterTests extends OpenSearchTestCase {
         DoubleTerms doubleTerms = createDoubleTerms("test", List.of(bucket), 0, 0);
 
         Aggregate.Builder result = converter.toProto(doubleTerms);
-        Aggregate aggregate = result.build();
+        DoubleTermsAggregate dterms = result.build().getDterms();
 
-        assertEquals(1, aggregate.getBucketsCount());
-        Map<String, ObjectMap.Value> fields = aggregate.getBuckets(0).getFieldsMap();
+        assertEquals(1, dterms.getBucketsCount());
+        DoubleTermsBucket protoBucket = dterms.getBuckets(0);
 
-        assertEquals(3.14, fields.get(Aggregation.CommonFields.KEY.getPreferredName()).getDouble(), 0.001);
-        assertEquals(10L, fields.get(Aggregation.CommonFields.DOC_COUNT.getPreferredName()).getInt64());
-        assertFalse(fields.containsKey(Aggregation.CommonFields.KEY_AS_STRING.getPreferredName()));
+        assertEquals(3.14, protoBucket.getKey(), 0.001);
+        assertEquals(10L, protoBucket.getDocCount());
+        assertFalse("key_as_string should not be set with RAW format", protoBucket.hasKeyAsString());
     }
 
     public void testMultipleBuckets() throws IOException {
@@ -65,14 +66,14 @@ public class DoubleTermsAggregateConverterTests extends OpenSearchTestCase {
         DoubleTerms doubleTerms = createDoubleTerms("test", List.of(bucket1, bucket2), 5, 200);
 
         Aggregate.Builder result = converter.toProto(doubleTerms);
-        Aggregate aggregate = result.build();
+        DoubleTermsAggregate dterms = result.build().getDterms();
 
-        assertEquals(5, aggregate.getDocCountErrorUpperBound());
-        assertEquals(200, aggregate.getSumOtherDocCount());
-        assertEquals(2, aggregate.getBucketsCount());
+        assertEquals(5, dterms.getDocCountErrorUpperBound());
+        assertEquals(200, dterms.getSumOtherDocCount());
+        assertEquals(2, dterms.getBucketsCount());
 
-        assertEquals(1.0, aggregate.getBuckets(0).getFieldsMap().get(Aggregation.CommonFields.KEY.getPreferredName()).getDouble(), 0.001);
-        assertEquals(2.5, aggregate.getBuckets(1).getFieldsMap().get(Aggregation.CommonFields.KEY.getPreferredName()).getDouble(), 0.001);
+        assertEquals(1.0, dterms.getBuckets(0).getKey(), 0.001);
+        assertEquals(2.5, dterms.getBuckets(1).getKey(), 0.001);
     }
 
     public void testBucketWithDocCountError() throws IOException {
@@ -80,10 +81,9 @@ public class DoubleTermsAggregateConverterTests extends OpenSearchTestCase {
         DoubleTerms doubleTerms = createDoubleTerms("test", List.of(bucket), 0, 0);
 
         Aggregate.Builder result = converter.toProto(doubleTerms);
-        Map<String, ObjectMap.Value> fields = result.build().getBuckets(0).getFieldsMap();
+        DoubleTermsBucket protoBucket = result.build().getDterms().getBuckets(0);
 
-        assertTrue(fields.containsKey("doc_count_error_upper_bound"));
-        assertEquals(3L, fields.get("doc_count_error_upper_bound").getInt64());
+        assertEquals(3L, protoBucket.getDocCountErrorUpperBound());
     }
 
     public void testBucketWithFormattedKey() throws IOException {
@@ -92,11 +92,11 @@ public class DoubleTermsAggregateConverterTests extends OpenSearchTestCase {
         DoubleTerms doubleTerms = createDoubleTerms("test", List.of(bucket), 0, 0);
 
         Aggregate.Builder result = converter.toProto(doubleTerms);
-        Map<String, ObjectMap.Value> fields = result.build().getBuckets(0).getFieldsMap();
+        DoubleTermsBucket protoBucket = result.build().getDterms().getBuckets(0);
 
-        assertEquals(3.14159, fields.get(Aggregation.CommonFields.KEY.getPreferredName()).getDouble(), 0.00001);
-        assertTrue(fields.containsKey(Aggregation.CommonFields.KEY_AS_STRING.getPreferredName()));
-        assertEquals("3.14", fields.get(Aggregation.CommonFields.KEY_AS_STRING.getPreferredName()).getString());
+        assertEquals(3.14159, protoBucket.getKey(), 0.00001);
+        assertTrue("key_as_string should be set with custom format", protoBucket.hasKeyAsString());
+        assertEquals("3.14", protoBucket.getKeyAsString());
     }
 
     public void testBucketWithRawFormatNoKeyAsString() throws IOException {
@@ -104,9 +104,9 @@ public class DoubleTermsAggregateConverterTests extends OpenSearchTestCase {
         DoubleTerms doubleTerms = createDoubleTerms("test", List.of(bucket), 0, 0);
 
         Aggregate.Builder result = converter.toProto(doubleTerms);
-        ObjectMap bucketMap = result.build().getBuckets(0);
+        DoubleTermsBucket protoBucket = result.build().getDterms().getBuckets(0);
 
-        assertFalse(bucketMap.getFieldsMap().containsKey(Aggregation.CommonFields.KEY_AS_STRING.getPreferredName()));
+        assertFalse("key_as_string should not be set with RAW format", protoBucket.hasKeyAsString());
     }
 
     private static DoubleTerms createDoubleTerms(String name, List<DoubleTerms.Bucket> buckets, long docCountError, long otherDocCount) {

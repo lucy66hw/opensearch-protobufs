@@ -8,9 +8,9 @@
 package org.opensearch.transport.grpc.proto.response.search.aggregation.bucket.terms;
 
 import org.opensearch.protobufs.Aggregate;
-import org.opensearch.protobufs.ObjectMap;
+import org.opensearch.protobufs.LongTermsAggregate;
+import org.opensearch.protobufs.LongTermsBucket;
 import org.opensearch.search.DocValueFormat;
-import org.opensearch.search.aggregations.Aggregation;
 import org.opensearch.search.aggregations.BucketOrder;
 import org.opensearch.search.aggregations.InternalAggregation;
 import org.opensearch.search.aggregations.InternalAggregations;
@@ -21,7 +21,6 @@ import org.opensearch.test.OpenSearchTestCase;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Tests for {@link LongTermsAggregateConverter}.
@@ -41,9 +40,11 @@ public class LongTermsAggregateConverterTests extends OpenSearchTestCase {
         assertNotNull(result);
 
         Aggregate aggregate = result.build();
-        assertEquals(0, aggregate.getDocCountErrorUpperBound());
-        assertEquals(0, aggregate.getSumOtherDocCount());
-        assertEquals(0, aggregate.getBucketsCount());
+        assertTrue("Should have lterms set", aggregate.hasLterms());
+        LongTermsAggregate lterms = aggregate.getLterms();
+        assertEquals(0, lterms.getDocCountErrorUpperBound());
+        assertEquals(0, lterms.getSumOtherDocCount());
+        assertEquals(0, lterms.getBucketsCount());
     }
 
     public void testSingleBucket() throws IOException {
@@ -51,15 +52,14 @@ public class LongTermsAggregateConverterTests extends OpenSearchTestCase {
         LongTerms longTerms = createLongTerms("test", List.of(bucket), 0, 0);
 
         Aggregate.Builder result = converter.toProto(longTerms);
-        Aggregate aggregate = result.build();
+        LongTermsAggregate lterms = result.build().getLterms();
 
-        assertEquals(1, aggregate.getBucketsCount());
-        ObjectMap bucketMap = aggregate.getBuckets(0);
-        Map<String, ObjectMap.Value> fields = bucketMap.getFieldsMap();
+        assertEquals(1, lterms.getBucketsCount());
+        LongTermsBucket protoBucket = lterms.getBuckets(0);
 
-        assertEquals(42L, fields.get(Aggregation.CommonFields.KEY.getPreferredName()).getInt64());
-        assertEquals(10L, fields.get(Aggregation.CommonFields.DOC_COUNT.getPreferredName()).getInt64());
-        assertFalse(fields.containsKey(Aggregation.CommonFields.KEY_AS_STRING.getPreferredName()));
+        assertEquals(42L, protoBucket.getKey().getSigned());
+        assertEquals(10L, protoBucket.getDocCount());
+        assertFalse("key_as_string should not be set with RAW format", protoBucket.hasKeyAsString());
     }
 
     public void testMultipleBuckets() throws IOException {
@@ -68,14 +68,14 @@ public class LongTermsAggregateConverterTests extends OpenSearchTestCase {
         LongTerms longTerms = createLongTerms("test", List.of(bucket1, bucket2), 5, 200);
 
         Aggregate.Builder result = converter.toProto(longTerms);
-        Aggregate aggregate = result.build();
+        LongTermsAggregate lterms = result.build().getLterms();
 
-        assertEquals(5, aggregate.getDocCountErrorUpperBound());
-        assertEquals(200, aggregate.getSumOtherDocCount());
-        assertEquals(2, aggregate.getBucketsCount());
+        assertEquals(5, lterms.getDocCountErrorUpperBound());
+        assertEquals(200, lterms.getSumOtherDocCount());
+        assertEquals(2, lterms.getBucketsCount());
 
-        assertEquals(1L, aggregate.getBuckets(0).getFieldsMap().get(Aggregation.CommonFields.KEY.getPreferredName()).getInt64());
-        assertEquals(2L, aggregate.getBuckets(1).getFieldsMap().get(Aggregation.CommonFields.KEY.getPreferredName()).getInt64());
+        assertEquals(1L, lterms.getBuckets(0).getKey().getSigned());
+        assertEquals(2L, lterms.getBuckets(1).getKey().getSigned());
     }
 
     public void testBucketWithDocCountError() throws IOException {
@@ -83,11 +83,9 @@ public class LongTermsAggregateConverterTests extends OpenSearchTestCase {
         LongTerms longTerms = createLongTerms("test", List.of(bucket), 0, 0);
 
         Aggregate.Builder result = converter.toProto(longTerms);
-        ObjectMap bucketMap = result.build().getBuckets(0);
-        Map<String, ObjectMap.Value> fields = bucketMap.getFieldsMap();
+        LongTermsBucket protoBucket = result.build().getLterms().getBuckets(0);
 
-        assertTrue(fields.containsKey("doc_count_error_upper_bound"));
-        assertEquals(3L, fields.get("doc_count_error_upper_bound").getInt64());
+        assertEquals(3L, protoBucket.getDocCountErrorUpperBound());
     }
 
     public void testBucketWithFormattedKey() throws IOException {
@@ -96,12 +94,11 @@ public class LongTermsAggregateConverterTests extends OpenSearchTestCase {
         LongTerms longTerms = createLongTerms("test", List.of(bucket), 0, 0);
 
         Aggregate.Builder result = converter.toProto(longTerms);
-        ObjectMap bucketMap = result.build().getBuckets(0);
-        Map<String, ObjectMap.Value> fields = bucketMap.getFieldsMap();
+        LongTermsBucket protoBucket = result.build().getLterms().getBuckets(0);
 
-        assertEquals(1000L, fields.get(Aggregation.CommonFields.KEY.getPreferredName()).getInt64());
-        assertTrue(fields.containsKey(Aggregation.CommonFields.KEY_AS_STRING.getPreferredName()));
-        assertEquals("1000.00", fields.get(Aggregation.CommonFields.KEY_AS_STRING.getPreferredName()).getString());
+        assertEquals(1000L, protoBucket.getKey().getSigned());
+        assertTrue("key_as_string should be set with custom format", protoBucket.hasKeyAsString());
+        assertEquals("1000.00", protoBucket.getKeyAsString());
     }
 
     public void testBucketWithRawFormatNoKeyAsString() throws IOException {
@@ -109,9 +106,9 @@ public class LongTermsAggregateConverterTests extends OpenSearchTestCase {
         LongTerms longTerms = createLongTerms("test", List.of(bucket), 0, 0);
 
         Aggregate.Builder result = converter.toProto(longTerms);
-        ObjectMap bucketMap = result.build().getBuckets(0);
+        LongTermsBucket protoBucket = result.build().getLterms().getBuckets(0);
 
-        assertFalse(bucketMap.getFieldsMap().containsKey(Aggregation.CommonFields.KEY_AS_STRING.getPreferredName()));
+        assertFalse("key_as_string should not be set with RAW format", protoBucket.hasKeyAsString());
     }
 
     private static LongTerms createLongTerms(String name, List<LongTerms.Bucket> buckets, long docCountError, long otherDocCount) {

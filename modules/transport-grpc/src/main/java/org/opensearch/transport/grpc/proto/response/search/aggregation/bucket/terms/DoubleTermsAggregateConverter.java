@@ -2,20 +2,21 @@ package org.opensearch.transport.grpc.proto.response.search.aggregation.bucket.t
 
 import org.opensearch.core.xcontent.XContentBuilder;
 import org.opensearch.protobufs.Aggregate;
-import org.opensearch.protobufs.ObjectMap;
+import org.opensearch.protobufs.DoubleTermsAggregate;
+import org.opensearch.protobufs.DoubleTermsBucket;
 import org.opensearch.search.DocValueFormat;
 import org.opensearch.search.aggregations.Aggregation;
 import org.opensearch.search.aggregations.InternalAggregation;
 import org.opensearch.search.aggregations.bucket.terms.DoubleTerms;
+import org.opensearch.transport.grpc.proto.response.search.aggregation.AggregateProtoUtils;
+import org.opensearch.transport.grpc.spi.AggregateProtoConverter;
 
 import java.io.IOException;
-
-import static org.opensearch.transport.grpc.proto.response.search.aggregation.AggregateProtoUtils.newValue;
 
 /**
  * Proto converter for {@link DoubleTerms}
  */
-public class DoubleTermsAggregateConverter extends TermsAggregatesProtoConverter<DoubleTerms.Bucket> {
+public class DoubleTermsAggregateConverter implements AggregateProtoConverter {
     @Override
     public Class<? extends InternalAggregation> getHandledAggregationType() {
         return DoubleTerms.class;
@@ -24,21 +25,43 @@ public class DoubleTermsAggregateConverter extends TermsAggregatesProtoConverter
     @Override
     public Aggregate.Builder toProto(InternalAggregation aggregation) throws IOException {
         DoubleTerms doubleTerms = (DoubleTerms) aggregation;
-        Aggregate.Builder protoBuilder = Aggregate.newBuilder();
-        convertCommon(protoBuilder, doubleTerms.getDocCountError(), doubleTerms.getSumOfOtherDocCounts(), doubleTerms.getBuckets());
-        return protoBuilder;
+        DoubleTermsAggregate.Builder termsBuilder = DoubleTermsAggregate.newBuilder();
+
+        termsBuilder.setDocCountErrorUpperBound(doubleTerms.getDocCountError());
+        termsBuilder.setSumOtherDocCount(doubleTerms.getSumOfOtherDocCounts());
+
+        for (DoubleTerms.Bucket bucket : doubleTerms.getBuckets()) {
+            termsBuilder.addBuckets(convertBucket(bucket));
+        }
+
+        TermsAggregateProtoUtils.applyMetadata(termsBuilder::setMeta, doubleTerms);
+
+        return Aggregate.newBuilder().setDterms(termsBuilder);
     }
 
     /**
      * Mirroring {@link DoubleTerms.Bucket#keyToXContent(XContentBuilder)}
-     *
-     * {@inheritDoc}
      */
-    @Override
-    void convertBucketKey(ObjectMap.Builder builder, DoubleTerms.Bucket bucket) {
-        builder.putFields(Aggregation.CommonFields.KEY.getPreferredName(), newValue((double) bucket.getKey()));
+    private DoubleTermsBucket convertBucket(DoubleTerms.Bucket bucket) throws IOException {
+        DoubleTermsBucket.Builder builder = DoubleTermsBucket.newBuilder();
+
+        builder.setKey((double) bucket.getKey());
+
         if (bucket.getFormat() != DocValueFormat.RAW) {
-            builder.putFields(Aggregation.CommonFields.KEY_AS_STRING.getPreferredName(), newValue(bucket.getKeyAsString()));
+            builder.setKeyAsString(bucket.getKeyAsString());
         }
+
+        builder.setDocCount(bucket.getDocCount());
+        if (bucket.showDocCountError()) {
+            builder.setDocCountErrorUpperBound(bucket.getDocCountError());
+        }
+
+        for (Aggregation subAgg : bucket.getAggregations()) {
+            if (subAgg instanceof InternalAggregation internalAgg) {
+                builder.getMutableAggregate().put(subAgg.getName(), AggregateProtoUtils.toProto(internalAgg));
+            }
+        }
+
+        return builder.build();
     }
 }

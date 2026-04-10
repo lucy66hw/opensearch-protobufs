@@ -32,7 +32,6 @@ public class MinAggregateProtoConverter implements AggregateProtoConverter {
 
     @Override
     public Aggregate.Builder toProto(InternalAggregation aggregation) throws IOException {
-        Aggregate aggregate = MinAggregateProtoUtils.toProto((InternalMin) aggregation);
-        return aggregate.toBuilder();
+        return Aggregate.newBuilder().setMin(MinAggregateProtoUtils.toProto((InternalMin) aggregation));
     }
 }
