@@ -10,7 +10,7 @@ package org.opensearch.transport.grpc.proto.response.search.aggregation.metrics;
 import org.opensearch.protobufs.Aggregate;
 import org.opensearch.search.aggregations.InternalAggregation;
 import org.opensearch.search.aggregations.metrics.InternalMax;
-import org.opensearch.transport.grpc.proto.response.search.aggregation.AbstractAggregateProtoConverter;
+import org.opensearch.transport.grpc.spi.AggregateProtoConverter;
 
 import java.io.IOException;
 
@@ -18,7 +18,7 @@ import java.io.IOException;
  * Converter for {@link InternalMax} aggregations to Protocol Buffer Aggregate messages.
  * Delegates the actual conversion logic to {@link MaxAggregateProtoUtils}.
  */
-public class MaxAggregateProtoConverter extends AbstractAggregateProtoConverter {
+public class MaxAggregateProtoConverter implements AggregateProtoConverter {
 
     /**
      * Creates a new MaxAggregateProtoConverter.
@@ -31,8 +31,7 @@ public class MaxAggregateProtoConverter extends AbstractAggregateProtoConverter 
     }
 
     @Override
-    protected Aggregate.Builder doProtoBody(InternalAggregation aggregation) throws IOException {
-        Aggregate aggregate = MaxAggregateProtoUtils.toProto((InternalMax) aggregation);
-        return aggregate.toBuilder();
+    public Aggregate.Builder toProto(InternalAggregation aggregation) throws IOException {
+        return Aggregate.newBuilder().setMax(MaxAggregateProtoUtils.toProto((InternalMax) aggregation));
     }
 }

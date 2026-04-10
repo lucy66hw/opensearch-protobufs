@@ -27,20 +27,16 @@ import java.util.Map;
  */
 public class AggregateProtoUtilsTests extends OpenSearchTestCase {
 
-    // ========================================
-    // toProto() - Dispatcher Tests
-    // ========================================
-
     public void testToProtoWithInternalMin() throws IOException {
         InternalMin internalMin = new InternalMin("min_price", 10.5, DocValueFormat.RAW, Collections.emptyMap());
 
         Aggregate result = AggregateProtoUtils.toProto(internalMin);
 
         assertNotNull("Result should not be null", result);
-        assertTrue("Should have value set", result.hasValue());
-        assertTrue("Value should be double", result.getValue().hasDouble());
-        assertEquals("Value should match", 10.5, result.getValue().getDouble(), 0.001);
-        assertFalse("Should not have metadata", result.hasMeta());
+        assertTrue("Should have min set", result.hasMin());
+        assertTrue("Value should be double", result.getMin().getValue().hasDouble());
+        assertEquals("Value should match", 10.5, result.getMin().getValue().getDouble(), 0.001);
+        assertFalse("Should not have metadata", result.getMin().hasMeta());
     }
 
     public void testToProtoWithInternalMax() throws IOException {
@@ -49,10 +45,10 @@ public class AggregateProtoUtilsTests extends OpenSearchTestCase {
         Aggregate result = AggregateProtoUtils.toProto(internalMax);
 
         assertNotNull("Result should not be null", result);
-        assertTrue("Should have value set", result.hasValue());
-        assertTrue("Value should be double", result.getValue().hasDouble());
-        assertEquals("Value should match", 99.9, result.getValue().getDouble(), 0.001);
-        assertFalse("Should not have metadata", result.hasMeta());
+        assertTrue("Should have max set", result.hasMax());
+        assertTrue("Value should be double", result.getMax().getValue().hasDouble());
+        assertEquals("Value should match", 99.9, result.getMax().getValue().getDouble(), 0.001);
+        assertFalse("Should not have metadata", result.getMax().hasMeta());
     }
 
     public void testToProtoWithNullThrowsException() {
@@ -61,7 +57,6 @@ public class AggregateProtoUtilsTests extends OpenSearchTestCase {
     }
 
     public void testToProtoWithUnsupportedTypeThrowsException() throws IOException {
-        // Create a mock unsupported aggregation type
         InternalAggregation unsupported = new InternalAggregation("unsupported", Collections.emptyMap()) {
             @Override
             public String getWriteableName() {
@@ -92,9 +87,7 @@ public class AggregateProtoUtilsTests extends OpenSearchTestCase {
             }
 
             @Override
-            protected void doWriteTo(org.opensearch.core.common.io.stream.StreamOutput out) throws IOException {
-                // No-op for test
-            }
+            protected void doWriteTo(org.opensearch.core.common.io.stream.StreamOutput out) throws IOException {}
         };
 
         IllegalArgumentException ex = expectThrows(IllegalArgumentException.class, () -> AggregateProtoUtils.toProto(unsupported));
@@ -111,8 +104,8 @@ public class AggregateProtoUtilsTests extends OpenSearchTestCase {
         Aggregate result = AggregateProtoUtils.toProto(internalMin);
 
         assertNotNull("Result should not be null", result);
-        assertTrue("Should have metadata", result.hasMeta());
-        ObjectMap metaMap = result.getMeta();
+        assertTrue("Should have metadata", result.getMin().hasMeta());
+        ObjectMap metaMap = result.getMin().getMeta();
         assertTrue("Metadata should contain key1", metaMap.getFieldsMap().containsKey("key1"));
         assertTrue("Metadata should contain key2", metaMap.getFieldsMap().containsKey("key2"));
     }
@@ -123,6 +116,6 @@ public class AggregateProtoUtilsTests extends OpenSearchTestCase {
         Aggregate result = AggregateProtoUtils.toProto(internalMin);
 
         assertNotNull("Result should not be null", result);
-        assertFalse("Should not have metadata for empty map", result.hasMeta());
+        assertFalse("Should not have metadata for empty map", result.getMin().hasMeta());
     }
 }

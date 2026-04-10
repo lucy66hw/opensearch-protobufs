@@ -8,6 +8,7 @@
 package org.opensearch.transport.grpc.proto.response.search.aggregation.bucket.terms;
 
 import org.opensearch.protobufs.Aggregate;
+import org.opensearch.protobufs.UnmappedTermsAggregate;
 import org.opensearch.search.aggregations.BucketOrder;
 import org.opensearch.search.aggregations.bucket.terms.TermsAggregator;
 import org.opensearch.search.aggregations.bucket.terms.UnmappedTerms;
@@ -40,8 +41,9 @@ public class UnmappedTermsAggregateConverterTests extends OpenSearchTestCase {
         assertNotNull(result);
 
         Aggregate aggregate = result.build();
-        assertEquals(0, aggregate.getDocCountErrorUpperBound());
-        assertEquals(0, aggregate.getSumOtherDocCount());
-        assertEquals(0, aggregate.getBucketsCount());
+        assertTrue("Should have umterms set", aggregate.hasUmterms());
+        UnmappedTermsAggregate umterms = aggregate.getUmterms();
+        assertEquals(0, umterms.getDocCountErrorUpperBound());
+        assertEquals(0, umterms.getSumOtherDocCount());
     }
 }

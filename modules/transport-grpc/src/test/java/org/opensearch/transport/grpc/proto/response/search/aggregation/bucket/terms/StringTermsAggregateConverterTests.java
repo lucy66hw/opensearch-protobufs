@@ -9,9 +9,9 @@ package org.opensearch.transport.grpc.proto.response.search.aggregation.bucket.t
 
 import org.apache.lucene.util.BytesRef;
 import org.opensearch.protobufs.Aggregate;
-import org.opensearch.protobufs.ObjectMap;
+import org.opensearch.protobufs.StringTermsAggregate;
+import org.opensearch.protobufs.StringTermsBucket;
 import org.opensearch.search.DocValueFormat;
-import org.opensearch.search.aggregations.Aggregation;
 import org.opensearch.search.aggregations.BucketOrder;
 import org.opensearch.search.aggregations.InternalAggregations;
 import org.opensearch.search.aggregations.bucket.terms.StringTerms;
@@ -21,7 +21,6 @@ import org.opensearch.test.OpenSearchTestCase;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Tests for {@link StringTermsAggregateConverter}.
@@ -40,9 +39,11 @@ public class StringTermsAggregateConverterTests extends OpenSearchTestCase {
         Aggregate.Builder result = converter.toProto(stringTerms);
         Aggregate aggregate = result.build();
 
-        assertEquals(0, aggregate.getDocCountErrorUpperBound());
-        assertEquals(0, aggregate.getSumOtherDocCount());
-        assertEquals(0, aggregate.getBucketsCount());
+        assertTrue("Should have sterms set", aggregate.hasSterms());
+        StringTermsAggregate sterms = aggregate.getSterms();
+        assertEquals(0, sterms.getDocCountErrorUpperBound());
+        assertEquals(0, sterms.getSumOtherDocCount());
+        assertEquals(0, sterms.getBucketsCount());
     }
 
     public void testSingleBucket() throws IOException {
@@ -57,14 +58,13 @@ public class StringTermsAggregateConverterTests extends OpenSearchTestCase {
         StringTerms stringTerms = createStringTerms("test", List.of(bucket), 0, 0);
 
         Aggregate.Builder result = converter.toProto(stringTerms);
-        Aggregate aggregate = result.build();
+        StringTermsAggregate sterms = result.build().getSterms();
 
-        assertEquals(1, aggregate.getBucketsCount());
-        Map<String, ObjectMap.Value> fields = aggregate.getBuckets(0).getFieldsMap();
+        assertEquals(1, sterms.getBucketsCount());
+        StringTermsBucket protoBucket = sterms.getBuckets(0);
 
-        assertEquals("active", fields.get(Aggregation.CommonFields.KEY.getPreferredName()).getString());
-        assertEquals(25L, fields.get(Aggregation.CommonFields.DOC_COUNT.getPreferredName()).getInt64());
-        assertFalse(fields.containsKey(Aggregation.CommonFields.KEY_AS_STRING.getPreferredName()));
+        assertEquals("active", protoBucket.getKey());
+        assertEquals(25L, protoBucket.getDocCount());
     }
 
     public void testMultipleBuckets() throws IOException {
@@ -87,14 +87,14 @@ public class StringTermsAggregateConverterTests extends OpenSearchTestCase {
         StringTerms stringTerms = createStringTerms("test", List.of(bucket1, bucket2), 3, 150);
 
         Aggregate.Builder result = converter.toProto(stringTerms);
-        Aggregate aggregate = result.build();
+        StringTermsAggregate sterms = result.build().getSterms();
 
-        assertEquals(3, aggregate.getDocCountErrorUpperBound());
-        assertEquals(150, aggregate.getSumOtherDocCount());
-        assertEquals(2, aggregate.getBucketsCount());
+        assertEquals(3, sterms.getDocCountErrorUpperBound());
+        assertEquals(150, sterms.getSumOtherDocCount());
+        assertEquals(2, sterms.getBucketsCount());
 
-        assertEquals("active", aggregate.getBuckets(0).getFieldsMap().get(Aggregation.CommonFields.KEY.getPreferredName()).getString());
-        assertEquals("inactive", aggregate.getBuckets(1).getFieldsMap().get(Aggregation.CommonFields.KEY.getPreferredName()).getString());
+        assertEquals("active", sterms.getBuckets(0).getKey());
+        assertEquals("inactive", sterms.getBuckets(1).getKey());
     }
 
     public void testBucketWithDocCountError() throws IOException {
@@ -109,10 +109,9 @@ public class StringTermsAggregateConverterTests extends OpenSearchTestCase {
         StringTerms stringTerms = createStringTerms("test", List.of(bucket), 0, 0);
 
         Aggregate.Builder result = converter.toProto(stringTerms);
-        Map<String, ObjectMap.Value> fields = result.build().getBuckets(0).getFieldsMap();
+        StringTermsBucket protoBucket = result.build().getSterms().getBuckets(0);
 
-        assertTrue(fields.containsKey("doc_count_error_upper_bound"));
-        assertEquals(2L, fields.get("doc_count_error_upper_bound").getInt64());
+        assertEquals(2L, protoBucket.getDocCountErrorUpperBound());
     }
 
     private static StringTerms createStringTerms(String name, List<StringTerms.Bucket> buckets, long docCountError, long otherDocCount) {

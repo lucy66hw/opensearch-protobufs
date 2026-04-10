@@ -8,9 +8,9 @@
 package org.opensearch.transport.grpc.proto.response.search.aggregation.bucket.terms;
 
 import org.opensearch.protobufs.Aggregate;
-import org.opensearch.protobufs.ObjectMap;
+import org.opensearch.protobufs.UnsignedLongTermsAggregate;
+import org.opensearch.protobufs.UnsignedLongTermsBucket;
 import org.opensearch.search.DocValueFormat;
-import org.opensearch.search.aggregations.Aggregation;
 import org.opensearch.search.aggregations.BucketOrder;
 import org.opensearch.search.aggregations.InternalAggregations;
 import org.opensearch.search.aggregations.bucket.terms.TermsAggregator;
@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Tests for {@link UnsignedLongTermsAggregateConverter}.
@@ -40,9 +39,11 @@ public class UnsignedLongTermsAggregateConverterTests extends OpenSearchTestCase
         Aggregate.Builder result = converter.toProto(terms);
         Aggregate aggregate = result.build();
 
-        assertEquals(0, aggregate.getDocCountErrorUpperBound());
-        assertEquals(0, aggregate.getSumOtherDocCount());
-        assertEquals(0, aggregate.getBucketsCount());
+        assertTrue("Should have ulterms set", aggregate.hasUlterms());
+        UnsignedLongTermsAggregate ulterms = aggregate.getUlterms();
+        assertEquals(0, ulterms.getDocCountErrorUpperBound());
+        assertEquals(0, ulterms.getSumOtherDocCount());
+        assertEquals(0, ulterms.getBucketsCount());
     }
 
     public void testSingleBucket() throws IOException {
@@ -57,14 +58,14 @@ public class UnsignedLongTermsAggregateConverterTests extends OpenSearchTestCase
         UnsignedLongTerms terms = createUnsignedLongTerms("test", List.of(bucket), 0, 0);
 
         Aggregate.Builder result = converter.toProto(terms);
-        Aggregate aggregate = result.build();
+        UnsignedLongTermsAggregate ulterms = result.build().getUlterms();
 
-        assertEquals(1, aggregate.getBucketsCount());
-        Map<String, ObjectMap.Value> fields = aggregate.getBuckets(0).getFieldsMap();
+        assertEquals(1, ulterms.getBucketsCount());
+        UnsignedLongTermsBucket protoBucket = ulterms.getBuckets(0);
 
-        assertEquals("100", fields.get(Aggregation.CommonFields.KEY.getPreferredName()).getString());
-        assertEquals(15L, fields.get(Aggregation.CommonFields.DOC_COUNT.getPreferredName()).getInt64());
-        assertFalse(fields.containsKey(Aggregation.CommonFields.KEY_AS_STRING.getPreferredName()));
+        assertEquals(100L, protoBucket.getKey());
+        assertEquals(15L, protoBucket.getDocCount());
+        assertFalse("key_as_string should not be set with RAW format", protoBucket.hasKeyAsString());
     }
 
     public void testLargeUnsignedValue() throws IOException {
@@ -80,9 +81,9 @@ public class UnsignedLongTermsAggregateConverterTests extends OpenSearchTestCase
         UnsignedLongTerms terms = createUnsignedLongTerms("test", List.of(bucket), 0, 0);
 
         Aggregate.Builder result = converter.toProto(terms);
-        Map<String, ObjectMap.Value> fields = result.build().getBuckets(0).getFieldsMap();
+        UnsignedLongTermsBucket protoBucket = result.build().getUlterms().getBuckets(0);
 
-        assertEquals(largeValue.toString(), fields.get(Aggregation.CommonFields.KEY.getPreferredName()).getString());
+        assertEquals(largeValue.longValue(), protoBucket.getKey());
     }
 
     public void testMultipleBuckets() throws IOException {
@@ -105,11 +106,11 @@ public class UnsignedLongTermsAggregateConverterTests extends OpenSearchTestCase
         UnsignedLongTerms terms = createUnsignedLongTerms("test", List.of(bucket1, bucket2), 7, 300);
 
         Aggregate.Builder result = converter.toProto(terms);
-        Aggregate aggregate = result.build();
+        UnsignedLongTermsAggregate ulterms = result.build().getUlterms();
 
-        assertEquals(7, aggregate.getDocCountErrorUpperBound());
-        assertEquals(300, aggregate.getSumOtherDocCount());
-        assertEquals(2, aggregate.getBucketsCount());
+        assertEquals(7, ulterms.getDocCountErrorUpperBound());
+        assertEquals(300, ulterms.getSumOtherDocCount());
+        assertEquals(2, ulterms.getBucketsCount());
     }
 
     public void testBucketWithDocCountError() throws IOException {
@@ -124,10 +125,9 @@ public class UnsignedLongTermsAggregateConverterTests extends OpenSearchTestCase
         UnsignedLongTerms terms = createUnsignedLongTerms("test", List.of(bucket), 0, 0);
 
         Aggregate.Builder result = converter.toProto(terms);
-        Map<String, ObjectMap.Value> fields = result.build().getBuckets(0).getFieldsMap();
+        UnsignedLongTermsBucket protoBucket = result.build().getUlterms().getBuckets(0);
 
-        assertTrue(fields.containsKey("doc_count_error_upper_bound"));
-        assertEquals(4L, fields.get("doc_count_error_upper_bound").getInt64());
+        assertEquals(4L, protoBucket.getDocCountErrorUpperBound());
     }
 
     private static UnsignedLongTerms createUnsignedLongTerms(

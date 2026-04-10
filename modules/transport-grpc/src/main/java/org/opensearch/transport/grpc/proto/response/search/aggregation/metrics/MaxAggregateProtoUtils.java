@@ -7,14 +7,17 @@
  */
 package org.opensearch.transport.grpc.proto.response.search.aggregation.metrics;
 
-import org.opensearch.protobufs.Aggregate;
 import org.opensearch.protobufs.NullValue;
+import org.opensearch.protobufs.ObjectMap;
+import org.opensearch.protobufs.SingleMetricAggregateBase;
 import org.opensearch.protobufs.SingleMetricAggregateBaseAllOfValue;
 import org.opensearch.search.DocValueFormat;
 import org.opensearch.search.aggregations.metrics.InternalMax;
+import org.opensearch.transport.grpc.proto.response.common.ObjectMapProtoUtils;
 
 /**
- * Utility class for converting {@link InternalMax} aggregation results to Aggregate protocol buffer format.
+ * Utility class for converting {@link InternalMax} aggregation results to
+ * {@link SingleMetricAggregateBase} protocol buffer format.
  */
 public class MaxAggregateProtoUtils {
 
@@ -23,16 +26,16 @@ public class MaxAggregateProtoUtils {
     }
 
     /**
-     * Converts an InternalMax aggregation result to Aggregate proto.
+     * Converts an InternalMax aggregation result to SingleMetricAggregateBase proto.
      *
      * <p>Mirrors {@link InternalMax#doXContentBody} structure exactly.
      *
      * @param internalMax The InternalMax aggregation result from OpenSearch
-     * @return Aggregate proto (metadata not included)
+     * @return SingleMetricAggregateBase proto with value, value_as_string, and metadata
      * @see InternalMax#doXContentBody
      */
-    public static Aggregate toProto(InternalMax internalMax) {
-        Aggregate.Builder builder = Aggregate.newBuilder();
+    public static SingleMetricAggregateBase toProto(InternalMax internalMax) {
+        SingleMetricAggregateBase.Builder builder = SingleMetricAggregateBase.newBuilder();
 
         double max = internalMax.getValue();
         boolean hasValue = !Double.isInfinite(max);
@@ -47,6 +50,13 @@ public class MaxAggregateProtoUtils {
 
         if (hasValue && internalMax.getFormat() != DocValueFormat.RAW) {
             builder.setValueAsString(internalMax.getValueAsString());
+        }
+
+        if (internalMax.getMetadata() != null && !internalMax.getMetadata().isEmpty()) {
+            ObjectMap.Value metaValue = ObjectMapProtoUtils.toProto(internalMax.getMetadata());
+            if (metaValue.hasObjectMap()) {
+                builder.setMeta(metaValue.getObjectMap());
+            }
         }
 
         return builder.build();
