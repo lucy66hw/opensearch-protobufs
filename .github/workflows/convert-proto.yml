@@ -48,19 +48,19 @@ jobs:
               per_page: 20
             });
 
-            const latestSuccessfulRun = runs.data.workflow_runs.find(
-              (run) => run.conclusion === "success"
-            );
+            const latestRun = runs.data.workflow_runs[0];
 
-            if (!latestSuccessfulRun) {
-              core.setFailed("Could not find a successful build.yml workflow run on main.");
+            if (!latestRun) {
+              core.setFailed("Could not find any build.yml workflow run on main.");
               return;
             }
 
-            core.setOutput("run_id", String(latestSuccessfulRun.id));
-            core.setOutput("head_sha", latestSuccessfulRun.head_sha);
-            console.log("Latest successful build run: " + latestSuccessfulRun.id);
-            console.log("Spec commit: " + latestSuccessfulRun.head_sha);
+            core.setOutput("run_id", String(latestRun.id));
+            core.setOutput("head_sha", latestRun.head_sha);
+            core.setOutput("conclusion", latestRun.conclusion || "unknown");
+            console.log("Latest build run: " + latestRun.id);
+            console.log("Spec commit: " + latestRun.head_sha);
+            console.log("Build conclusion: " + (latestRun.conclusion || "unknown"));
 
       - name: Download Latest Spec Build Artifact
         id: download_build_artifact
