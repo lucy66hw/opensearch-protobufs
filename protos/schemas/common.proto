@@ -2865,6 +2865,7 @@ message BinaryFieldValue {
 
     // [optional] Long array payload for fields that support vector-like input.
     LongArrayValue long_array_value = 5;
+
   }
 }
 
@@ -2902,12 +2903,12 @@ message FloatList {
 
 message DoubleArrayValue {
   oneof encoding {
-
     // [optional] Fast path: 8 * dimension bytes, little-endian binary double array.
     DoubleBinaryLE binary_le = 1;
 
     // [optional] Simple path: packed array
     DoubleList values = 2;
+
   }
 }
 
@@ -2928,12 +2929,12 @@ message DoubleList {
 
 message IntArrayValue {
   oneof encoding {
-
     // [optional] Fast path: 4 * dimension bytes, little-endian binary int32 array.
     IntBinaryLE binary_le = 1;
 
     // [optional] Simple path: packed array
     IntList values = 2;
+
   }
 }
 
@@ -2954,12 +2955,12 @@ message IntList {
 
 message LongArrayValue {
   oneof encoding {
-
     // [optional] Fast path: 8 * dimension bytes, little-endian binary int64 array.
     LongBinaryLE binary_le = 1;
 
     // [optional] Simple path: packed array
     LongList values = 2;
+
   }
 }
 
@@ -3411,6 +3412,39 @@ message MlPredictModelStreamRequest {
   optional GlobalParams global_params = 2;
 
   optional MLPredictModelStreamRequestBody ml_predict_model_stream_request_body = 3;
+}
+
+message InlineObject {
+
+  optional string pit_id = 1;
+
+  optional int64 creation_time = 2;
+
+  optional ShardStatistics x_shards = 3;
+}
+
+message CreatePitRequest {
+
+  // A comma-separated list of indexes; use `_all` or empty string to perform the operation on all indexes.
+  repeated string index = 1;
+
+  // Allow if point in time can be created with partial failures.
+  optional bool allow_partial_pit_creation = 2;
+
+  // Whether to expand wildcard expression to concrete indexes that are open, closed or both.
+  repeated ExpandWildcard expand_wildcards = 3;
+
+  // Specify the keep alive for point in time.
+  optional string keep_alive = 4;
+
+  // Specify the node or shard the operation should be performed on.
+  optional string preference = 5;
+
+  // A comma-separated list of specific routing values.
+  repeated string routing = 6;
+
+  // Global query parameters
+  optional GlobalParams global_params = 7;
 }
 
 enum FieldValueFactorModifier {
