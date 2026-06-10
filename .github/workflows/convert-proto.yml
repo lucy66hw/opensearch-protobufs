@@ -16,7 +16,6 @@ on:
 jobs:
   auto-proto-convert:
     runs-on: ubuntu-latest
-    if: github.repository == 'opensearch-project/opensearch-protobufs'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -158,7 +157,7 @@ jobs:
           path: protos-schemas.diff
 
       - name: Create Pull Request if changes exist
-        if: github.event_name != 'pull_request' && steps.check_changes.outputs.changed == 'true' && github.repository == 'opensearch-project/opensearch-protobufs'
+        if: github.event_name != 'pull_request' && steps.check_changes.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
