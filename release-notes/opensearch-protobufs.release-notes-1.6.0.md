@@ -1,4 +1,4 @@
-## Version 1.6.0 (2026-06-16) Release Notes
+## Version 1.6.0 (2026-06-11) Release Notes
 
 ### Added
 - Add support for double, int and long in BinaryFieldValue ([#460](https://github.com/opensearch-project/opensearch-protobufs/pull/460))
