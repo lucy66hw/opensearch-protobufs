@@ -3,6 +3,18 @@ name: Auto Proto Convert
 on:
   workflow_dispatch:
     inputs:
+      artifact_download_url:
+        description: 'Download URL for the api-spec build artifact zip.'
+        required: true
+        type: string
+      api_spec_commit:
+        description: 'Optional api-spec commit SHA for PR metadata.'
+        required: false
+        type: string
+      api_spec_run_id:
+        description: 'Optional api-spec workflow run ID for PR metadata.'
+        required: false
+        type: string
       opensearch_version:
         description: 'OpenSearch version. Leave empty to fetch latest.'
         required: false
@@ -32,55 +44,21 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Resolve API spec build artifact
+      - name: Resolve provided artifact metadata
         id: api_spec_artifact
-        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const owner = "opensearch-project";
-            const repo = "opensearch-api-specification";
-            const workflow_id = "build.yml";
-            const branch = "main";
+        env:
+          ARTIFACT_DOWNLOAD_URL: ${{ inputs.artifact_download_url || github.event.client_payload.artifact_download_url || '' }}
+          API_SPEC_COMMIT: ${{ inputs.api_spec_commit || github.event.client_payload.api_spec_commit || '' }}
+          API_SPEC_RUN_ID: ${{ inputs.api_spec_run_id || github.event.client_payload.api_spec_run_id || '' }}
+        run: |
+          if [ -z "$ARTIFACT_DOWNLOAD_URL" ]; then
+            echo "artifact_download_url is required for both workflow_dispatch and repository_dispatch."
+            exit 1
+          fi
 
-            const response = await github.rest.actions.listWorkflowRuns({
-              owner,
-              repo,
-              workflow_id,
-              branch,
-              event: "push",
-              status: "completed",
-              per_page: 1
-            });
-            const selectedRun = response.data.workflow_runs[0];
-
-            if (!selectedRun) {
-              core.setFailed("Could not find a completed api-spec build run on main.");
-              return;
-            }
-
-            const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
-              owner,
-              repo,
-              run_id: selectedRun.id
-            });
-            const selectedArtifact = artifacts.data.artifacts.find(
-              (artifact) => artifact.name === "build" && !artifact.expired
-            );
-
-            if (!selectedArtifact) {
-              core.setFailed(`Latest completed api-spec build run ${selectedRun.id} does not have a non-expired build artifact.`);
-              return;
-            }
-
-            core.setOutput("source_commit", selectedRun.head_sha);
-            core.setOutput("run_id", String(selectedRun.id));
-            core.setOutput("run_conclusion", selectedRun.conclusion || "unknown");
-            core.setOutput("artifact_id", String(selectedArtifact.id));
-            core.setOutput("artifact_download_url", selectedArtifact.archive_download_url);
-            console.log(
-              `Using build artifact ${selectedArtifact.id} from run ${selectedRun.id} (${selectedRun.conclusion}) at commit ${selectedRun.head_sha}`
-            );
+          echo "artifact_download_url=$ARTIFACT_DOWNLOAD_URL" >> "$GITHUB_OUTPUT"
+          echo "source_commit=${API_SPEC_COMMIT:-unknown}" >> "$GITHUB_OUTPUT"
+          echo "run_id=${API_SPEC_RUN_ID:-unknown}" >> "$GITHUB_OUTPUT"
 
       - name: Download API spec build artifact
         env:
@@ -218,7 +196,7 @@ jobs:
 
             **OpenSearch Version**: ${{ steps.get_opensearch_version.outputs.version }}
             **API Spec Commit**: ${{ steps.api_spec_artifact.outputs.source_commit }}
-            **API Spec Build Run**: ${{ steps.api_spec_artifact.outputs.run_id }} (${{ steps.api_spec_artifact.outputs.run_conclusion }})
+            **API Spec Build Run**: ${{ steps.api_spec_artifact.outputs.run_id }}
 
             ---
 
